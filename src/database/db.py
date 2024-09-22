@@ -63,6 +63,7 @@ for row in cursor:
     print('*************')
     print('')
 
+conn.commit()
 
 conn.close()
 
