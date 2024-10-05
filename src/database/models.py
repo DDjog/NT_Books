@@ -50,18 +50,18 @@ class Book(Base):
     id = Column(Integer, primary_key=True)
     title = Column(String(50), nullable=True)
     isbn_id = Column(Integer, ForeignKey('isbn.id'), nullable=True, unique=True)
-    isbn = relationship('Isbn', backref='books')
-    language_id = Column(String(20), nullable=True, unique=True)
-    cover_page_id = Column(LargeBinary, ForeignKey('cover_pagr.id'), nullable=True, unique=True)
+    language_id = Column(Integer, ForeignKey('languages.id'), nullable=True)
+    cover_page_id = Column(Integer, ForeignKey('cover_pages.id'), nullable=True, unique=True)
+    shelf_signature_id = Column(Integer, ForeignKey('shelf_signatures.id'), nullable=True, unique=True)
 
+    isbn = relationship('Isbn', backref='books')
     language = relationship('Language', backref='books')
     cover_page = relationship('Cover_page', backref='books')
     authors = relationship("Author", secondary=book_m2m_author, backref="books")
     tags = relationship("Tag", secondary=book_m2m_tag, backref="books")
     publisher = relationship('Publisher', secondary=book_m2m_publisher, backref='books')
     category = relationship('Category', secondary=book_m2m_category, backref='books')
-    shelf_signature = relationship('Shelf_signature', secondary=book_m2m_shelf_signature, backref='books')
-
+    shelf_signature = relationship('ShelfSignature', secondary=book_m2m_shelf_signature, backref='books')
 
 class Language(Base):
     __tablename__ = "languages"
@@ -85,11 +85,11 @@ class Isbn(Base):
 class Cover_page(Base):
     __tablename__ = "cover_pages"
     id = Column(Integer, primary_key=True)
-    cover_page = Column(LargeBinary(50), nullable=True)
+    cover_page = Column(LargeBinary, nullable=True)
 
 
 class Publisher(Base):
-    __tablename__ = "publisher"
+    __tablename__ = "publishers"
     id = Column(Integer, primary_key=True)
     publisher = Column(String(150), nullable=True, unique=False)
     publication_year = Column(Integer, nullable=True, unique=False)
@@ -101,13 +101,13 @@ class Tag(Base):
     tag = Column(String(50), nullable=True, unique=False, default=None)
 
 
-class BookCategory(Base):
+class Category(Base):
     __tablename__ = "categories"
     id = Column(Integer, primary_key=True)
     category_name = Column(String(50), nullable=True, unique=False)
 
 
-class BookShelfSignature(Base):
+class ShelfSignature(Base):
     __tablename__ = "shelf_signatures"
     id = Column(Integer, primary_key=True)
     shelf_signature = Column(String(50), nullable=True, unique=False)
