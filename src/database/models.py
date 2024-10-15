@@ -88,11 +88,23 @@ class Cover_page(Base):
     cover_page = Column(LargeBinary, nullable=True)
 
 
+class Address(Base):
+    __tablename__ = "addresses"
+    id = Column(Integer, primary_key=True)
+    street = Column(String(100), nullable=False)
+    number = Column(Integer, nullable=False, unique=False)
+    flat_number = Column(Integer, nullable=True, unique=False)
+    zip_code = Column(Integer, nullable=False, unique=False)
+    city = Column(String(100), nullable=False, unique=False)
+    country = Column(String(80), nullable=False, unique=False)
+
+
 class Publisher(Base):
     __tablename__ = "publishers"
     id = Column(Integer, primary_key=True)
     publisher = Column(String(150), nullable=True, unique=False)
     publication_year = Column(Integer, nullable=True, unique=False)
+    address_id = Column(Integer, ForeignKey('addresses.id'), nullable=True)
 
 
 class Tag(Base):
