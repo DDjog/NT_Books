@@ -2,7 +2,7 @@ from sqlalchemy import Column, Integer, String, Table, LargeBinary
 from sqlalchemy.orm import relationship, declarative_base
 from sqlalchemy.sql.schema import ForeignKey
 
-Base = declarative_base()
+Base = declarative_base() 
 
 book_m2m_author = Table(
     "book_m2m_author",
@@ -48,7 +48,7 @@ book_m2m_shelf_signature = Table(
 class Book(Base):
     __tablename__ = "books"
     id = Column(Integer, primary_key=True)
-    title = Column(String(50), nullable=True)
+    title = Column(String(255), nullable=True)
     isbn_id = Column(Integer, ForeignKey('isbn.id'), nullable=True, unique=True)
     language_id = Column(Integer, ForeignKey('languages.id'), nullable=True)
     cover_page_id = Column(Integer, ForeignKey('cover_pages.id'), nullable=True, unique=True)
@@ -68,6 +68,10 @@ class Language(Base):
     id = Column(Integer, primary_key=True)
     language = Column(String(50))
 
+class Title(Base):
+    __tablename__ = "titles"
+    id = Column(Integer, primary_key=True)
+    title = Column(String(255))
 
 class Author(Base):
     __tablename__ = "authors"
