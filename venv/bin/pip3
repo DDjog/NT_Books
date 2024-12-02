@@ -1,4 +1,4 @@
-#!/Users/Dorota/PycharmProjects/NT_Books/venv/bin/python3
+#!/Users/dorota/PycharmProjects/NT_Books/venv/bin/python3
 # -*- coding: utf-8 -*-
 import re
 import sys

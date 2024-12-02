@@ -40,6 +40,37 @@ def add_book(new_title, new_author_list, new_isbn, new_language, new_cover_page,
     )
     session.add(new_book)
     session.commit()
+    print(f'New book {new_book} was added.')
 
+def add_language(new_language):
+    languages_list = [language.language for language in session.query(Language).all()]
+
+    if new_language not in languages_list:
+        language = Language(language=new_language)
+        session.add(new_language)
+        session.commit()
+        print(f'New language {new_language} was added.')
+    else:
+        print(f'New language {new_language} already exists.')
+
+def add_tag(new_tag):
+    tags_list = [tag.tag for tag in session.query(Tag).all()]
+    if new_tag not in tags_list:
+        tag = Tag(tag=new_tag)
+        session.add(new_tag)
+        session.commit()
+        print(f'New tag {new_tag} was added.')
+    else:
+        print(f'New tag {new_tag} already exists.')
+
+def add_shelf_signature(new_shelf_signature):
+    shelf_signatures_list = [ShelfSignature.shelf_signature for shelf_signature in session.query(ShelfSignature).all()]
+    if new_shelf_signature not in shelf_signatures_list:
+        shelf_signature = ShelfSignature(shelf_signature=new_shelf_signature)
+        session.add(new_shelf_signature)
+        session.commit()
+        print(f'New shelf signature {new_shelf_signature} was added.')
+    else:
+        print(f'New shelf signature {new_shelf_signature} already exists.')
 
 
