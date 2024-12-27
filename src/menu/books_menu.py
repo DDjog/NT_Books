@@ -1,4 +1,5 @@
 from tkinter import *
+from src.database.category_operations import add_category, get_categories_list, delete_category
 
 root = Tk()
 root.title('Books project')
@@ -20,6 +21,8 @@ def cat_oper_window():
     global text_list
 
     top=Toplevel()
+    top.grab_set()
+
     top.title('Categories operations')
 
     top.columnconfigure(0, weight=1)
@@ -40,6 +43,10 @@ def cat_oper_window():
     text_list = Listbox(top, width=60, height=15)
     text_list.grid(row=2, column=0, padx=10, pady=10, sticky='nsew')
 
+    l=get_categories_list()
+    for i in l:
+        text_list.insert(END, i.category_name)
+
     text_list_label = Label(top, text='List of categories:')
     text_list_label.grid(row=1, column=0, padx=10, pady=10, sticky='nsew')
 
@@ -52,6 +59,7 @@ def aut_oper_window():
     global text_list
 
     top=Toplevel()
+    top.grab_set()
     top.title('Authors operations')
 
     top.columnconfigure(0, weight=1)
@@ -84,6 +92,7 @@ def tit_oper_window():
     global text_list
 
     top=Toplevel()
+    top.grab_set()
     top.title('Titles operations')
 
     top.columnconfigure(0, weight=1)
@@ -114,15 +123,16 @@ def add_to_list():
     global text
     text = e.get()
     if text not in text_list.get(0, END):
+        add_category(text)
         text_list.insert(END, text)
         e.delete(0, END)
 
 def selected_to_be_deleted():
-    global selected_indicates
-    selected_indicates= text_list.curselection()
+    global selected_indicate
+    selected_indicate= text_list.curselection()
 
-    if selected_indicates:
-        return selected_indicates[0]
+    if selected_indicate:
+        return selected_indicate[0]
     else:
         return None
 
@@ -130,6 +140,7 @@ def delete_selected():
     selected_index = text_list.curselection()
 
     if selected_index:
+        delete_category(text_list.get(selected_index))
         text_list.delete(selected_index)
     else:
         print('No record to be deleted')
