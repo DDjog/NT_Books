@@ -1,6 +1,6 @@
-from models import (Book, Title, Isbn, Language, Cover_page, ShelfSignature, Author,
+from src.database.models import (Book, Title, Isbn, Language, Cover_page, ShelfSignature, Author,
                     Tag, Publisher, Category)
-from db import session
+from src.database.db import session
 
 
 def add_book(new_title, new_author_list, new_isbn, new_language, new_cover_page, new_shelf_signature,

@@ -1,4 +1,3 @@
-from unicodedata import category
 
 from src.database.models import Category
 from src.database.db import session
