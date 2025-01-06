@@ -2,24 +2,24 @@
 from src.database.models import Language
 from src.database.db import session
 
-def add_language(new_language):
-    language = session.query(Language).filter_by(language=new_language).first()
+def add_language(language_name):
+    language = session.query(Language).filter_by(language=language_name).first()
 
     if not language:
-        language = Language(language=new_language)
+        language = Language(language=language_name)
         session.add(language)
         session.commit()
-        print(f'Language {new_language} was added.')
+        print(f'Language {language_name} was added.')
     else:
-        print(f'Language {new_language} already exists.')
+        print(f'Language {language_name} already exists.')
 
-def get_language(lang):
-    language = session.query(Language).filter_by(language=lang).first()
+def find_language(language_name):
+    language = session.query(Language).filter_by(language=language_name).first()
 
     if language:
-        print(f'Language: {lang}, ID: {language.id}')
+        print(f'Language: {language_name}, ID: {language.id}')
     else:
-        print(f':Language {language} was not found')
+        print(f':Language {language_name} was not found')
 
 def get_languages_list():
     languages_list = session.query(Language).all()
@@ -33,25 +33,25 @@ def get_languages_list():
         print('Languages list is empty')
         return None
 
-def update_language(language, updated_language):
-    language = session.query(Language).filter_by(language=language).first()
+def update_language(old_language_name, new_language_name):
+    language = session.query(Language).filter_by(language=old_language_name).first()
 
     if language:
-        language.language = updated_language
+        language.language = new_language_name
         session.commit()
-        print(f'Language: {id} {language} was updated to {updated_language}.')
+        print(f'Language: {id} {old_language_name} was updated to {new_language_name}.')
     else:
-        print(f'Language {language} was not found.')
+        print(f'Language {old_language_name} was not found.')
 
-def delete_language(language):
-    language = session.query(Language).filter_by(language=language).first()
+def delete_language(language_name):
+    language = session.query(Language).filter_by(language=language_name).first()
 
     if language:
         _id=language.id
         session.delete(language)
         session.commit()
-        print(f'Language: {_id} {language} was deleted.')
+        print(f'Language: {_id} {language_name} was deleted.')
     else:
-        print(f'Language {language} was not found.')
+        print(f'Language {language_name} was not found.')
 
 

@@ -2,24 +2,24 @@
 from src.database.models import Tag
 from src.database.db import session
 
-def add_tag(new_tag):
-    tag = session.query(Tag).filter_by(tag=new_tag).first()
+def add_tag(tag_name):
+    tag = session.query(Tag).filter_by(tag=tag_name).first()
 
     if not tag:
-        tag = Tag(tag=new_tag)
+        tag = Tag(tag=tag_name)
         session.add(tag)
         session.commit()
-        print(f'Tag {new_tag} was added.')
+        print(f'Tag {tag_name} was added.')
     else:
-        print(f'Tag {new_tag} already exists.')
+        print(f'Tag {tag_name} already exists.')
 
-def get_tag(ta):
-    tag = session.query(Tag).filter_by(tag=ta).first()
+def find_tag(tag_name):
+    tag = session.query(Tag).filter_by(tag=tag_name).first()
 
     if tag:
-        print(f'Tag: {ta}, ID: {tag.id}')
+        print(f'Tag: {tag_name}, ID: {tag.id}')
     else:
-        print(f':Tag {tag} was not found')
+        print(f':Tag {tag_name} was not found')
 
 def get_tags_list():
     tags_list = session.query(Tag).all()
@@ -33,25 +33,25 @@ def get_tags_list():
         print('Tags list is empty')
         return None
 
-def update_tag(tag, updated_tag):
-    tag = session.query(Tag).filter_by(tag=tag).first()
+def update_tag(old_tag_name, updated_tag_name):
+    tag = session.query(Tag).filter_by(tag=old_tag_name).first()
 
     if tag:
-        tag.tag = updated_tag
+        tag.tag = updated_tag_name
         session.commit()
-        print(f'Tag: {id} {tag} was updated to {updated_tag}.')
+        print(f'Tag: {id} {old_tag_name} was updated to {updated_tag_name}.')
     else:
-        print(f'Tag {tag} was not found.')
+        print(f'Tag {old_tag_name} was not found.')
 
-def delete_tag(tag):
-    tag = session.query(Tag).filter_by(tag=tag).first()
+def delete_tag(tag_name):
+    tag = session.query(Tag).filter_by(tag=tag_name).first()
 
     if tag:
         _id=tag.id
         session.delete(tag)
         session.commit()
-        print(f'Tag: {_id} {tag} was deleted.')
+        print(f'Tag: {_id} {tag_name} was deleted.')
     else:
-        print(f'Tag {tag} was not found.')
+        print(f'Tag {tag_name} was not found.')
 
 

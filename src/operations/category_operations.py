@@ -2,24 +2,24 @@
 from src.database.models import Category
 from src.database.db import session
 
-def add_category(new_category_name):
-    category = session.query(Category).filter_by(category_name=new_category_name).first()
+def add_category(category_name):
+    category = session.query(Category).filter_by(category_name=category_name).first()
 
     if not category:
-        category = Category(category_name=new_category_name)
+        category = Category(category_name=category_name)
         session.add(category)
         session.commit()
-        print(f'Category {new_category_name} was added.')
+        print(f'Category {category_name} was added.')
     else:
-        print(f'Category {new_category_name} already exists.')
+        print(f'Category {category_name} already exists.')
 
-def get_category(cat_name):
-    category = session.query(Category).filter_by(category_name=cat_name).first()
+def find_category(category_name):
+    category = session.query(Category).filter_by(category_name=category_name).first()
 
     if category:
-        print(f'Category name: {cat_name}, ID: {category.id}')
+        print(f'Category name: {category_name}, ID: {category.id}')
     else:
-        print(f'Category name {cat_name} was not found')
+        print(f'Category name {category_name} was not found')
 
 def get_categories_list():
     categories_list = session.query(Category).all()
@@ -33,25 +33,25 @@ def get_categories_list():
         print('Categories list is empty')
         return None
 
-def update_category(cat_name, updated_category_name):
-    category = session.query(Category).filter_by(category_name=cat_name).first()
+def update_category(old_category_name, updated_category_name):
+    category = session.query(Category).filter_by(category_name=old_category_name).first()
 
     if category:
         category.category_name = updated_category_name
         session.commit()
-        print(f'Category: {id} {cat_name} was updated to {updated_category_name}.')
+        print(f'Category: {id} {old_category_name} was updated to {updated_category_name}.')
     else:
-        print(f'Category {cat_name} was not found.')
+        print(f'Category {old_category_name} was not found.')
 
-def delete_category(cat_name):
-    category = session.query(Category).filter_by(category_name=cat_name).first()
+def delete_category(category_name):
+    category = session.query(Category).filter_by(category_name=category_name).first()
 
     if category:
         _id=category.id
         session.delete(category)
         session.commit()
-        print(f'Category: {_id} {cat_name} was deleted.')
+        print(f'Category: {_id} {category_name} was deleted.')
     else:
-        print(f'Category {cat_name} was not found.')
+        print(f'Category {category_name} was not found.')
 
 

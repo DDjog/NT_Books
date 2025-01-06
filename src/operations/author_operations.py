@@ -1,63 +1,60 @@
+from unicodedata import category
 
 from src.database.models import Author
 from src.database.db import session
 
-def add_author(new_author_name, new_author_surname):
-    author_name = session.query(Author).filter_by(category_name=new_author_name).first()
-    author_surname = session.query(Author).filter_by(category_name=new_author_surname).first()
+def add_author(indicated_author_name, indicated_author_surname):
+    author = session.query(Author).filter_by(author_name=indicated_author_name, author_surname=indicated_author_surname).first()
 
-    if not (author_name and author_surname):
-        author_name = Author(author_name=new_author_name)
-        author_surname = Author(author_name=new_author_surname)
-        session.add(author_name)
-        session.add(author_surname)
+    if not author:
+        new_author = Author(author_name=indicated_author_name,
+                            author_surname=indicated_author_surname)
+        session.add(new_author)
         session.commit()
-        print(f'Author {new_author_name} {new_author_surname} was added.')
+        print(f'Author {indicated_author_name} {indicated_author_name} was added.')
     else:
-        print(f'Author {new_author_name} {new_author_surname} already exists.')
+        print(f'Author {indicated_author_name} {indicated_author_surname} already exists.')
 
-def get_author(aut_name, aut_surname):
-    author_name = session.query(Author).filter_by(category_name=aut_name).first()
-    author_surname = session.query(Author).filter_by(category_name=aut_surname).first()
+def find_author_id(indicated_author_name, indicated_author_surname):
+    author = session.query(Author).filter_by(author_name=indicated_author_name, author_surname=indicated_author_surname).first()
 
-    if author_name and author_surname:
-        print(f'Author name: {aut_name}, Author surname: {aut_surname}, ID: {Author.id}')
+    if author:
+        print(f'Author name: {indicated_author_name} Author surname: {indicated_author_surname}, ID: {Author.id}')
     else:
-        print(f'Author {aut_name} {aut_surname} was not found')
+        print(f'Author {indicated_author_name} {indicated_author_surname} was not found')
 
 def get_authors_list():
-    authors_name_list = session.query(Author.author_name).all()
-    authors_surname_list = session.query(Author.author_surname).all()
+    authors_list = session.query(Author).all()
 
-    if authors_name_list and authors_surname_list:
+    if authors_list:
         print(f'Authors list:')
-        for author_name in authors_name_list:
-            for author_surname in authors_surname_list:
-                print(f'ID: {Author.id}, Name and surname: {Author.author_name} {Author.author_surname}')
-            return authors_name_list, authors_surname_list
+        for author in authors_list:
+            print(f'ID: {author.id}, Name and surname: {author.author_name} {author.author_surname}')
+        return authors_list
     else:
         print('Authors list is empty')
         return None
 
-def update_author(aut_name, aut_surname, updated_aut_name, updated_aut_surname):
-    author_name = session.query(Author).filter_by(category_name=aut_name).first()
+def update_author(old_author_name, old_author_surname, updated_author_name, updated_author_surname):
+    author = session.query(Author).filter_by(author_name=old_author_name, author_surname=old_author_surname).first()
 
-    if category:
-        category.category_name = updated_category_name
+    if author:
+        author.author_name = updated_author_name,
+        author.author_surname = updated_author_surname
         session.commit()
-        print(f'Category: {id} {cat_name} was updated to {updated_category_name}.')
+        print(f'Category: {id} {old_author_name} {old_author_surname} was updated to {updated_author_name} {updated_author_surname}.')
     else:
-        print(f'Category {cat_name} was not found.')
+        print(f'Category {old_author_name} {old_author_surname} was not found.')
 
-def delete_author(cat_name):
-    category = session.query(Category).filter_by(category_name=cat_name).first()
+def delete_author(indicated_author_name, indicated_author_surname):
+    author = session.query(Author).filter_by(author_name=indicated_author_name, author_surname=indicated_author_surname).first()
 
-    if category:
-        _id=category.id
-        session.delete(category)
+    if author:
+        _id=author.id
+        session.delete(author)
         session.commit()
-        print(f'Category: {_id} {cat_name} was deleted.')
+        print(f'Category: {_id} {indicated_author_name} {indicated_author_surname} was deleted.')
     else:
-        print(f'Category {cat_name} was not found.')
+        print(f'Category {indicated_author_name} {indicated_author_surname} was not found.')
 
 
