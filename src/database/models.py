@@ -96,9 +96,9 @@ class Address(Base):
     __tablename__ = "addresses"
     id = Column(Integer, primary_key=True)
     street = Column(String(100), nullable=False)
-    number = Column(Integer, nullable=False, unique=False)
-    flat_number = Column(Integer, nullable=True, unique=False)
-    zip_code = Column(Integer, nullable=False, unique=False)
+    number = Column(String(50), nullable=False, unique=False)
+    flat_number = Column(String(50), nullable=True, unique=False)
+    zip_code = Column(String(50), nullable=False, unique=False)
     city = Column(String(100), nullable=False, unique=False)
     country = Column(String(80), nullable=False, unique=False)
 
