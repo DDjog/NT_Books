@@ -10,8 +10,10 @@ from src.operations.shelf_signature_operations import is_shelf_signature_in_db, 
 from src.operations.tag_operations import is_tag_in_db, add_tag
 
 
-def add_book(title_name, indicated_author_name, indicated_author_surname, isbn_number, language_name, cover_page_name, shelf_signature_number,
-             tag_name, indicated_publisher, indicated_publication_year, indicated_street, indicated_number, indicated_flat_number, indicated_zip_code, indicated_city, indicated_country, category_name):
+def add_book(title_name, indicated_author_name, indicated_author_surname, isbn_number, language_name,
+             shelf_signature_number,tag_name, indicated_publisher, indicated_publication_year, indicated_street,
+             indicated_number, indicated_flat_number, indicated_zip_code, indicated_city, indicated_country,
+             category_name):
 
     if is_title_in_db(title_name)==False:
         add_title(title_name)
@@ -31,7 +33,7 @@ def add_book(title_name, indicated_author_name, indicated_author_surname, isbn_n
     if is_language_in_db(language_name)==False:
         add_language(language_name)
     else:
-        print(f'Isbn {language_name} already exists in database')
+        print(f'Language {language_name} already exists in database')
 
     if is_shelf_signature_in_db(shelf_signature_number)==False:
         add_shelf_signature(shelf_signature_number)

@@ -51,12 +51,12 @@ class Book(Base):
     title = Column(String(255), nullable=True)
     isbn_id = Column(Integer, ForeignKey('isbn.id'), nullable=True, unique=True)
     language_id = Column(Integer, ForeignKey('languages.id'), nullable=True)
-    cover_page_id = Column(Integer, ForeignKey('cover_pages.id'), nullable=True, unique=True)
-    shelf_signature_id = Column(Integer, ForeignKey('shelf_signatures.id'), nullable=True, unique=True)
+    # cover_page_id = Column(Integer, ForeignKey('cover_pages.id'), nullable=True, unique=True)
+    shelf_signature_id = Column(String(50), ForeignKey('shelf_signatures.id'), nullable=True, unique=True)
 
     isbn = relationship('Isbn', backref='books')
     language = relationship('Language', backref='books')
-    cover_page = relationship('Cover_page', backref='books')
+    # cover_page = relationship('Cover_page', backref='books')
     authors = relationship("Author", secondary=book_m2m_author, backref="books")
     tags = relationship("Tag", secondary=book_m2m_tag, backref="books")
     publisher = relationship('Publisher', secondary=book_m2m_publisher, backref='books')
@@ -79,18 +79,16 @@ class Author(Base):
     author_name = Column(String(50), nullable=True)
     author_surname = Column(String(50), nullable=True)
 
-
 class Isbn(Base):
     __tablename__ = "isbn"
     id = Column(Integer, primary_key=True)
     isbn_name = Column(String(50), nullable=True)
 
 
-class Cover_page(Base):
-    __tablename__ = "cover_pages"
-    id = Column(Integer, primary_key=True)
-    cover_page = Column(LargeBinary, nullable=True)
-
+# class Cover_page(Base):
+#     __tablename__ = "cover_pages"
+#     id = Column(Integer, primary_key=True)
+#     cover_page = Column(String(10), nullable=True)
 
 class Address(Base):
     __tablename__ = "addresses"
@@ -107,7 +105,7 @@ class Publisher(Base):
     __tablename__ = "publishers"
     id = Column(Integer, primary_key=True)
     publisher = Column(String(150), nullable=True, unique=False)
-    publication_year = Column(Integer, nullable=True, unique=False)
+    publication_year = Column(String(150), nullable=True, unique=False)
     address_id = Column(Integer, ForeignKey('addresses.id'), nullable=True)
 
 
