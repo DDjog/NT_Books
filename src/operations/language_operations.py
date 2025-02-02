@@ -1,4 +1,5 @@
-
+from src.constans import OPER_ADD_SUCCEEDED, OPER_ADD_FAILED_DATA_EXISTS, OPER_GET_LIST_FAILED, OPER_UPDATE_SUCCEEDED, \
+    OPER_UPDATE_FAILED_DATA_NOT_EXISTS, OPER_DELETE_SUCCEEDED, OPER_DELETE_FAILED_DATA_NOT_EXISTS
 from src.database.models import Language
 from src.database.db import session
 
@@ -10,8 +11,8 @@ def add_language(language_name):
         session.add(language)
         session.commit()
         print(f'Language: {language_name} was added.')
-    else:
-        print(f'Language: {language_name} already exists.')
+        return OPER_ADD_SUCCEEDED
+    return OPER_ADD_FAILED_DATA_EXISTS
 
 def is_language_in_db(language_name):
     language = session.query(Language).filter_by(language=language_name).first()
@@ -31,7 +32,7 @@ def get_languages_list():
             _id = language.id
             print(f'ID: {_id}, Language: {language.language}')
         return languages_list
-    return None
+    return OPER_GET_LIST_FAILED
 
 def update_language(old_language_name, new_language_name):
     language = session.query(Language).filter_by(language=old_language_name).first()
@@ -41,8 +42,8 @@ def update_language(old_language_name, new_language_name):
         language.language = new_language_name
         session.commit()
         print(f'ID: {_id}, Language: {old_language_name} was updated to {new_language_name}.')
-    else:
-        print(f'Language: {old_language_name} was not found.')
+        return OPER_UPDATE_SUCCEEDED
+    return OPER_UPDATE_FAILED_DATA_NOT_EXISTS
 
 def delete_language(language_name):
     language = session.query(Language).filter_by(language=language_name).first()
@@ -52,7 +53,7 @@ def delete_language(language_name):
         session.delete(language)
         session.commit()
         print(f'ID: {_id}, Language: {language_name} was deleted.')
-    else:
-        print(f'Language: {language_name} was not found.')
+        return OPER_DELETE_SUCCEEDED
+    return OPER_DELETE_FAILED_DATA_NOT_EXISTS
 
 

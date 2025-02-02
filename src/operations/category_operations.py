@@ -1,4 +1,5 @@
-
+from src.constans import OPER_ADD_SUCCEEDED, OPER_ADD_FAILED_DATA_EXISTS, OPER_GET_LIST_FAILED, \
+    OPER_UPDATE_SUCCEEDED, OPER_DELETE_SUCCEEDED, OPER_DELETE_FAILED_DATA_NOT_EXISTS
 from src.database.models import Category
 from src.database.db import session
 
@@ -10,8 +11,8 @@ def add_category(category_name):
         session.add(category)
         session.commit()
         print(f'Category: {category_name} was added.')
-    else:
-        print(f'Category: {category_name} already exists.')
+        return OPER_ADD_SUCCEEDED
+    return OPER_ADD_FAILED_DATA_EXISTS
 
 def is_category_in_db(category_name):
     category = session.query(Category).filter_by(category_name=category_name).first()
@@ -31,7 +32,7 @@ def get_categories_list():
             _id = category.id
             print(f'ID: {_id}, Name: {category.category_name}')
         return categories_list
-    return None
+    return OPER_GET_LIST_FAILED
 
 def update_category(old_category_name, updated_category_name):
     category = session.query(Category).filter_by(category_name=old_category_name).first()
@@ -41,8 +42,8 @@ def update_category(old_category_name, updated_category_name):
         category.category_name = updated_category_name
         session.commit()
         print(f'ID: {_id}, Category: {old_category_name} was updated to {updated_category_name}.')
-    else:
-        print(f'Category: {old_category_name} was not found.')
+        return OPER_UPDATE_SUCCEEDED
+    return OPER_ADD_FAILED_DATA_EXISTS
 
 def delete_category(category_name):
     category = session.query(Category).filter_by(category_name=category_name).first()
@@ -52,7 +53,6 @@ def delete_category(category_name):
         session.delete(category)
         session.commit()
         print(f'ID: {_id}, Category: {category_name} was deleted.')
-    else:
-        print(f'Category: {category_name} was not found.')
-
+        return OPER_DELETE_SUCCEEDED
+    return OPER_DELETE_FAILED_DATA_NOT_EXISTS
 

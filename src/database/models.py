@@ -1,3 +1,5 @@
+from unicodedata import category
+
 from sqlalchemy import Column, Integer, String, Table, LargeBinary
 from sqlalchemy.orm import relationship, declarative_base
 from sqlalchemy.sql.schema import ForeignKey
@@ -20,13 +22,13 @@ book_m2m_tag = Table(
     Column("tag_id", Integer, ForeignKey("tags.id", ondelete="CASCADE")),
                         )
 
-book_m2m_publisher = Table(
-    "book_m2m_publisher",
-    Base.metadata,
-    Column("id", Integer, primary_key=True),
-    Column("book_id", Integer, ForeignKey("books.id", ondelete="CASCADE")),
-    Column("publisher_id", Integer, ForeignKey("publishers.id", ondelete="CASCADE")),
-                        )
+# book_m2m_publisher = Table(
+#     "book_m2m_publisher",
+#     Base.metadata,
+#     Column("id", Integer, primary_key=True),
+#     Column("book_id", Integer, ForeignKey("books.id", ondelete="CASCADE")),
+#     Column("publisher_id", Integer, ForeignKey("publishers.id", ondelete="CASCADE")),
+#                         )
 
 book_m2m_category = Table(
     "book_m2m_category",
@@ -36,32 +38,42 @@ book_m2m_category = Table(
     Column("category_id", Integer, ForeignKey("categories.id", ondelete="CASCADE")),
                         )
 
-book_m2m_shelf_signature = Table(
-    "book_m2m_shelf_signature",
-    Base.metadata,
-    Column("id", Integer, primary_key=True),
-    Column("book_id", Integer, ForeignKey("books.id", ondelete="CASCADE")),
-    Column("shelf_signature_id", Integer, ForeignKey("shelf_signatures.id", ondelete="CASCADE")),
-                        )
+# book_m2o_shelf_signature = Table(
+#     "book_m2o_shelf_signature",
+#     Base.metadata,
+#     Column("id", Integer, primary_key=True),
+#     Column("book_id", Integer, ForeignKey("books.id", ondelete="CASCADE")),
+#     Column("shelf_signature_id", Integer, ForeignKey("shelf_signatures.id", ondelete="CASCADE")),
+#                         )
 
+# book_m2m_cover_page = Table(
+#     "book_m2m_cover_page",
+#     Base.metadata,
+#     Column("id", Integer, primary_key=True),
+#     Column("book_id", Integer, ForeignKey("books.id", ondelete="CASCADE")),
+#     Column("cover_page_id", Integer, ForeignKey("cover_page.id", ondelete="CASCADE")),
+#                         )
 
 class Book(Base):
     __tablename__ = "books"
     id = Column(Integer, primary_key=True)
-    title = Column(String(255), nullable=True)
+    title_id = Column(Integer, ForeignKey('titles.id'), nullable=True, unique=True)
     isbn_id = Column(Integer, ForeignKey('isbn.id'), nullable=True, unique=True)
     language_id = Column(Integer, ForeignKey('languages.id'), nullable=True)
     # cover_page_id = Column(Integer, ForeignKey('cover_pages.id'), nullable=True, unique=True)
     shelf_signature_id = Column(String(50), ForeignKey('shelf_signatures.id'), nullable=True, unique=True)
+    publisher_id = Column(String(50), ForeignKey('publishers.id'), nullable=True, unique=True)
+    category_id = Column(String(50), ForeignKey('categories.id'), nullable=True, unique=True)
 
+    title = relationship('Title', backref='books')
     isbn = relationship('Isbn', backref='books')
     language = relationship('Language', backref='books')
     # cover_page = relationship('Cover_page', backref='books')
     authors = relationship("Author", secondary=book_m2m_author, backref="books")
     tags = relationship("Tag", secondary=book_m2m_tag, backref="books")
-    publisher = relationship('Publisher', secondary=book_m2m_publisher, backref='books')
-    category = relationship('Category', secondary=book_m2m_category, backref='books')
-    shelf_signature = relationship('ShelfSignature', secondary=book_m2m_shelf_signature, backref='books')
+    publisher = relationship('Publisher', backref='books')
+    categories = relationship('Category', secondary=book_m2m_category, backref='books')
+    shelf_signature = relationship('ShelfSignature', backref='books')
 
 class Language(Base):
     __tablename__ = "languages"
