@@ -13,9 +13,8 @@ def add_shelf_signature(shelf_signature_number):
         shelf_signature = ShelfSignature(shelf_signature=shelf_signature_number)
         session.add(shelf_signature)
         session.commit()
-        print(f'Shelf signature: {shelf_signature_number} was added.')
-        return OPER_ADD_SUCCEEDED
-    return OPER_ADD_FAILED_DATA_EXISTS
+        return OPER_ADD_SUCCEEDED, shelf_signature.id
+    return OPER_ADD_FAILED_DATA_EXISTS, shelf_signature.id
 
 def is_shelf_signature_in_db(shelf_signature_number):
     shelf_signature = session.query(ShelfSignature).filter_by(shelf_signature=shelf_signature_number)

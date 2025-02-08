@@ -12,9 +12,8 @@ def add_author(indicated_author_name, indicated_author_surname):
                             author_surname=indicated_author_surname)
         session.add(author)
         session.commit()
-        print(f'Author {indicated_author_name} {indicated_author_surname} was added.')
-        return OPER_ADD_SUCCEEDED
-    return OPER_ADD_FAILED_DATA_EXISTS
+        return OPER_ADD_SUCCEEDED, author.id
+    return OPER_ADD_FAILED_DATA_EXISTS, author.id
 
 def is_author_in_db(indicated_author_name, indicated_author_surname):
     author = session.query(Author).filter_by(author_name=indicated_author_name, author_surname=indicated_author_surname).first()

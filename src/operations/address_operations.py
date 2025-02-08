@@ -15,10 +15,8 @@ def add_address(indicated_street, indicated_number, indicated_flat_number, indic
                           zip_code=indicated_zip_code, city=indicated_city, country=indicated_country)
         session.add(address)
         session.commit()
-        print(f'Address: {indicated_street} {indicated_number} {indicated_flat_number} {indicated_zip_code} '
-              f'{indicated_city} {indicated_country} was added.')
-        return OPER_ADD_SUCCEEDED
-    return OPER_ADD_FAILED_DATA_EXISTS
+        return OPER_ADD_SUCCEEDED, address.id
+    return OPER_ADD_FAILED_DATA_EXISTS, address.id
 
 def is_address_in_db(indicated_street, indicated_number, indicated_flat_number, indicated_zip_code,
                      indicated_city, indicated_country):

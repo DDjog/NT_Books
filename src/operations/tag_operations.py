@@ -11,8 +11,8 @@ def add_tag(tag_name):
         session.add(tag)
         session.commit()
         print(f'Tag: {tag_name} was added.')
-        return OPER_ADD_SUCCEEDED
-    return OPER_ADD_FAILED_DATA_EXISTS
+        return OPER_ADD_SUCCEEDED, tag.id
+    return OPER_ADD_FAILED_DATA_EXISTS, tag.id
 
 def is_tag_in_db(tag_name):
     tag = session.query(Tag).filter_by(tag=tag_name).first()

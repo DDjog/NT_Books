@@ -3,8 +3,9 @@ from src.database.models import Address
 from src.operations.publisher_operations  import add_publisher
 from src.operations.address_operations import add_address
 
-add_address('Warsaw Street', '10', '5', '00-123',
-            'London', 'Great Britain')
+a = ['Warsaw Street', '10', '5', '00-123',
+            'London', 'Great Britain']
+add_address({a})
 
 address = session.query(Address).filter_by(
     street='Warsaw Street',
@@ -15,6 +16,9 @@ address = session.query(Address).filter_by(
     country='Great Britain'
 ).first()
 if address:
-    add_publisher('AXA', '2009', address.id)
+    global p
+    p = ['AXA', '2009', address.id]
+    add_publisher({p})
+    print(f'{p} was added to the database')
 else:
-    print('Address was not found in db')
+    print(f'{p} was not found in the database')

@@ -1,8 +1,8 @@
 """Init
 
-Revision ID: 3e719d1b2ba2
+Revision ID: bd91db359137
 Revises: 
-Create Date: 2024-12-01 19:31:23.963773
+Create Date: 2025-02-02 17:30:31.255049
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '3e719d1b2ba2'
+revision: str = 'bd91db359137'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -23,9 +23,9 @@ def upgrade() -> None:
     op.create_table('addresses',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('street', sa.String(length=100), nullable=False),
-    sa.Column('number', sa.Integer(), nullable=False),
-    sa.Column('flat_number', sa.Integer(), nullable=True),
-    sa.Column('zip_code', sa.Integer(), nullable=False),
+    sa.Column('number', sa.String(length=50), nullable=False),
+    sa.Column('flat_number', sa.String(length=50), nullable=True),
+    sa.Column('zip_code', sa.String(length=50), nullable=False),
     sa.Column('city', sa.String(length=100), nullable=False),
     sa.Column('country', sa.String(length=80), nullable=False),
     sa.PrimaryKeyConstraint('id')
@@ -39,11 +39,6 @@ def upgrade() -> None:
     op.create_table('categories',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('category_name', sa.String(length=50), nullable=True),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_table('cover_pages',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('cover_page', sa.LargeBinary(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('isbn',
@@ -71,22 +66,6 @@ def upgrade() -> None:
     sa.Column('title', sa.String(length=255), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_table('books',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('title', sa.String(length=255), nullable=True),
-    sa.Column('isbn_id', sa.Integer(), nullable=True),
-    sa.Column('language_id', sa.Integer(), nullable=True),
-    sa.Column('cover_page_id', sa.Integer(), nullable=True),
-    sa.Column('shelf_signature_id', sa.Integer(), nullable=True),
-    sa.ForeignKeyConstraint(['cover_page_id'], ['cover_pages.id'], ),
-    sa.ForeignKeyConstraint(['isbn_id'], ['isbn.id'], ),
-    sa.ForeignKeyConstraint(['language_id'], ['languages.id'], ),
-    sa.ForeignKeyConstraint(['shelf_signature_id'], ['shelf_signatures.id'], ),
-    sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('cover_page_id'),
-    sa.UniqueConstraint('isbn_id'),
-    sa.UniqueConstraint('shelf_signature_id')
-    )
     op.create_table('publishers',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('publisher', sa.String(length=150), nullable=True),
@@ -94,6 +73,27 @@ def upgrade() -> None:
     sa.Column('address_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['address_id'], ['addresses.id'], ),
     sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('books',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('title_id', sa.Integer(), nullable=True),
+    sa.Column('isbn_id', sa.Integer(), nullable=True),
+    sa.Column('language_id', sa.Integer(), nullable=True),
+    sa.Column('shelf_signature_id', sa.Integer(), nullable=True),
+    sa.Column('publisher_id', sa.Integer(), nullable=True),
+    sa.Column('category_id', sa.Integer(), nullable=True),
+    sa.ForeignKeyConstraint(['category_id'], ['categories.id'], ),
+    sa.ForeignKeyConstraint(['isbn_id'], ['isbn.id'], ),
+    sa.ForeignKeyConstraint(['language_id'], ['languages.id'], ),
+    sa.ForeignKeyConstraint(['publisher_id'], ['publishers.id'], ),
+    sa.ForeignKeyConstraint(['shelf_signature_id'], ['shelf_signatures.id'], ),
+    sa.ForeignKeyConstraint(['title_id'], ['titles.id'], ),
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('category_id'),
+    sa.UniqueConstraint('isbn_id'),
+    sa.UniqueConstraint('publisher_id'),
+    sa.UniqueConstraint('shelf_signature_id'),
+    sa.UniqueConstraint('title_id')
     )
     op.create_table('book_m2m_author',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -111,22 +111,6 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['category_id'], ['categories.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_table('book_m2m_publisher',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('book_id', sa.Integer(), nullable=True),
-    sa.Column('publisher_id', sa.Integer(), nullable=True),
-    sa.ForeignKeyConstraint(['book_id'], ['books.id'], ondelete='CASCADE'),
-    sa.ForeignKeyConstraint(['publisher_id'], ['publishers.id'], ondelete='CASCADE'),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_table('book_m2m_shelf_signature',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('book_id', sa.Integer(), nullable=True),
-    sa.Column('shelf_signature_id', sa.Integer(), nullable=True),
-    sa.ForeignKeyConstraint(['book_id'], ['books.id'], ondelete='CASCADE'),
-    sa.ForeignKeyConstraint(['shelf_signature_id'], ['shelf_signatures.id'], ondelete='CASCADE'),
-    sa.PrimaryKeyConstraint('id')
-    )
     op.create_table('book_m2m_tag',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('book_id', sa.Integer(), nullable=True),
@@ -141,18 +125,15 @@ def upgrade() -> None:
 def downgrade() -> None:
     # ### commands auto generated by Alembic - please adjust! ###
     op.drop_table('book_m2m_tag')
-    op.drop_table('book_m2m_shelf_signature')
-    op.drop_table('book_m2m_publisher')
     op.drop_table('book_m2m_category')
     op.drop_table('book_m2m_author')
-    op.drop_table('publishers')
     op.drop_table('books')
+    op.drop_table('publishers')
     op.drop_table('titles')
     op.drop_table('tags')
     op.drop_table('shelf_signatures')
     op.drop_table('languages')
     op.drop_table('isbn')
-    op.drop_table('cover_pages')
     op.drop_table('categories')
     op.drop_table('authors')
     op.drop_table('addresses')

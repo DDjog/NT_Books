@@ -61,9 +61,9 @@ class Book(Base):
     isbn_id = Column(Integer, ForeignKey('isbn.id'), nullable=True, unique=True)
     language_id = Column(Integer, ForeignKey('languages.id'), nullable=True)
     # cover_page_id = Column(Integer, ForeignKey('cover_pages.id'), nullable=True, unique=True)
-    shelf_signature_id = Column(String(50), ForeignKey('shelf_signatures.id'), nullable=True, unique=True)
-    publisher_id = Column(String(50), ForeignKey('publishers.id'), nullable=True, unique=True)
-    category_id = Column(String(50), ForeignKey('categories.id'), nullable=True, unique=True)
+    shelf_signature_id = Column(Integer, ForeignKey('shelf_signatures.id'), nullable=True, unique=True)
+    publisher_id = Column(Integer, ForeignKey('publishers.id'), nullable=True, unique=True)
+    category_id = Column(Integer, ForeignKey('categories.id'), nullable=True, unique=True)
 
     title = relationship('Title', backref='books')
     isbn = relationship('Isbn', backref='books')
@@ -117,7 +117,7 @@ class Publisher(Base):
     __tablename__ = "publishers"
     id = Column(Integer, primary_key=True)
     publisher = Column(String(150), nullable=True, unique=False)
-    publication_year = Column(String(150), nullable=True, unique=False)
+    publication_year = Column(Integer, nullable=True, unique=False)
     address_id = Column(Integer, ForeignKey('addresses.id'), nullable=True)
 
 

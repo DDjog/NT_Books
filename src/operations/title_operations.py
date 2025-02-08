@@ -12,9 +12,8 @@ def add_title(title_name):
         title = Title(title=title_name)
         session.add(title)
         session.commit()
-        print(f'Title: {title_name} was added.')
-        return OPER_ADD_SUCCEEDED
-    return OPER_ADD_FAILED_DATA_EXISTS
+        return OPER_ADD_SUCCEEDED, title.id
+    return OPER_ADD_FAILED_DATA_EXISTS, title.id
 
 def is_title_in_db(title_name):
     title = session.query(Title).filter_by(title=title_name).first()

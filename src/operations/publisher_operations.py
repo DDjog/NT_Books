@@ -13,11 +13,8 @@ def add_publisher(indicated_publisher, indicated_publication_year, indicated_add
         publisher = Publisher(publisher=indicated_publisher, publication_year=indicated_publication_year, address_id=indicated_address_id)
         session.add(publisher)
         session.commit()
-        print(f'Publisher: {indicated_publisher}, publication year: {indicated_publication_year} were added.')
-        return OPER_ADD_SUCCEEDED
-    print("was ok")
-    return OPER_ADD_FAILED_DATA_EXISTS
-    print("went wrong")
+        return OPER_ADD_SUCCEEDED, publisher.id
+    return OPER_ADD_FAILED_DATA_EXISTS, publisher.id
 
 def is_publisher_in_db(indicated_publisher, indicated_publication_year):
     publisher = session.query(Publisher).filter_by(publisher=indicated_publisher, publication_year=indicated_publication_year)

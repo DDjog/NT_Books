@@ -10,9 +10,8 @@ def add_category(category_name):
         category = Category(category_name=category_name)
         session.add(category)
         session.commit()
-        print(f'Category: {category_name} was added.')
-        return OPER_ADD_SUCCEEDED
-    return OPER_ADD_FAILED_DATA_EXISTS
+        return OPER_ADD_SUCCEEDED, category.id
+    return OPER_ADD_FAILED_DATA_EXISTS, category.id
 
 def is_category_in_db(category_name):
     category = session.query(Category).filter_by(category_name=category_name).first()

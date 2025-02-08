@@ -10,9 +10,8 @@ def add_language(language_name):
         language = Language(language=language_name)
         session.add(language)
         session.commit()
-        print(f'Language: {language_name} was added.')
-        return OPER_ADD_SUCCEEDED
-    return OPER_ADD_FAILED_DATA_EXISTS
+        return OPER_ADD_SUCCEEDED, language.id
+    return OPER_ADD_FAILED_DATA_EXISTS, language.id
 
 def is_language_in_db(language_name):
     language = session.query(Language).filter_by(language=language_name).first()

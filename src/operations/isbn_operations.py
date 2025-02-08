@@ -13,9 +13,8 @@ def add_isbn(isbn_number):
         isbn = Isbn(isbn_name=isbn_number)
         session.add(isbn)
         session.commit()
-        print(f'ISBN: {isbn_number} was added.')
-        return OPER_ADD_SUCCEEDED
-    return OPER_ADD_FAILED_DATA_EXISTS
+        return OPER_ADD_SUCCEEDED, isbn.id
+    return OPER_ADD_FAILED_DATA_EXISTS, isbn.id
 
 
 def is_isbn_in_db(isbn_number):
