@@ -98,7 +98,7 @@ def add_book(new_title, new_author_name, new_author_surname, new_isbn, new_langu
         new_author = session.query(Author).filter_by(id=author_id).first()
     new_author=author
     if author is None:
-        raise ValueError(f"Błąd: Nie udało się dodać autora {new_author_name} {new_author_surname} do bazy!")
+        raise ValueError(f" {new_author_name} {new_author_surname} was not added too the databse!")
 
     # relation to category
     category = session.query(Category).filter_by(category_name=new_category).first()
@@ -107,7 +107,7 @@ def add_book(new_title, new_author_name, new_author_surname, new_isbn, new_langu
         new_category = session.query(Category).filter_by(id=category_id).first()
     new_category=category
     if category is None:
-        raise ValueError(f"Błąd: Nie udało się dodać kategorii {new_category} do bazy!")
+        raise ValueError(f"{new_category} was not added to the database")
 
     # relation to tag
     tag = session.query(Tag).filter_by(tag=new_tag).first()
@@ -116,7 +116,7 @@ def add_book(new_title, new_author_name, new_author_surname, new_isbn, new_langu
         new_tag = session.query(Tag).filter_by(id=tag_id).first()
     new_tag=tag
     if tag is None:
-        raise ValueError(f"Błąd: Nie udało się dodać tagu {new_tag} do bazy!")
+        raise ValueError(f"{new_tag} was not added to the database")
 
     new_book.authors.append(new_author)
     new_book.categories.append(new_category)

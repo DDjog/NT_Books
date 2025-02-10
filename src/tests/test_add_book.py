@@ -10,12 +10,12 @@ from src.constans import OPER_ADD_SUCCEEDED, OPER_ADD_FAILED_DATA_EXISTS
 
 # a = add_book(*ad)
 
-add_book('CHow to solve your own murder',
-      'CKristen',  'CPerrin',
-         'C978-1-52943-007-3','Cenglish', '1112', 'Cmurder',
-         'CQuercus', 'CViktoria Embankment', '1150',
-    '111', '11EC4Y', 'CLondon', 'CGreat Britain',
-         112024, 'Cnovel' )
+add_book('DHow to solve your own murder',
+      'DKristen',  'DPerrin',
+         'D978-1-52943-007-3','Denglish', '2112', 'Dmurder',
+         'DQuercus', 'DViktoria Embankment', '2150',
+    '211', '21EC4Y', 'DLondon', 'DGreat Britain',
+         212024, 'Dnovel' )
 
 #if a == OPER_ADD_SUCCEEDED:
 #    print(f"{a} was added to the database")
