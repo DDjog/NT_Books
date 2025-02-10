@@ -7,7 +7,7 @@ from src.constans import OPER_ADD_FAILED_DATA_EXISTS, OPER_ADD_SUCCEEDED, \
 
 
 def add_shelf_signature(shelf_signature_number):
-    shelf_signature = session.query(ShelfSignature).filter_by(shelf_signature=shelf_signature_number)
+    shelf_signature = session.query(ShelfSignature).filter_by(shelf_signature=shelf_signature_number).first()
 
     if not shelf_signature:
         shelf_signature = ShelfSignature(shelf_signature=shelf_signature_number)

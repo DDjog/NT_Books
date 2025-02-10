@@ -63,7 +63,6 @@ class Book(Base):
     # cover_page_id = Column(Integer, ForeignKey('cover_pages.id'), nullable=True, unique=True)
     shelf_signature_id = Column(Integer, ForeignKey('shelf_signatures.id'), nullable=True, unique=True)
     publisher_id = Column(Integer, ForeignKey('publishers.id'), nullable=True, unique=True)
-    category_id = Column(Integer, ForeignKey('categories.id'), nullable=True, unique=True)
 
     title = relationship('Title', backref='books')
     isbn = relationship('Isbn', backref='books')

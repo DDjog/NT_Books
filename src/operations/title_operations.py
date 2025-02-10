@@ -13,6 +13,7 @@ def add_title(title_name):
         session.add(title)
         session.commit()
         return OPER_ADD_SUCCEEDED, title.id
+
     return OPER_ADD_FAILED_DATA_EXISTS, title.id
 
 def is_title_in_db(title_name):

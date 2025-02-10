@@ -12,7 +12,8 @@ from src.operations.isbn_operations import is_isbn_in_db, add_isbn
 from src.operations.shelf_signature_operations import is_shelf_signature_in_db, add_shelf_signature
 from src.operations.tag_operations import is_tag_in_db, add_tag
 from src.database.db import session
-from src.database.models import Book, Address, Author, Title, Isbn, Language, ShelfSignature, Tag, Publisher, Category
+from src.database.models import Book, Address, Author, Title, Isbn, Language, ShelfSignature, Tag, Publisher, Category, \
+    book_m2m_author, book_m2m_tag, book_m2m_category
 from src.constans import (OPER_DELETE_SUCCEEDED, OPER_UPDATE_FAILED_DATA_NOT_EXISTS , OPER_DELETE_SUCCEEDED, OPER_UPDATE_SUCCEEDED, \
     OPER_ADD_SUCCEEDED, OPER_DELETE_FAILED_DATA_NOT_EXISTS, OPER_UPDATE_FAILED_DATA_NOT_EXISTS,
                           OPER_ADD_FAILED_DATA_EXISTS, OPER_GET_LIST_FAILED, OPER_GET_LIST_FAILED)
@@ -22,59 +23,107 @@ def add_book(new_title, new_author_name, new_author_surname, new_isbn, new_langu
              new_shelf_signature, new_tag, new_publisher,  new_street, new_number, new_flat_number, new_zip_code,
              new_city, new_country, new_publication_year, new_category):
 
+    operation_status = -1
+    id = -1
+    title = None
+    isbn_name = None
+    language = None
+    shelf_signature = None
+    tag = None
+    publisher = None
+    address = None
+    author = None
+    category = None
+    tag = None
+
+
     new_book = Book()
 
     title = session.query(Title).filter_by(title=new_title).first()
-    if not title.id:
-        add_title(title.id)
-    new_book.title=new_title
+    if title is None:
+        operation_status, id = add_title(new_title)
+        new_book.title_id = id
+    else:
+        new_book.title_id = title.id
 
-    # for author in authors:
-    #     author = session.query(Author).filter_by(author_name=new_author_name,
-    #                                              author_surname=new_author_surname).first()
-    #     if not author.id:
-    #         add_author(new_author_name, new_author_surname)
-    #     new_book.authors.append(author)
 
     isbn_name = session.query(Isbn).filter_by(isbn_name=new_isbn).first()
-    if not isbn_name.id:
-        add_isbn(new_isbn)
-    new_book.isbn_name=new_isbn
+    if isbn_name is None:
+        operation_status, id = add_isbn(new_isbn)
+        new_book.isbn_id = id
+    else:
+        new_book.isbn_id = isbn_name.id
+
 
     language = session.query(Language).filter_by(language=new_language).first()
-    if not language.id:
-        add_language(new_language)
-    new_book.language=new_language
+    if language is None:
+        operation_status, id = add_language(new_language)
+        new_book.language_id = id
+    else:
+        new_book.language_id = language.id
+
 
     shelf_signature = session.query(ShelfSignature).filter_by(shelf_signature=new_shelf_signature).first()
-    if not shelf_signature.id:
-        add_shelf_signature(new_shelf_signature)
-    new_book.shelf_signature=new_shelf_signature
+    if shelf_signature is None:
+        operation_status, id = add_shelf_signature(new_shelf_signature)
+        new_book.shelf_signature_id = id
+    else:
+        new_book.shelf_signature_id = shelf_signature.id
 
-    tag = session.query(Tag).filter_by(tag=new_tag).first()
-    if not tag.id:
-        add_tag(new_tag)
-    new_book.tag=new_tag
+
+    address = session.query(Address).filter_by(street=new_street, number=new_number, flat_number=new_flat_number,
+                                               zip_code=new_zip_code, city=new_city, country=new_country).first()
+    if address is None:
+        operation_status, new_address_id = add_address(new_street, new_number, new_flat_number,new_zip_code, new_city, new_country)
+    else:
+        new_address_id = address.id
 
     publisher = session.query(Publisher).filter_by(publisher=new_publisher,
-                                                   publication_year = new_publication_year).first()
-    if not publisher.id:
-        add_publisher(new_publisher)
-    new_book.publisher=new_publisher
+                                                   publication_year = new_publication_year,
+                                                   address_id=new_address_id).first()
+    if publisher is None:
+        operation_status, id = add_publisher(new_publisher, new_publication_year, new_address_id)
+        new_book.publisher_id = id
+    else:
+        new_book.publisher_id = publisher.id
 
-    # address = session.query(Address).filter_by(id=new_address.id).first()
-    # if not address.id:
-    #     add_address(new_street, new_number, new_flat_number, new_zip_code, new_city, new_country)
-    # new_book.address=new_address
-
-    for category in categories:
-        category = session.query(Category).filter_by(category_name=new_category)
-        if not category.id:
-            add_category(new_category)
-        new_book.category=new_category
 
     session.add(new_book)
     session.commit()
+
+    # relation to author
+    author = session.query(Author).filter_by(author_name=new_author_name, author_surname=new_author_surname).first()
+    if author is None:
+        operation_status, author_id = add_author(new_author_name, new_author_surname)
+        new_author = session.query(Author).filter_by(id=author_id).first()
+    new_author=author
+    if author is None:
+        raise ValueError(f"Błąd: Nie udało się dodać autora {new_author_name} {new_author_surname} do bazy!")
+
+    # relation to category
+    category = session.query(Category).filter_by(category_name=new_category).first()
+    if category is None:
+        operation_status, category_id = add_category(category_name=new_category)
+        new_category = session.query(Category).filter_by(id=category_id).first()
+    new_category=category
+    if category is None:
+        raise ValueError(f"Błąd: Nie udało się dodać kategorii {new_category} do bazy!")
+
+    # relation to tag
+    tag = session.query(Tag).filter_by(tag=new_tag).first()
+    if tag is None:
+        operation_status, tag_id = add_tag(tag_name=new_tag)
+        new_tag = session.query(Tag).filter_by(id=tag_id).first()
+    new_tag=tag
+    if tag is None:
+        raise ValueError(f"Błąd: Nie udało się dodać tagu {new_tag} do bazy!")
+
+    new_book.authors.append(new_author)
+    new_book.categories.append(new_category)
+    new_book.tags.append(new_tag)
+
+    session.commit()
+
 
 # def add_book(title_name, authors, isbn_number, language_name,
 #              shelf_signature_number, tag_name, indicated_publisher,  indicated_publication_year, indicated_street,

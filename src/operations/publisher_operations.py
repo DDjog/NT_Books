@@ -7,7 +7,7 @@ from src.constans import OPER_ADD_FAILED_DATA_EXISTS, OPER_GET_LIST_FAILED, \
 
 
 def add_publisher(indicated_publisher, indicated_publication_year, indicated_address_id):
-    publisher = session.query(Publisher).filter_by(publisher=indicated_publisher, publication_year=indicated_publication_year, address_id=indicated_address_id)
+    publisher = session.query(Publisher).filter_by(publisher=indicated_publisher, publication_year=indicated_publication_year, address_id=indicated_address_id).first()
 
     if not publisher:
         publisher = Publisher(publisher=indicated_publisher, publication_year=indicated_publication_year, address_id=indicated_address_id)
