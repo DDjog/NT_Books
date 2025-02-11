@@ -98,7 +98,7 @@ def add_book(new_title, new_author_name, new_author_surname, new_isbn, new_langu
         new_author = session.query(Author).filter_by(id=author_id).first()
     new_author=author
     if author is None:
-        raise ValueError(f" {new_author_name} {new_author_surname} was not added too the databse!")
+        raise ValueError(f"{new_author_name} {new_author_surname} was not added too the database")
 
     # relation to category
     category = session.query(Category).filter_by(category_name=new_category).first()
