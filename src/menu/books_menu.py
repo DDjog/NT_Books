@@ -5,6 +5,8 @@ from src.operations.author_operations import add_author, delete_author
 from src.operations.title_operations import add_title, delete_title
 from src.operations.language_operations import add_language, get_languages_list, delete_language
 from src.operations.tag_operations import add_tag, get_tags_list, delete_tag
+from src.tests.test_delete_author import author_surname
+from src.tests.test_is_author_in_db import author_name
 
 root = Tk()
 root.title('Books project')
@@ -192,10 +194,10 @@ def tag_oper_window():
     e=Entry(top, width=50)
     e.grid(row=0, column=0, sticky='ew')
 
-    add_in_e=Button(top, text='Add language', command=add_tag_to_list)
+    add_in_e=Button(top, text='Add tag', command=add_tag_to_list)
     add_in_e.grid(row=0, column=1, padx=10, pady=10, sticky='ew')
 
-    delete_in_e = Button(top, text='Delete language', command=delete_selected_tag)
+    delete_in_e = Button(top, text='Delete tag', command=delete_selected_tag)
     delete_in_e.grid(row=0, column=2, padx=10, pady=10, sticky='ew')
 
     text_list = Listbox(top, width=60, height=15)
@@ -223,7 +225,7 @@ def add_author_to_list():
     global text
     text = e.get()
     if text not in text_list.get(0, END):
-        add_author(text)
+        add_author(text[0], text[1])
         text_list.insert(END, text)
         e.delete(0, END)
 
@@ -270,13 +272,22 @@ def delete_selected_category():
         print('No record to be deleted')
 
 def delete_selected_author():
-    selected_index = text_list.curselection()
 
-    if selected_index:
-        delete_author(text_list.get(selected_index))
-        text_list.delete(selected_index)
-    else:
+    selected = text_list.curselection()
+
+    if not selected:
         print('No record to be deleted')
+        
+    selected = selected[0]
+    selected_author =  text_list.get(selected)
+    parts = selected_author.split()
+    author_name = parts[0]
+    author_surname = parts[1]
+
+    delete_author(author_name, author_surname)
+    text_list.delete(selected)
+
+
 
 def delete_selected_title():
     selected_index = text_list.curselection()

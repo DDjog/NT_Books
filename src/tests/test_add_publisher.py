@@ -1,24 +1,30 @@
+from src.constans import OPER_ADD_SUCCEEDED
 from src.database.db import session
 from src.database.models import Address
 from src.operations.publisher_operations  import add_publisher
 from src.operations.address_operations import add_address
 
-a = ['Warsaw Street', '10', '5', '00-123',
-            'London', 'Great Britain']
-add_address({a})
 
+a = ['AWarsaw Street', '110', '15', '100-123',
+            'ALondon', 'AGreat Britain']
+street, number, flat_number, zip_code, city, country = a
 address = session.query(Address).filter_by(
-    street='Warsaw Street',
-    number= '10',
-    flat_number='5',
-    zip_code='00-123',
-    city='London',
-    country='Great Britain'
+    street=street,
+    number= number,
+    flat_number=flat_number,
+    zip_code=zip_code,
+    city=city,
+    country=country
 ).first()
-if address:
-    global p
-    p = ['AXA', '2009', address.id]
-    add_publisher({p})
+if not address:
+    operation_status, address_id = add_address(street, number, flat_number, zip_code, city, country)
+else:
+    address_id=address.id
+
+p = ['AXA', '2009', address_id]
+publisher_name, publication_year, address_id = p
+operation_status, address_id = add_publisher(publisher_name, publication_year, address_id)
+if operation_status == OPER_ADD_SUCCEEDED:
     print(f'{p} was added to the database')
 else:
     print(f'{p} was not found in the database')

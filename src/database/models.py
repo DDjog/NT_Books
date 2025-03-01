@@ -57,12 +57,12 @@ book_m2m_category = Table(
 class Book(Base):
     __tablename__ = "books"
     id = Column(Integer, primary_key=True)
-    title_id = Column(Integer, ForeignKey('titles.id'), nullable=True, unique=True)
+    title_id = Column(Integer, ForeignKey('titles.id'), nullable=True)
     isbn_id = Column(Integer, ForeignKey('isbn.id'), nullable=True, unique=True)
     language_id = Column(Integer, ForeignKey('languages.id'), nullable=True)
     # cover_page_id = Column(Integer, ForeignKey('cover_pages.id'), nullable=True, unique=True)
-    shelf_signature_id = Column(Integer, ForeignKey('shelf_signatures.id'), nullable=True, unique=True)
-    publisher_id = Column(Integer, ForeignKey('publishers.id'), nullable=True, unique=True)
+    shelf_signature_id = Column(Integer, ForeignKey('shelf_signatures.id'), nullable=True)
+    publisher_id = Column(Integer, ForeignKey('publishers.id'), nullable=True)
 
     title = relationship('Title', backref='books')
     isbn = relationship('Isbn', backref='books')

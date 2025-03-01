@@ -1,59 +1,81 @@
-
+from sqlalchemy.exc import IntegrityError, OperationalError
 from src.database.models import Publisher
 from src.database.db import session
-from src.constans import OPER_ADD_FAILED_DATA_EXISTS, OPER_GET_LIST_FAILED, \
-    OPER_UPDATE_SUCCEEDED, OPER_UPDATE_FAILED_DATA_NOT_EXISTS, OPER_DELETE_SUCCEEDED, \
-    OPER_DELETE_FAILED_DATA_NOT_EXISTS, OPER_ADD_SUCCEEDED
+from src.constans import OPER_ADD_FAILED_DATA_EXISTS, OPER_GET_LIST_FAILED, OPER_GET_LIST_SUCCEEDED,\
+    OPER_UPDATE_SUCCEEDED, OPER_UPDATE_FAILED_DATA_EXISTS, OPER_DELETE_SUCCEEDED, \
+    OPER_DELETE_FAILED_DATA_EXISTS, OPER_ADD_SUCCEEDED, OPER_IS_IN_DB_SUCCEEDED, OPER_IS_IN_DB_FAILED, \
+    OPER_UPDATE_FAILED_DATA_EXISTS
 
 
-def add_publisher(indicated_publisher, indicated_publication_year, indicated_address_id):
-    publisher = session.query(Publisher).filter_by(publisher=indicated_publisher, publication_year=indicated_publication_year, address_id=indicated_address_id).first()
 
-    if not publisher:
-        publisher = Publisher(publisher=indicated_publisher, publication_year=indicated_publication_year, address_id=indicated_address_id)
-        session.add(publisher)
-        session.commit()
-        return OPER_ADD_SUCCEEDED, publisher.id
-    return OPER_ADD_FAILED_DATA_EXISTS, publisher.id
+def add_publisher(new_publisher, new_publication_year, new_address_id):
+    try:
+        publisher = session.query(Publisher).filter_by(publisher=new_publisher, publication_year=new_publication_year, address_id=new_address_id).first()
 
-def is_publisher_in_db(indicated_publisher, indicated_publication_year):
-    publisher = session.query(Publisher).filter_by(publisher=indicated_publisher, publication_year=indicated_publication_year)
+        if not publisher:
+            publisher = Publisher(publisher=new_publisher, publication_year=new_publication_year, address_id=new_address_id)
+            session.add(publisher)
+            session.commit()
+            return OPER_ADD_SUCCEEDED, publisher.id
+        else:
+            return OPER_ADD_FAILED_DATA_EXISTS, None
+    except IntegrityError as e:
+        print(f'Data exists already in the database: {e}')
+        session.rollback()
+        return OPER_ADD_FAILED_DATA_EXISTS, None
 
-    if publisher:
-        print(f'Publisher: {indicated_publisher} is in a database.')
-        return True
-    return False
+def is_publisher_in_db(publisher, publication_year):
+    try:
+        publisher = session.query(Publisher).filter_by(publisher=publisher, publication_year=publication_year)
+        if publisher:
+            return OPER_IS_IN_DB_SUCCEEDED, publisher.id
+        else:
+            return OPER_IS_IN_DB_FAILED, None
+    except Exception as e:
+        print(f'Unexpected error: {e}')
+        return OPER_IS_IN_DB_FAILED, None
 
 def get_publishers_list():
-    publishers_list = session.query(Publisher).all()
+    try:
+        publishers_list = session.query(Publisher).all()
+        if publishers_list:
+            return OPER_GET_LIST_SUCCEEDED, publishers_list
+        else:
+            return OPER_GET_LIST_FAILED
+    except OperationalError as e:
+        print(f'Database error connection: {e}')
+        return OPER_IS_IN_DB_FAILED
 
-    if publishers_list:
-        print(f'Publishers list:')
-        for publisher in publishers_list:
-            _id = publisher.id
+def update_publisher(old_publisher_name, updated_publisher_name, old_publication_year, updated_publication_year):
+    try:
+        publisher = session.query(Publisher).filter_by(
+            publisher=old_publisher_name,
+            publication_year=old_publication_year
+        ).first()
+        if publisher:
+            publisher.publisher = updated_publisher_name
+            publisher.publication_year = updated_publication_year
             session.commit()
-            print(f'ID: {_id}, Publisher: {publisher.publisher}')
-        return publishers_list
-    return OPER_GET_LIST_FAILED
+            return OPER_UPDATE_SUCCEEDED, publisher.id
+        else:
+            return OPER_UPDATE_FAILED_DATA_EXISTS, None
+    except IntegrityError as e:
+        session.rollback()
+        print(f'Data exists already in the database: {e}')
+        return OPER_UPDATE_FAILED_DATA_EXISTS, None
 
-def update_publisher(old_publisher_name, updated_publisher_name):
-    publisher = session.query(Publisher).filter_by(publisher=old_publisher_name).first()
-
-    if publisher:
-        _id=publisher.id
-        publisher.publisher = updated_publisher_name
-        session.commit()
-        print(f'ID: {_id}, Publisher: {old_publisher_name} was updated to {updated_publisher_name}.')
-        return OPER_UPDATE_SUCCEEDED
-    return OPER_UPDATE_FAILED_DATA_NOT_EXISTS
-
-def delete_publisher(publisher_name):
-    publisher = session.query(Publisher).filter_by(publisher=publisher_name).first()
-
-    if publisher:
-        _id=publisher.id
-        session.delete(publisher)
-        session.commit()
-        print(f'ID: {publisher.id}, Publisher: {publisher} was deleted.')
-        return OPER_DELETE_SUCCEEDED
-    return OPER_DELETE_FAILED_DATA_NOT_EXISTS
+def delete_publisher(publisher_name, publication_year):
+    try:
+        publisher = session.query(Publisher).filter_by(
+            publisher=publisher_name,
+            publication_year=publication_year
+        ).first()
+        if publisher:
+            session.delete(publisher)
+            session.commit()
+            return OPER_DELETE_SUCCEEDED
+        else:
+            return OPER_DELETE_FAILED_DATA_EXISTS
+    except OperationalError as e:
+        print(f'Database error connection: {e}')
+        return OPER_DELETE_FAILED_DATA_EXISTS

@@ -1,59 +1,73 @@
+from sqlalchemy.exc import IntegrityError, OperationalError
 from src.database.models import Isbn
 from src.database.db import session
-from src.constans import OPER_ADD_FAILED_DATA_EXISTS, OPER_GET_LIST_FAILED, \
-    OPER_UPDATE_SUCCEEDED, OPER_UPDATE_FAILED_DATA_NOT_EXISTS, OPER_DELETE_SUCCEEDED, \
-    OPER_DELETE_FAILED_DATA_NOT_EXISTS, OPER_ADD_SUCCEEDED
+from src.constans import OPER_ADD_FAILED_DATA_EXISTS, OPER_GET_LIST_FAILED, OPER_GET_LIST_SUCCEEDED,\
+    OPER_UPDATE_SUCCEEDED, OPER_UPDATE_FAILED_DATA_EXISTS, OPER_DELETE_SUCCEEDED, \
+    OPER_DELETE_FAILED_DATA_EXISTS, OPER_ADD_SUCCEEDED, OPER_IS_IN_DB_SUCCEEDED, OPER_IS_IN_DB_FAILED, \
+    OPER_UPDATE_FAILED_DATA_EXISTS
 
 
 def add_isbn(isbn_number):
-    # if len(isbn_number) == 17:
-    isbn = session.query(Isbn).filter_by(isbn_name=isbn_number).first()
+    try:
+        isbn = session.query(Isbn).filter_by(isbn_name=isbn_number).first()
 
-    if not isbn:
-        isbn = Isbn(isbn_name=isbn_number)
-        session.add(isbn)
-        session.commit()
-        return OPER_ADD_SUCCEEDED, isbn.id
-    return OPER_ADD_FAILED_DATA_EXISTS, isbn.id
+        if not isbn:
+            isbn = Isbn(isbn_name=isbn_number)
+            session.add(isbn)
+            session.commit()
+            return OPER_ADD_SUCCEEDED, isbn.id
+        else:
+            return  OPER_ADD_FAILED_DATA_EXISTS, None
+    except IntegrityError as e:
+        print(f'Data exists already in the database: {e}')
+        session.rollback()
+        return OPER_ADD_FAILED_DATA_EXISTS, None
 
 
 def is_isbn_in_db(isbn_number):
-    isbn = session.query(Isbn).filter_by(isbn_name=isbn_number).first()
-
-    if isbn:
-        print(f'ISBN: {isbn_number} is already in database')
-        return True
-    return False
+    try:
+        isbn = session.query(Isbn).filter_by(isbn_name=isbn_number).first()
+        if isbn:
+            return OPER_IS_IN_DB_SUCCEEDED, isbn.id
+        else:
+            return OPER_IS_IN_DB_FAILED, None
+    except Exception as e:
+        print(f'Unexpected error: {e}')
+        return OPER_IS_IN_DB_FAILED, None
 
 def get_isbn_list():
-    isbns_list = session.query(Isbn).all()
-
-    if isbns_list:
-        print(f'ISBNs list:')
-        for isbn in isbns_list:
-            _id = isbn.id
-            print(f'ID: {_id}, ISBN: {isbn.isbn}')
-        return isbns_list
-    return OPER_GET_LIST_FAILED
+    try:
+        isbns_list = session.query(Isbn).all()
+        if isbns_list:
+            return OPER_GET_LIST_SUCCEEDED, isbns_list
+        return OPER_GET_LIST_FAILED
+    except OperationalError as e:
+        print(f'Database error connection: {e}')
+        return OPER_IS_IN_DB_FAILED
 
 def update_isbn(old_isbn_number, new_isbn_number):
-    isbn = session.query(Isbn).filter_by(isbn=old_isbn_number).first()
-
-    if isbn:
-        _id = isbn.id
-        isbn.isbn = new_isbn_number
-        session.commit()
-        print(f'ID: {_id}, ISBN: {old_isbn_number} was updated to {new_isbn_number}.')
-        return OPER_UPDATE_SUCCEEDED
-    return OPER_UPDATE_FAILED_DATA_NOT_EXISTS
+    try:
+        isbn = session.query(Isbn).filter_by(isbn_name=old_isbn_number).first()
+        if isbn:
+            isbn.isbn = new_isbn_number
+            session.commit()
+            return OPER_UPDATE_SUCCEEDED, isbn.id
+        else:
+            return OPER_UPDATE_FAILED_DATA_EXISTS, None
+    except IntegrityError as e:
+        session.rollback()
+        print(f'Data exists already in the database: {e}')
+        return OPER_UPDATE_FAILED_DATA_EXISTS, None
 
 def delete_isbn(isbn_name):
-    isbn = session.query(Isbn).filter_by(isbn=isbn_name).first()
-
-    if isbn:
-        _id=isbn.id
-        session.delete(isbn)
-        session.commit()
-        print(f'ID: {_id}, ISBN: {isbn} was deleted.')
-        return OPER_DELETE_SUCCEEDED
-    return OPER_DELETE_FAILED_DATA_NOT_EXISTS
+    try:
+        isbn = session.query(Isbn).filter_by(isbn_name=isbn_name).first()
+        if isbn:
+            session.delete(isbn)
+            session.commit()
+            return OPER_DELETE_SUCCEEDED
+        else:
+            return OPER_DELETE_FAILED_DATA_EXISTS
+    except OperationalError as e:
+        print(f'Database error connection: {e}')
+        return OPER_DELETE_FAILED_DATA_EXISTS

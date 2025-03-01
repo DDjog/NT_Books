@@ -1,9 +1,10 @@
 from src.operations.tag_operations import update_tag
-from src.constans import OPER_UPDATE_SUCCEEDED, OPER_UPDATE_FAILED_DATA_NOT_EXISTS
+from src.constans import OPER_UPDATE_SUCCEEDED, OPER_UPDATE_FAILED_DATA_NOT_FOUND
 
-t = ['Heaven', 'Forest']
-u = update_tag ({t})
-if u == OPER_UPDATE_SUCCEEDED:
-    print(f'{t} is in the database')
-elif u == OPER_UPDATE_FAILED_DATA_NOT_EXISTS:
-    print(f'{t} is not in the database')
+t = ['Gmurder', 'murder']
+old_tag_name, updated_tag_name = t
+operation_status, tag_id = update_tag (old_tag_name, updated_tag_name)
+if operation_status == OPER_UPDATE_SUCCEEDED:
+    print(f'Updated tag: {updated_tag_name} is in the database')
+elif operation_status == OPER_UPDATE_FAILED_DATA_NOT_FOUND:
+    print(f'Tag: {updated_tag_name} is not in the database')

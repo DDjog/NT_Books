@@ -1,57 +1,76 @@
-
+from sqlalchemy.exc import IntegrityError, OperationalError
 from src.database.models import ShelfSignature
 from src.database.db import session
 from src.constans import OPER_ADD_FAILED_DATA_EXISTS, OPER_ADD_SUCCEEDED, \
-    OPER_GET_LIST_FAILED, OPER_UPDATE_SUCCEEDED, OPER_UPDATE_FAILED_DATA_NOT_EXISTS, OPER_DELETE_SUCCEEDED, \
-    OPER_DELETE_FAILED_DATA_NOT_EXISTS
+    OPER_GET_LIST_FAILED, OPER_GET_LIST_SUCCEEDED, OPER_UPDATE_FAILED_DATA_EXISTS, OPER_UPDATE_SUCCEEDED, \
+    OPER_DELETE_FAILED_DATA_EXISTS, OPER_DELETE_SUCCEEDED, OPER_IS_IN_DB_FAILED, OPER_IS_IN_DB_SUCCEEDED
 
 
 def add_shelf_signature(shelf_signature_number):
-    shelf_signature = session.query(ShelfSignature).filter_by(shelf_signature=shelf_signature_number).first()
+    try:
+        shelf_signature = session.query(ShelfSignature).filter_by(shelf_signature=shelf_signature_number).first()
 
-    if not shelf_signature:
-        shelf_signature = ShelfSignature(shelf_signature=shelf_signature_number)
-        session.add(shelf_signature)
-        session.commit()
-        return OPER_ADD_SUCCEEDED, shelf_signature.id
-    return OPER_ADD_FAILED_DATA_EXISTS, shelf_signature.id
+        if not shelf_signature:
+            shelf_signature = ShelfSignature(shelf_signature=shelf_signature_number)
+            session.add(shelf_signature)
+            session.commit()
+            return OPER_ADD_SUCCEEDED, shelf_signature.id
+        else:
+            return OPER_ADD_FAILED_DATA_EXISTS, None
+    except IntegrityError as e:
+        print(f'Data exists already in the database: {e}')
+        session.rollback()
+        return OPER_ADD_FAILED_DATA_EXISTS,None
+
 
 def is_shelf_signature_in_db(shelf_signature_number):
-    shelf_signature = session.query(ShelfSignature).filter_by(shelf_signature=shelf_signature_number)
+    try:
+        shelf_signature = session.query(ShelfSignature).filter_by(shelf_signature=shelf_signature_number).first()
 
-    if shelf_signature:
-        return True
-    return False
+        if shelf_signature:
+            return OPER_IS_IN_DB_SUCCEEDED, shelf_signature.id
+        else:
+            return OPER_IS_IN_DB_FAILED, None
+    except Exception as e:
+        print(f'Unexpected error: {e}')
+        return OPER_IS_IN_DB_FAILED, None
 
 def get_shelf_signatures_list():
-    shelf_signatures_list = session.query(ShelfSignature).all()
-
-    if shelf_signatures_list:
-        print(f'Shelf signatures list:')
-        for shelf_signature in shelf_signatures_list:
-            _id = shelf_signature.id
-            print(f'ID: {_id}, Shelf signature: {shelf_signature.shelf_signature}')
-        return shelf_signatures_list
-    return OPER_GET_LIST_FAILED
+    try:
+        shelf_signatures_list = session.query(ShelfSignature).all()
+        if shelf_signatures_list:
+            return OPER_GET_LIST_SUCCEEDED, shelf_signatures_list
+        else:
+            return OPER_GET_LIST_FAILED
+    except OperationalError as e:
+        print(f'Database error connection: {e}')
+        return OPER_IS_IN_DB_FAILED
 
 def update_shelf_signature(old_shelf_signature, new_shelf_signature):
-    shelf_signature = session.query(ShelfSignature).filter_by(shelf_signature=old_shelf_signature).first()
+    try:
+        shelf_signature = session.query(ShelfSignature).filter_by(shelf_signature=old_shelf_signature).first()
 
-    if shelf_signature:
-        _id = shelf_signature.id
-        shelf_signature.shelf_signature = new_shelf_signature
-        session.commit()
-        print(f'ID: {_id}, shelf signature: {old_shelf_signature} was updated to {new_shelf_signature}.')
-        return OPER_UPDATE_SUCCEEDED
-    return OPER_UPDATE_FAILED_DATA_NOT_EXISTS
+        if shelf_signature:
+            shelf_signature.shelf_signature = new_shelf_signature
+            session.commit()
+            return OPER_UPDATE_SUCCEEDED, shelf_signature.id
+        else:
+            return OPER_UPDATE_FAILED_DATA_EXISTS, None
+    except IntegrityError as e:
+        session.rollback()
+        print(f'Data exists already in the database: {e}')
+        return OPER_UPDATE_FAILED_DATA_EXISTS, None
 
 def delete_shelf_signature(shelf_signature_number):
-    shelf_signature = session.query(ShelfSignature).filter_by(shelf_signature=shelf_signature_number).first()
+    try:
+        shelf_signature = session.query(ShelfSignature).filter_by(shelf_signature=shelf_signature_number).first()
 
-    if shelf_signature:
-        _id=shelf_signature.id
-        session.delete(shelf_signature)
-        session.commit()
-        print(f'ID: {_id}, shelf signature: {shelf_signature_number} was deleted.')
-        return OPER_DELETE_SUCCEEDED
-    return OPER_DELETE_FAILED_DATA_NOT_EXISTS
+        if shelf_signature:
+            session.delete(shelf_signature)
+            session.commit()
+            return OPER_DELETE_SUCCEEDED
+        else:
+            return OPER_DELETE_FAILED_DATA_EXISTS
+    except OperationalError as e:
+        print(f'Database error connection: {e}')
+        return OPER_DELETE_FAILED_DATA_EXISTS

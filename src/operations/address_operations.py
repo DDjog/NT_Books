@@ -1,75 +1,126 @@
+from sqlalchemy.exc import IntegrityError, OperationalError
+
 from src.database.models import Address
 from src.database.db import session
-from src.constans import (OPER_ADD_SUCCEEDED, OPER_ADD_FAILED_DATA_EXISTS, OPER_GET_LIST_FAILED, OPER_UPDATE_SUCCEEDED,
-                          OPER_UPDATE_FAILED_DATA_NOT_EXISTS, OPER_DELETE_SUCCEEDED, OPER_DELETE_FAILED_DATA_NOT_EXISTS)
+from src.constans import (OPER_ADD_SUCCEEDED, OPER_ADD_FAILED_DATA_EXISTS, OPER_GET_LIST_FAILED,
+                          OPER_GET_LIST_SUCCEEDED,
+                          OPER_UPDATE_FAILED_DATA_EXISTS, OPER_UPDATE_SUCCEEDED, OPER_DELETE_SUCCEEDED,
+                          OPER_DELETE_FAILED_DATA_EXISTS,
+                          OPER_ADD_FAILED_DATA_EXISTS, OPER_IS_IN_DB_SUCCEEDED, OPER_IS_IN_DB_FAILED,
+                          OPER_UPDATE_FAILED_DATA_EXISTS)
 
 
-def add_address(indicated_street, indicated_number, indicated_flat_number, indicated_zip_code,
-                indicated_city, indicated_country):
-    address = session.query(Address).filter_by(street=indicated_street, number= indicated_number,
-                                               flat_number= indicated_flat_number, zip_code=indicated_zip_code,
-                                               city=indicated_city, country=indicated_country).first()
+def add_address(new_street, new_number, new_flat_number, new_zip_code,
+                new_city, new_country):
+    try:
+        address = session.query(Address).filter_by(
+            street=new_street,
+            number= new_number,
+            flat_number= new_flat_number,
+            zip_code=new_zip_code,
+            city=new_city,
+            country=new_country
+        ).first()
 
-    if not address:
-        address = Address(street=indicated_street, number=indicated_number, flat_number=indicated_flat_number,
-                          zip_code=indicated_zip_code, city=indicated_city, country=indicated_country)
-        session.add(address)
-        session.commit()
-        return OPER_ADD_SUCCEEDED, address.id
-    return OPER_ADD_FAILED_DATA_EXISTS, address.id
+        if not address:
+            address = Address(
+                street=new_street,
+                number=new_number,
+                flat_number=new_flat_number,
+                zip_code=new_zip_code,
+                city=new_city,
+                country=new_country
+            )
+            session.add(address)
+            session.commit()
+            return OPER_ADD_SUCCEEDED, address.id
+        else:
+            return OPER_ADD_FAILED_DATA_EXISTS, None
 
-def is_address_in_db(indicated_street, indicated_number, indicated_flat_number, indicated_zip_code,
-                     indicated_city, indicated_country):
-    address = session.query(Address).filter_by(street=indicated_street, number=indicated_number,
-                                               flat_number=indicated_flat_number, zip_code=indicated_zip_code,
-                                               city=indicated_city, country=indicated_country).first()
+    except IntegrityError as e:
+        print(f'Data exists already in the database: {e}')
+        session.rollback()
+        return OPER_ADD_FAILED_DATA_EXISTS, None
 
-    if address:
-        _id=address.id
-        print(f'ID: {_id}, Address: {indicated_street} {indicated_number} {indicated_flat_number} '
-              f'{indicated_zip_code} {indicated_city} {indicated_country} is already in database.')
-        return True
-    return False
+
+def is_address_in_db(street, number, flat_number, zip_code,city, country):
+    try:
+        address = session.query(Address).filter_by(
+            street=street,
+            number=number,
+            flat_number=flat_number,
+            zip_code=zip_code,
+            city=city,
+            country=country
+        ).first()
+
+        if address:
+            return OPER_IS_IN_DB_SUCCEEDED, address.id
+        else:
+            return OPER_IS_IN_DB_FAILED, None
+
+    except Exception as e:
+        print(f'Unexpected error: {e}')
+        return OPER_IS_IN_DB_FAILED, None
 
 def get_addresses_list():
-    addresses_list = session.query(Address).all()
-
-    if addresses_list:
-        print(f'Addresses list:')
-        for address in addresses_list:
-            _id = address.id
-            print(f'ID: {_id}, Address: {address.street}, {address.number}, {address.flat_number}, {address.zip_code}, '
-                  f'{address.city}, {address.country}')
-        return addresses_list
-    return OPER_GET_LIST_FAILED
+    try:
+        addresses_list = session.query(Address).all()
+        if addresses_list:
+            return OPER_GET_LIST_SUCCEEDED, addresses_list
+        else:
+            return OPER_GET_LIST_FAILED, None
+    except OperationalError as e:
+        print(f'Database error connection: {e}')
+        return OPER_IS_IN_DB_FAILED, None
 
 def update_address(old_street, updated_street, old_number, updated_number, old_flat_number, updated_number_flat,
                     old_zip_code, updated_zip_code, old_city, updated_city, old_country, updated_country):
-    address = session.query(Address).filter_by(street=old_street, number=old_number, flat_number=old_flat_number,
-                                               zip_code=old_zip_code, city=old_city, country=old_country ).first()
+    try:
+        address = session.query(Address).filter(
+            Address.street==old_street,
+            Address.number==old_number,
+            Address.flat_number==old_flat_number,
+            Address.zip_code==old_zip_code,
+            Address.city==old_city,
+            Address.country==old_country
+        ).first()
 
-    if address:
-        address = Address(street=updated_street, number=updated_number, flat_number=updated_number_flat,
-                          zip_code=updated_zip_code, city=updated_city, country=updated_country)
-        _id = address.id
-        session.commit()
-        print(f'ID: {_id}, Address: {old_street} {old_number} {old_flat_number}, {old_zip_code},'
-              f'{old_city}, {old_country} was updated to {updated_street} {updated_number}, '
-              f'{updated_number_flat},{updated_zip_code}, {updated_city}, {updated_country}.')
-        return OPER_UPDATE_SUCCEEDED
-    return OPER_UPDATE_FAILED_DATA_NOT_EXISTS
+        if address:
+            address.street=updated_street
+            address.number=updated_number
+            address.flat_number=updated_number_flat
+            address.zip_code=updated_zip_code
+            address.city=updated_city
+            address.country=updated_country
 
-def delete_address(indicated_street, indicated_number, indicated_flat_number,
-                    indicated_zip_code, indicated_city, indicated_country):
-    address = session.query(Address).filter_by(street=indicated_street, number=indicated_number,
-                                               flat_number=indicated_flat_number,zip_code=indicated_zip_code,
-                                               city=indicated_city, country=indicated_country).first()
+            session.commit()
 
-    if address:
-        _id=address.id
-        session.delete(address)
-        session.commit()
-        print(f'ID: {_id}, Address: {indicated_street} {indicated_number} {indicated_flat_number}, {indicated_zip_code},'
-              f'{indicated_city}, {indicated_country} was deleted.')
-        return OPER_DELETE_SUCCEEDED
-    return OPER_DELETE_FAILED_DATA_NOT_EXISTS
+            return OPER_UPDATE_SUCCEEDED, address.id
+        else:
+            return OPER_UPDATE_FAILED_DATA_EXISTS, None
+    except IntegrityError as e:
+        session.rollback()
+        print(f'Data exists already in the database: {e}')
+        return OPER_UPDATE_FAILED_DATA_EXISTS, None
+
+def delete_address(street, number, flat_number,zip_code, city, country):
+    try:
+        address = session.query(Address).filter_by(
+            street=street,
+            number=number,
+            flat_number=flat_number,
+            zip_code=zip_code,
+            city=city,
+            country=country
+        ).first()
+        if address:
+            session.delete(address)
+            session.commit()
+            return OPER_DELETE_SUCCEEDED
+        else:
+            return OPER_DELETE_FAILED_DATA_NOT_EXISTS
+    except OperationalError as e:
+        print(f'Database error connection: {e}')
+        return OPER_DELETE_FAILED_DATA_EXISTS
+

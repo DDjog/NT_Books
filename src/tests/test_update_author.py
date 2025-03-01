@@ -1,9 +1,12 @@
 from src.operations.author_operations import update_author
-from src.constans import OPER_IS_IN_DB_FAILED, OPER_UPDATE_SUCCEEDED
+from src.constans import OPER_UPDATE_SUCCEEDED, OPER_UPDATE_FAILED_DATA_NOT_FOUND
 
-a = ['Frederick', 'Forsyth', 'Alfred', 'Forsyth']
-u = update_author ({a})
-if u == OPER_UPDATE_SUCCEEDED:
-    print(f'Address: {a} is in the database')
-elif u == OPER_IS_IN_DB_FAILED:
-    print(f'Address: {a} is not in the database')
+
+a = ['Vincentt', 'AVincentt', 'Severskiii', 'ASeverskiii']
+old_author_name, updated_author_name, old_author_surname, updated_author_surname = a
+operation_status, author_id = update_author(old_author_name, updated_author_name, old_author_surname, updated_author_surname)
+
+if operation_status == OPER_UPDATE_SUCCEEDED:
+    print(f'Author: {updated_author_name} {updated_author_surname} is in the database')
+elif operation_status == OPER_UPDATE_FAILED_DATA_NOT_FOUND:
+    print(f'Author: {updated_author_name} {updated_author_surname} is not in the database')
