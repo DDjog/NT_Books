@@ -1,12 +1,14 @@
 from tkinter import *
 
+import logging
+
+from src.constans import OPER_GET_LIST_SUCCEEDED
 from src.operations.category_operations import add_category, get_categories_list, delete_category
-from src.operations.author_operations import add_author, delete_author
-from src.operations.title_operations import add_title, delete_title
+from src.operations.author_operations import add_author, delete_author, get_authors_list
+from src.operations.title_operations import add_title, delete_title, get_titles_list
 from src.operations.language_operations import add_language, get_languages_list, delete_language
 from src.operations.tag_operations import add_tag, get_tags_list, delete_tag
-from src.tests.test_delete_author import author_surname
-from src.tests.test_is_author_in_db import author_name
+
 
 root = Tk()
 root.title('Books project')
@@ -32,7 +34,6 @@ def cat_oper_window():
 
     top=Toplevel()
     top.grab_set()
-
     top.title('Categories operations')
 
     top.columnconfigure(0, weight=1)
@@ -53,12 +54,17 @@ def cat_oper_window():
     text_list = Listbox(top, width=60, height=15)
     text_list.grid(row=2, column=0, padx=10, pady=10, sticky='nsew')
 
-    l=get_categories_list()
-    for i in l:
-        text_list.insert(END, i.category_name)
+    operation_status, l=get_categories_list()
+    if operation_status == OPER_GET_LIST_SUCCEEDED:
+        for i in l:
+            text_list.insert(END, i.category_name)
+
 
     text_list_label = Label(top, text='List of categories:')
     text_list_label.grid(row=1, column=0, padx=10, pady=10, sticky='nsew')
+
+    button_update = Button(top, text='Update category', command=update_category_window)
+    button_update.grid(row=1, column=1, padx=10, pady=10, sticky='nsew')
 
     button_quit = Button(top, text='Close', command=top.destroy)
     button_quit.grid(row=3, column=2)
@@ -90,9 +96,10 @@ def aut_oper_window():
     text_list = Listbox(top, width=60, height=15)
     text_list.grid(row=2, column=0, padx=10, pady=10, sticky='nsew')
 
-    # l = get_authors_list()
-    # for i in l:
-    #     text_list.insert(END, i.auth)
+    operation_status, l = get_authors_list()
+    if operation_status == OPER_GET_LIST_SUCCEEDED:
+        for i in l:
+            text_list.insert(END, f'{i.author_name} {i.author_surname}')
 
     text_list_label = Label(top, text='List of authors:')
     text_list_label.grid(row=1, column=0, padx=10, pady=10, sticky='nsew')
@@ -127,9 +134,10 @@ def tit_oper_window():
     text_list = Listbox(top, width=60, height=15)
     text_list.grid(row=2, column=0, padx=10, pady=10, sticky='nsew')
 
-    # l = get_titles_list()
-    # for i in l:
-    #     text_list.insert(END, i)
+    operation_status, l = get_titles_list()
+    if operation_status == OPER_GET_LIST_SUCCEEDED:
+        for i in l:
+            text_list.insert(END, i.title)
 
     text_list_label = Label(top, text='List of titles:')
     text_list_label.grid(row=1, column=0, padx=10, pady=10, sticky='nsew')
@@ -165,9 +173,10 @@ def lang_oper_window():
     text_list = Listbox(top, width=60, height=15)
     text_list.grid(row=2, column=0, padx=10, pady=10, sticky='nsew')
 
-    l=get_languages_list()
-    for i in l:
-        text_list.insert(END, i.language)
+    operation_status, l = get_languages_list()
+    if operation_status == OPER_GET_LIST_SUCCEEDED:
+        for i in l:
+            text_list.insert(END, i.language)
 
     text_list_label = Label(top, text='List of languages:')
     text_list_label.grid(row=1, column=0, padx=10, pady=10, sticky='nsew')
@@ -203,9 +212,10 @@ def tag_oper_window():
     text_list = Listbox(top, width=60, height=15)
     text_list.grid(row=2, column=0, padx=10, pady=10, sticky='nsew')
 
-    l=get_tags_list()
-    for i in l:
-        text_list.insert(END, i.tag)
+    operation_status, l = get_tags_list()
+    if operation_status == OPER_GET_LIST_SUCCEEDED:
+        for i in l:
+            text_list.insert(END, i.tag)
 
     text_list_label = Label(top, text='List of tags:')
     text_list_label.grid(row=1, column=0, padx=10, pady=10, sticky='nsew')
@@ -217,7 +227,7 @@ def add_category_to_list():
     global text
     text = e.get()
     if text not in text_list.get(0, END):
-        add_category(text)
+        add_category(text[0])
         text_list.insert(END, text)
         e.delete(0, END)
 
@@ -263,13 +273,14 @@ def selected_to_be_deleted():
         return None
 
 def delete_selected_category():
-    selected_index = text_list.curselection()
+    selected = text_list.curselection()
 
-    if selected_index:
-        delete_category(text_list.get(selected_index))
-        text_list.delete(selected_index)
-    else:
+    if not selected:
         print('No record to be deleted')
+
+    selected = selected[0]
+    delete_category(text_list.get(selected))
+    text_list.delete(selected)
 
 def delete_selected_author():
 
@@ -277,7 +288,7 @@ def delete_selected_author():
 
     if not selected:
         print('No record to be deleted')
-        
+
     selected = selected[0]
     selected_author =  text_list.get(selected)
     parts = selected_author.split()
@@ -287,34 +298,101 @@ def delete_selected_author():
     delete_author(author_name, author_surname)
     text_list.delete(selected)
 
-
-
 def delete_selected_title():
-    selected_index = text_list.curselection()
+    selected = text_list.curselection()
 
-    if selected_index:
-        delete_title(text_list.get(selected_index))
-        text_list.delete(selected_index)
+    if selected:
+        delete_title(text_list.get(selected))
+        text_list.delete(selected)
     else:
         print('No record to be deleted')
 
 def delete_selected_language():
-    selected_index = text_list.curselection()
+    selected = text_list.curselection()
 
-    if selected_index:
-        delete_language(text_list.get(selected_index))
-        text_list.delete(selected_index)
+    if selected:
+        delete_language(text_list.get(selected))
+        text_list.delete(selected)
     else:
         print('No record to be deleted')
 
 def delete_selected_tag():
-    selected_index = text_list.curselection()
+    selected = text_list.curselection()
 
-    if selected_index:
-        delete_tag(text_list.get(selected_index))
-        text_list.delete(selected_index)
+    if selected:
+        delete_tag(text_list.get(selected))
+        text_list.delete(selected)
     else:
-        print('No record to be deleted')
+        logging.info('No record to be deleted')
+
+# def update_selected_category():
+#     global selected_category
+#
+#     selected_category = text_list.curselection()
+#
+#     if selected_category:
+#         update_category_window()
+#     else:
+#         logging.info('No record to be updated')
+
+def update_category_window():
+    global old_category_name
+    global new_category_name
+    global selected_category
+
+    top = Toplevel()
+    top.grab_set()
+
+    top.columnconfigure(0, weight=1)
+    top.columnconfigure(1, weight=1)
+    top.columnconfigure(2, weight=1)
+    top.columnconfigure(3, weight=1)
+    top.rowconfigure(0, weight=1)
+
+    top.title('Update category')
+    selected_category = text_list.curselection()
+
+    old_category_name = Entry(top, width=50)
+    old_category_name.grid(row=0, column=1, sticky='ew')
+    if selected_category:
+        selected_index = selected_category[0]
+        selected_category_content = text_list.get(selected_index)
+        old_category_name.insert(0, selected_category_content)
+
+    new_category_name = Entry(top, width=50)
+    new_category_name.grid(row=1, column=1, sticky='ew')
+
+    old_category_label = Label(top, text='from')
+    old_category_label.grid(row=0, column=0, padx=10, pady=10, sticky='nsew')
+
+    new_category_label = Label(top, text='to')
+    new_category_label.grid(row=1, column=0, padx=10, pady=10, sticky='nsew')
+
+    button_update = Button(top, text='Press to update', command=lambda: update_category(new_category_name, selected_index))
+    button_update.grid(row=2, column=1, padx=10, pady=10)
+
+    button_close = Button(top, text='Close', command=top.destroy)
+    button_close.grid(row=2, column=2, padx=10, pady=10)
+
+def update_category(new_category_name, selected_index):
+
+    updated_category = new_category_name.get()
+    if not updated_category:
+        logging.info("No category given for update")
+        return None
+
+    selected_category_text = text_list.get(selected_index)
+    delete_category(selected_category_text)
+
+    categories_list = text_list.get(0, END)
+    if updated_category in categories_list:
+        logging.info('Category is already on categories list')
+        return None
+    add_category(updated_category)
+
+    text_list.delete(selected_index)
+    text_list.insert(selected_index, updated_category)
+
 
 myButton1 = Button(root, text='Categories operations', fg='blue', command=cat_oper_window)
 myButton1.grid(row=0, column=3, padx=10, pady=10, sticky='ew')

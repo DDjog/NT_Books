@@ -1,10 +1,11 @@
+import logging
+
 from sqlalchemy.exc import IntegrityError, OperationalError
-from src.constans import (OPER_UPDATE_SUCCEEDED, OPER_UPDATE_FAILED_DATA_EXISTS, OPER_ADD_SUCCEEDED,
-                          OPER_ADD_FAILED_DATA_EXISTS, OPER_DELETE_SUCCEEDED, OPER_DELETE_FAILED_DATA_EXISTS, \
-                          OPER_GET_LIST_FAILED, OPER_GET_LIST_SUCCEEDED, OPER_IS_IN_DB_SUCCEEDED, OPER_IS_IN_DB_FAILED,
-                          OPER_UPDATE_FAILED_DATA_EXISTS, OPER_UPDATE_FAILED_DATA_NOT_FOUND)
-from src.database.models import Author
+from src.constans import *
+from src.database.models import Author, Book, Title, Isbn
 from src.database.db import session
+
+
 
 def add_author(new_author_name, new_author_surname):
     try:
@@ -23,9 +24,42 @@ def add_author(new_author_name, new_author_surname):
             return  OPER_ADD_FAILED_DATA_EXISTS, None
 
     except IntegrityError as e:
-        print(f'Data exists already in the database: {e}')
+        logging.info(f'Data exists already in the database: {e}')
         session.rollback()
         return OPER_ADD_FAILED_DATA_EXISTS, None
+
+
+def add_author_to_the_book(title, isbn, ad_author_name, ad_author_surname):
+    try:
+        book = session.query(Book).join(Title).join(Isbn).filter(
+            Title.title == title,
+            Isbn.isbn_name == isbn
+        ).first()
+        if not book:
+            return OPER_ADD_FAILED_DATA_EXISTS, None
+
+        author = session.query(Author).filter_by(
+            author_name=ad_author_name,
+            author_surname=ad_author_surname
+        ).first()
+
+        if not author:
+            author = Author(
+                author_name=ad_author_name,
+                author_surname=ad_author_surname)
+            session.add(author)
+            session.commit()
+
+        if author not in book.authors:
+            book.authors.append(author)
+            session.commit()
+            return OPER_ADD_SUCCEEDED, author.id
+        else:
+            return  OPER_ADD_FAILED_DATA_EXISTS, None
+    except Exception as e:
+        session.rollback()
+        logging.error(f'Unexpected error: {e}')
+
 
 def is_author_in_db(author_name, author_surname):
     try:
@@ -38,7 +72,7 @@ def is_author_in_db(author_name, author_surname):
         else:
             return OPER_IS_IN_DB_FAILED, None
     except Exception as e:
-        print(f'Unexpected error: {e}')
+        logging.error(f'Unexpected error: {e}')
         return OPER_IS_IN_DB_FAILED, None
 
 
@@ -48,7 +82,7 @@ def get_authors_list():
         if authors_list:
             return OPER_GET_LIST_SUCCEEDED, authors_list
         else:
-            return OPER_GET_LIST_FAILED
+            return OPER_GET_LIST_FAILED, None
     except OperationalError as e:
         print(f'Database error connection: {e}')
         return OPER_IS_IN_DB_FAILED

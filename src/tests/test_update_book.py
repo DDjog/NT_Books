@@ -1,3 +1,5 @@
+import logging
+import src.logging_to_file
 from src.operations.books_operations import update_book
 from src.constans import OPER_UPDATE_SUCCEEDED, OPER_UPDATE_FAILED_DATA_EXISTS
 
@@ -18,6 +20,6 @@ operation_status, book_id= update_book (old_title, new_title, old_author_name, n
             old_zip_code, new_zip_code, old_city, new_city, old_country, new_country, old_publication_year,
             new_publication_year, old_category, new_category)
 if operation_status == OPER_UPDATE_SUCCEEDED:
-    print(f'Book: {b} is in the database')
+    logging.info(f'Book: {b} is in the database')
 elif operation_status == OPER_UPDATE_FAILED_DATA_EXISTS:
-    print(f'Book: {b} is not in the database')
+    logging.warning(f'Book: {b} is not in the database')

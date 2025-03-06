@@ -1,0 +1,136 @@
+2025-03-01 21:28:10 DEBUG ✅ Test log zapisany poprawnie do basic.log przez FileHandler!
+2025-03-01 21:28:10 DEBUG Test log: test_add_address has started
+2025-03-01 21:28:10 WARNING Address: Czerska 8 10 00-732 Warsaw Poland is already in the database
+2025-03-01 21:39:11 WARNING Author Vincent Severski is already in the database
+2025-03-01 21:42:33 INFO New book was added to the database
+2025-03-01 21:47:07 WARNING New book exists already in the database
+2025-03-01 21:48:15 WARNING Poetry exists already in the database
+2025-03-01 21:50:23 WARNING Book:GHow to solve your own murder G978-1-52943-007-3 exists already in the database
+2025-03-01 21:57:17 WARNING Book exists already in the database
+2025-03-01 21:58:47 WARNING Book:GHow to solve your own murder G978-1-52943-007-3 exists already in the database
+2025-03-01 21:59:41 INFO Turkish was added to the database
+2025-03-01 22:00:21 WARNING ['AXA', '2009', 16] was not found in the database
+2025-03-02 07:57:47 INFO Outsider was added to the database
+2025-03-02 07:58:26 INFO Title: Outsider was deleted from the database
+2025-03-02 08:01:30 WARNING Title: Outsiders doesnt exist in the database
+2025-03-02 08:04:16 INFO Addresses list was downloaded from the database:
+2025-03-02 08:04:16 INFO 1. AWarsaw Street, 110, 15, 100-123, ALondon, AGreat Britain
+2025-03-02 08:04:16 INFO 2. FViktoria Embankment, 42150, 4211, 421EC4Y, FLondon, FGreat Britain
+2025-03-02 08:04:16 INFO 3. ACzerska, 18, 11, 01-731, AWarsaw, APoland
+2025-03-02 08:04:16 INFO 4. Czerska, 8, 10, 00-732, Warsaw, Poland
+2025-03-02 08:05:08 INFO Address: Czerskaa 8 10 00-732 Warsaw Poland was added to the database
+2025-03-02 08:17:12 INFO Authors list was downloaded from the database:
+2025-03-02 08:17:12 INFO 1. GKristen, GPerrin
+2025-03-02 08:17:12 INFO 2. AVincentt, ASeverskiii
+2025-03-02 08:17:12 INFO 3. J, o
+2025-03-02 08:17:12 INFO 4. B, i
+2025-03-02 08:17:12 INFO 5. E, m
+2025-03-02 08:17:12 INFO 6. E, l
+2025-03-02 08:17:12 INFO 7. Vincent, Severski
+2025-03-02 08:17:12 INFO 8. GKristen, GPerrin
+2025-03-02 08:19:51 INFO Books list was downloaded from the database:
+2025-03-02 08:19:51 INFO 1. GHow to solve your own murder, G978-1-52943-007-3
+2025-03-02 08:19:51 INFO 2. GHow to solve your own murder, G978-1-52943-007-3
+2025-03-02 08:22:51 INFO Categories list was downloaded from the database:
+2025-03-02 08:22:51 INFO 1. Fnovel 
+2025-03-02 08:22:51 INFO 2. Comedy 
+2025-03-02 08:22:51 INFO 3. Drama 
+2025-03-02 08:22:51 INFO 4. Poetry 
+2025-03-02 08:22:51 INFO 5. Thriller 
+2025-03-02 08:23:31 INFO Isbn list was downloaded from the database:
+2025-03-02 08:23:31 INFO 1. G978-1-52943-007-3 
+2025-03-02 08:23:31 INFO 2. G978-1-52943-007-3 
+2025-03-02 08:23:31 INFO 3. F978-1-52943-007-3 
+2025-03-02 08:24:05 INFO Languages list was downloaded from the database:
+2025-03-02 08:24:05 INFO 1. English 
+2025-03-02 08:24:05 INFO 2. Genglish 
+2025-03-02 08:24:05 INFO 3. Fenglish 
+2025-03-02 08:24:05 INFO 4. Turkish 
+2025-03-02 08:25:11 INFO Publishers list was downloaded from the database:
+2025-03-02 08:25:11 INFO 1. GQuercus, 1975
+2025-03-02 08:25:11 INFO 2. AXA, 2009
+2025-03-02 08:25:11 INFO 3. FQuercus, 4212024
+2025-03-02 08:27:30 INFO Shelf signatures list was downloaded from the database:
+2025-03-02 08:27:30 INFO 1. 623112 
+2025-03-02 08:27:30 INFO 2. 523112 
+2025-03-02 08:27:30 INFO 3. 423112 
+2025-03-02 08:27:59 INFO Tags list was downloaded from the database:
+2025-03-02 08:27:59 INFO 1. murder
+2025-03-02 08:27:59 INFO 2. Gmurder
+2025-03-02 08:28:33 INFO Titles list was downloaded from the database:
+2025-03-02 08:28:33 INFO 1. GHow to solve your own murder 
+2025-03-02 08:28:33 INFO 2. GHow to solve your own murder 
+2025-03-02 08:28:33 INFO 3. FHow to solve your own murder 
+2025-03-02 08:28:51 INFO Titles list was downloaded from the database:
+2025-03-02 08:28:51 INFO 1. GHow to solve your own murder 
+2025-03-02 08:28:51 INFO 2. GHow to solve your own murder 
+2025-03-02 08:28:51 INFO 3. FHow to solve your own murder 
+2025-03-02 08:30:10 WARNING Address: Czerska 8 10 00-732 Warsaw Poland is not in the database
+2025-03-02 08:32:15 WARNING Author: John Smith is not in the database
+2025-03-02 08:33:16 INFO Book: GHow to solve your own murder with isbn: G978-1-52943-007-3 is in the database
+2025-03-02 08:36:28 WARNING Category: ['Fairy Tale'] is not in the database
+2025-03-02 08:37:04 WARNING Category: Fairy Tale is not in the database
+2025-03-02 08:37:33 WARNING 978-3-16-148410-0 is not in the database
+2025-03-02 08:38:47 WARNING Language: Spanish is not in the database
+2025-03-02 08:40:32 WARNING ['AXA', '2009', 16] was not found in the database
+2025-03-02 08:40:32 INFO Publisher: AXA with publication year 2009 was deleted from the database
+2025-03-02 08:40:32 WARNING Publisher: ['AXA', '2009'] is not in the database
+2025-03-02 08:43:02 INFO ['AXA', '2009', 16] was added to the database
+2025-03-02 08:43:02 INFO Publisher: AXA with publication year 2009 was deleted from the database
+2025-03-02 08:43:02 WARNING Publisher: ['AXA', 2009] is not in the database
+2025-03-02 08:43:32 INFO ['AXA', '2009', 16] was added to the database
+2025-03-02 08:43:32 INFO Publisher: AXA with publication year 2009 was deleted from the database
+2025-03-02 08:44:17 INFO ['AXA', '2009', 16] was added to the database
+2025-03-02 08:44:17 INFO Publisher: AXA with publication year 2009 was deleted from the database
+2025-03-02 08:44:33 INFO ['AXA', '2009', 16] was added to the database
+2025-03-02 08:44:33 INFO Publisher: AXA with publication year 2009 was deleted from the database
+2025-03-02 08:44:33 WARNING Publisher: ['AXA', 2009] is not in the database
+2025-03-02 08:44:56 INFO ['AXA', '2009', 16] was added to the database
+2025-03-02 08:44:56 INFO Publisher: AXA with publication year 2009 was deleted from the database
+2025-03-02 08:44:56 WARNING Publisher: ['AXA', 2009] is not in the database
+2025-03-02 08:49:30 INFO Shelf signature: 523112  is in the database
+2025-03-02 08:50:18 WARNING Tag: New Year is not in the database
+2025-03-02 08:51:10 WARNING Title: Outsiders is not in the database
+2025-03-02 08:51:35 INFO Updated address: ACzerska 18 11 01-731 AWarsaw APoland is in the database
+2025-03-02 08:52:15 WARNING Author: AVincentt ASeverskiii is not in the database
+2025-03-02 08:56:04 INFO New book:FHow to solve your own murder F978-1-52943-007-3 was added to the database
+2025-03-02 08:56:57 INFO Book: ['FHow to solve your own murder', 'GHow to solve your own murder', 'FKristen', 'GKristen', 'FPerrin', 'GPerrin', 'F978-1-52943-007-3', 'G978-1-52943-007-3', 'Fenglish', 'Genglish', '423112', '523112', 'Fmurder', 'Gmurder', 'FQuercus', 'GQuercus', 'FViktoria Embankment', 'GViktoria Embankment', '42150', '442150', '4211', '421EC4Y', '0356', '40356', 'FLondon', 'GLondon', 'FGreat Britain', 'GGreat Britain', '2024', '42024', 'Fnovel', 'Gnovel'] is in the database
+2025-03-02 08:56:57 INFO New book:FHow to solve your own murder F978-1-52943-007-3 was added to the database
+2025-03-02 08:57:50 INFO Book: ['FHow to solve your own murder', 'GHow to solve your own murder', 'FKristen', 'GKristen', 'FPerrin', 'GPerrin', 'F978-1-52943-007-3', 'G978-1-52943-007-3', 'Fenglish', 'Genglish', '423112', '523112', 'Fmurder', 'Gmurder', 'FQuercus', 'GQuercus', 'FViktoria Embankment', 'GViktoria Embankment', '42150', '442150', '4211', '421EC4Y', '0356', '40356', 'FLondon', 'GLondon', 'FGreat Britain', 'GGreat Britain', '2024', '42024', 'Fnovel', 'Gnovel'] is in the database
+2025-03-02 08:57:50 INFO New book:FHow to solve your own murder F978-1-52943-007-3 was added to the database
+2025-03-02 08:58:47 INFO Book: ['FHow to solve your own murder', 'GHow to solve your own murder', 'FKristen', 'GKristen', 'FPerrin', 'GPerrin', 'F978-1-52943-007-3', 'G978-1-52943-007-3', 'Fenglish', 'Genglish', '423112', '523112', 'Fmurder', 'Gmurder', 'FQuercus', 'GQuercus', 'FViktoria Embankment', 'GViktoria Embankment', '42150', '442150', '4211', '421EC4Y', '0356', '40356', 'FLondon', 'GLondon', 'FGreat Britain', 'GGreat Britain', '2024', '42024', 'Fnovel', 'Gnovel'] is in the database
+2025-03-02 08:58:47 INFO New book:FHow to solve your own murder F978-1-52943-007-3 was added to the database
+2025-03-02 08:59:04 INFO Book: ['FHow to solve your own murder', 'GHow to solve your own murder', 'FKristen', 'GKristen', 'FPerrin', 'GPerrin', 'F978-1-52943-007-3', 'G978-1-52943-007-3', 'Fenglish', 'Genglish', '423112', '523112', 'Fmurder', 'Gmurder', 'FQuercus', 'GQuercus', 'FViktoria Embankment', 'GViktoria Embankment', '42150', '442150', '4211', '421EC4Y', '0356', '40356', 'FLondon', 'GLondon', 'FGreat Britain', 'GGreat Britain', '2024', '42024', 'Fnovel', 'Gnovel'] is in the database
+2025-03-02 08:59:04 INFO New book:FHow to solve your own murder F978-1-52943-007-3 was added to the database
+2025-03-02 08:59:54 INFO Book: ['FHow to solve your own murder', 'GHow to solve your own murder', 'FKristen', 'GKristen', 'FPerrin', 'GPerrin', 'F978-1-52943-007-3', 'G978-1-52943-007-3', 'Fenglish', 'Genglish', '423112', '523112', 'Fmurder', 'Gmurder', 'FQuercus', 'GQuercus', 'FViktoria Embankment', 'GViktoria Embankment', '42150', '442150', '4211', '421EC4Y', '0356', '40356', 'FLondon', 'GLondon', 'FGreat Britain', 'GGreat Britain', '2024', '42024', 'Fnovel', 'Gnovel'] is in the database
+2025-03-02 08:59:54 INFO New book:FHow to solve your own murder F978-1-52943-007-3 was added to the database
+2025-03-02 09:03:04 INFO Book: ['FHow to solve your own murder', 'GHow to solve your own murder', 'FKristen', 'GKristen', 'FPerrin', 'GPerrin', 'F978-1-52943-007-3', 'G978-1-52943-007-3', 'Fenglish', 'Genglish', '423112', '523112', 'Fmurder', 'Gmurder', 'FQuercus', 'GQuercus', 'FViktoria Embankment', 'GViktoria Embankment', '42150', '442150', '4211', '421EC4Y', '0356', '40356', 'FLondon', 'GLondon', 'FGreat Britain', 'GGreat Britain', '2024', '42024', 'Fnovel', 'Gnovel'] is in the database
+2025-03-02 09:03:04 INFO Updated category Comedy is in the database
+2025-03-02 09:03:41 INFO Updated isbn: H978-1-52943-007-3 is in the database
+2025-03-02 09:04:09 INFO Updated language: English is in the database
+2025-03-02 09:04:28 INFO Updated publisher: GQuercus with publication year 1975 is in the database
+2025-03-02 09:04:49 INFO Updated shelf signature: 623112 is in the database
+2025-03-02 09:05:10 INFO Updated tag: murder is in the database
+2025-03-02 09:05:41 INFO Updated title: How to solve your own murder is in the database
+2025-03-02 20:11:00 ERROR Unexpected error: Query.filter() got an unexpected keyword argument 'author_name'
+2025-03-02 20:21:38 INFO Author: Al Rumsky was added to the database
+2025-03-03 21:23:47 WARNING Author: Al Rumsky is already in the database
+2025-03-03 21:37:20 INFO New book:FHow to solve your own murder F978-1-52943-007-3 was added to the database
+2025-03-04 19:15:18 WARNING Author Vincent Severski is already in the database
+2025-03-04 19:15:48 WARNING Author Vincent Severski is already in the database
+2025-03-04 19:16:25 INFO Author Vincent Severski was added to the database
+2025-03-04 19:16:40 WARNING Author Vincent Severski is already in the database
+2025-03-04 20:05:58 INFO New book:FHow to solve your own murder F978-1-52943-007-3 was added to the database
+2025-03-04 20:09:24 INFO New book:FHow to solve your own murder F978-1-52943-007-3 was added to the database
+2025-03-04 20:40:52 INFO Categories list was downloaded from the database:
+2025-03-04 20:40:52 INFO 1. Fnovel 
+2025-03-04 20:40:52 INFO 2. Comedy 
+2025-03-04 20:40:52 INFO 3. Drama 
+2025-03-04 20:40:52 INFO 4. Thriller 
+2025-03-04 20:40:52 INFO 5. Comedy 
+2025-03-05 19:47:10 INFO Categories list was downloaded from the database:
+2025-03-05 19:47:10 INFO 1. Fnovel 
+2025-03-05 19:47:10 INFO 2. Comedy 
+2025-03-05 19:47:10 INFO 3. Drama 
+2025-03-05 19:47:10 INFO 4. Thriller 
+2025-03-05 19:47:10 INFO 5. Comedy 

@@ -1,10 +1,12 @@
+import logging
+import src.logging_to_file
 from src.operations.title_operations import delete_title
-from src.constans import OPER_DELETE_SUCCEEDED, OPER_DELETE_FAILED_DATA_NOT_EXISTS
-from src.tests.test_delete_book import operation_system
+from src.constans import OPER_DELETE_SUCCEEDED, OPER_DELETE_FAILED_DATA_NOT_FOUND
 
-t = 'Outsider'
+
+t = 'Outsiders'
 operation_status = delete_title(t)
 if operation_status == OPER_DELETE_SUCCEEDED:
-    print(f"{t} was deleted from the database")
-elif operation_system == OPER_DELETE_FAILED_DATA_NOT_EXISTS:
-    print(f'{t} doesnt exist in the database')
+    logging.info(f"Title: {t} was deleted from the database")
+elif operation_status == OPER_DELETE_FAILED_DATA_NOT_FOUND:
+    logging.warning(f'Title: {t} doesnt exist in the database')

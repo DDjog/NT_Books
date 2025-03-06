@@ -1,3 +1,4 @@
+from enum import unique
 from unicodedata import category
 
 from sqlalchemy import Column, Integer, String, Table, LargeBinary
@@ -57,7 +58,7 @@ book_m2m_category = Table(
 class Book(Base):
     __tablename__ = "books"
     id = Column(Integer, primary_key=True)
-    title_id = Column(Integer, ForeignKey('titles.id'), nullable=True)
+    title_id = Column(Integer, ForeignKey('titles.id'), nullable=True, unique=True)
     isbn_id = Column(Integer, ForeignKey('isbn.id'), nullable=True, unique=True)
     language_id = Column(Integer, ForeignKey('languages.id'), nullable=True)
     # cover_page_id = Column(Integer, ForeignKey('cover_pages.id'), nullable=True, unique=True)
@@ -82,7 +83,7 @@ class Language(Base):
 class Title(Base):
     __tablename__ = "titles"
     id = Column(Integer, primary_key=True)
-    title = Column(String(255))
+    title = Column(String(255), nullable=True, unique=True)
 
 class Author(Base):
     __tablename__ = "authors"
@@ -93,7 +94,7 @@ class Author(Base):
 class Isbn(Base):
     __tablename__ = "isbn"
     id = Column(Integer, primary_key=True)
-    isbn_name = Column(String(50), nullable=True)
+    isbn_name = Column(String(50), nullable=True, unique=True)
 
 
 # class Cover_page(Base):

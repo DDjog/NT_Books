@@ -1,6 +1,8 @@
 from unicodedata import category
 
 from sqlalchemy.exc import IntegrityError, OperationalError
+from sqlalchemy.testing.plugin.plugin_base import logging
+
 from src.operations.address_operations import is_address_in_db, add_address
 from src.operations.author_operations import is_author_in_db, add_author
 from src.operations.category_operations import is_category_in_db, add_category
@@ -36,6 +38,14 @@ def add_book(new_title, new_author_name, new_author_surname, new_isbn, new_langu
         author = None
         category = None
         tag = None
+
+        book = session.query(Book).join(Title).join(Isbn).filter(
+            Title.title==new_title,
+            Isbn.isbn_name==new_isbn
+        ).first()
+
+        if book:
+            return OPER_ADD_FAILED_DATA_EXISTS, None
 
         try:
             new_book = Book()
@@ -139,6 +149,7 @@ def add_book(new_title, new_author_name, new_author_surname, new_isbn, new_langu
 
         except IntegrityError:
             session.rollback()
+            logging.info('Data exists already in the database')
             return OPER_ADD_FAILED_DATA_EXISTS
 
 
@@ -153,7 +164,7 @@ def is_book_in_db(title, isbn):
         else:
             return OPER_IS_IN_DB_FAILED, None
     except Exception as e:
-        print(f'Unexpected error: {e}')
+        logging.error(f'Unexpected error: {e}')
         return OPER_IS_IN_DB_FAILED, None
 
 
@@ -164,9 +175,9 @@ def get_books_list():
         if books_list:
             return OPER_GET_LIST_SUCCEEDED, books_list
         else:
-            return OPER_GET_LIST_FAILED
+            return OPER_GET_LIST_FAILED, None
     except OperationalError as e:
-        print(f'Database error connection: {e}')
+        logging.error(f'Database error connection: {e}')
         return OPER_IS_IN_DB_FAILED
 
 
@@ -244,7 +255,7 @@ def update_book(old_title, new_title, old_author_name, new_author_name, old_auth
 
     except IntegrityError as e:
         session.rollback()
-        print(f'Data exists already in the database: {e}')
+        logging.info(f'Data exists already in the database: {e}')
         return OPER_UPDATE_FAILED_DATA_EXISTS, None
 
 
@@ -262,7 +273,7 @@ def delete_book(title, isbn):
         else:
             return OPER_DELETE_FAILED_DATA_EXISTS
     except OperationalError as e:
-        print(f'Database error connection: {e}')
+        logging.error(f'Database error connection: {e}')
         return OPER_DELETE_FAILED_DATA_EXISTS
 
 

@@ -1,3 +1,5 @@
+import logging
+import src.logging_to_file
 from src.constans import OPER_ADD_SUCCEEDED
 from src.database.db import session
 from src.database.models import Address
@@ -25,6 +27,6 @@ p = ['AXA', '2009', address_id]
 publisher_name, publication_year, address_id = p
 operation_status, address_id = add_publisher(publisher_name, publication_year, address_id)
 if operation_status == OPER_ADD_SUCCEEDED:
-    print(f'{p} was added to the database')
+    logging.info(f'{p} was added to the database')
 else:
-    print(f'{p} was not found in the database')
+    logging.warning(f'{p} was not found in the database')

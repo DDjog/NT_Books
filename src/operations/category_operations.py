@@ -1,4 +1,6 @@
 from sqlalchemy.exc import IntegrityError, OperationalError
+from sqlalchemy.testing.plugin.plugin_base import logging
+
 from src.constans import OPER_ADD_SUCCEEDED, OPER_ADD_FAILED_DATA_EXISTS, OPER_GET_LIST_FAILED, OPER_GET_LIST_SUCCEEDED, \
     OPER_UPDATE_SUCCEEDED, OPER_DELETE_SUCCEEDED, OPER_DELETE_FAILED_DATA_EXISTS, OPER_IS_IN_DB_SUCCEEDED, \
     OPER_IS_IN_DB_FAILED, OPER_UPDATE_FAILED_DATA_EXISTS, OPER_UPDATE_FAILED_DATA_NOT_FOUND
@@ -16,7 +18,7 @@ def add_category(category_name):
         else:
             return OPER_ADD_FAILED_DATA_EXISTS, None
     except IntegrityError as e:
-        print(f'Data exists already in the database: {e}')
+        logging.error(f'Data exists already in the database: {e}')
         session.rollback()
         return OPER_ADD_FAILED_DATA_EXISTS,None
 
@@ -28,7 +30,7 @@ def is_category_in_db(category_name):
         else:
             return OPER_IS_IN_DB_FAILED, None
     except Exception as e:
-        print(f'Unexpected error: {e}')
+        logging.error(f'Unexpected error: {e}')
         return OPER_IS_IN_DB_FAILED, None
 
 def get_categories_list():
@@ -37,9 +39,9 @@ def get_categories_list():
         if categories_list:
             return OPER_GET_LIST_SUCCEEDED, categories_list
         else:
-            return OPER_GET_LIST_FAILED
+            return OPER_GET_LIST_FAILED, None
     except OperationalError as e:
-        print(f'Database error connection: {e}')
+        logging.error(f'Database error connection: {e}')
         return OPER_IS_IN_DB_FAILED
 
 def update_category(old_category_name, updated_category_name):
@@ -53,7 +55,7 @@ def update_category(old_category_name, updated_category_name):
             return OPER_UPDATE_FAILED_DATA_NOT_FOUND, None
     except IntegrityError as e:
         session.rollback()
-        print(f'Data exists already in the database: {e}')
+        logging.info(f'Data exists already in the database: {e}')
         return OPER_UPDATE_FAILED_DATA_EXISTS, None
 
 def delete_category(category_name):
@@ -64,7 +66,7 @@ def delete_category(category_name):
         else:
             return OPER_DELETE_FAILED_DATA_EXISTS
     except OperationalError as e:
-        print(f'Database error connection: {e}')
+        logging.error(f'Database error connection: {e}')
         return OPER_DELETE_FAILED_DATA_EXISTS
 
 

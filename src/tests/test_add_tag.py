@@ -1,9 +1,11 @@
+import logging
+import src.logging_to_file
 from src.operations.tag_operations import add_tag
 from src.constans import OPER_ADD_SUCCEEDED, OPER_ADD_FAILED_DATA_EXISTS
 
 t = 'New Year'
 operation_status, tag_id = add_tag(t)
 if operation_status == OPER_ADD_SUCCEEDED:
-    print(f'{t} was added to the database')
+    logging.info(f'{t} was added to the database')
 elif operation_status == OPER_ADD_FAILED_DATA_EXISTS:
-    print(f'{t} already exists in the database')
+    logging.warning(f'{t} already exists in the database')

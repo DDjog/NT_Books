@@ -1,9 +1,8 @@
 from sqlalchemy.exc import IntegrityError, OperationalError
 from src.database.models import Title
 from src.database.db import session
-from src.constans import OPER_ADD_SUCCEEDED, OPER_ADD_FAILED_DATA_EXISTS, \
-    OPER_GET_LIST_FAILED, OPER_GET_LIST_SUCCEEDED, OPER_UPDATE_FAILED_DATA_EXISTS, OPER_DELETE_SUCCEEDED, \
-    OPER_IS_IN_DB_SUCCEEDED, OPER_IS_IN_DB_FAILED, OPER_DELETE_FAILED_DATA_EXISTS, OPER_UPDATE_FAILED_DATA_NOT_FOUND, OPER_UPDATE_SUCCEEDED
+from src.constans import *
+import logging
 
 
 def add_title(title_name):
@@ -17,7 +16,8 @@ def add_title(title_name):
             return OPER_ADD_SUCCEEDED, title.id
         else:
             return OPER_ADD_FAILED_DATA_EXISTS, None
-    except IntegrityError:
+    except IntegrityError as e:
+        logging.info(f'Data exists already in the database: {e}')
         session.rollback()
         return OPER_ADD_FAILED_DATA_EXISTS, None
 
@@ -29,7 +29,7 @@ def is_title_in_db(title_name):
         else:
             return OPER_IS_IN_DB_FAILED, None
     except Exception as e:
-        print(f'Unexpected error: {e}')
+        logging.error(f'Unexpected error: {e}')
         return OPER_IS_IN_DB_FAILED, None
 
 def get_titles_list():
@@ -38,10 +38,10 @@ def get_titles_list():
         if titles_list:
             return OPER_GET_LIST_SUCCEEDED, titles_list
         else:
-            return OPER_GET_LIST_FAILED
+            return OPER_GET_LIST_FAILED, None
     except OperationalError as e:
-        print(f'Database error connection: {e}')
-        return OPER_IS_IN_DB_FAILED
+        logging.error(f'Database error connection: {e}')
+        return OPER_IS_IN_DB_FAILED, None
 
 def update_title(old_title_name, updated_title_name):
     try:
@@ -54,7 +54,7 @@ def update_title(old_title_name, updated_title_name):
             return OPER_UPDATE_FAILED_DATA_NOT_FOUND, None
     except IntegrityError as e:
         session.rollback()
-        print(f'Data exists already in the database: {e}')
+        logging.info(f'Data exists already in the database: {e}')
         return OPER_UPDATE_FAILED_DATA_EXISTS, None
 
 def delete_title(title_name):
@@ -65,9 +65,9 @@ def delete_title(title_name):
             session.commit()
             return OPER_DELETE_SUCCEEDED
         else:
-            return OPER_UPDATE_FAILED_DATA_EXISTS
+            return OPER_DELETE_FAILED_DATA_NOT_FOUND
     except OperationalError as e:
-        print(f'Database error connection: {e}')
+        logging.error(f'Database error connection: {e}')
         return OPER_DELETE_FAILED_DATA_EXISTS
 
 

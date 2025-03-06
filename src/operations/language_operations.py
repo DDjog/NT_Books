@@ -1,4 +1,6 @@
 from sqlalchemy.exc import IntegrityError, OperationalError
+from sqlalchemy.testing.plugin.plugin_base import logging
+
 from src.constans import OPER_ADD_SUCCEEDED, OPER_ADD_FAILED_DATA_EXISTS, OPER_GET_LIST_FAILED, OPER_GET_LIST_SUCCEEDED, \
     OPER_UPDATE_FAILED_DATA_EXISTS, OPER_DELETE_SUCCEEDED, OPER_DELETE_FAILED_DATA_EXISTS, \
     OPER_IS_IN_DB_SUCCEEDED, OPER_IS_IN_DB_FAILED, OPER_UPDATE_FAILED_DATA_EXISTS, OPER_UPDATE_FAILED_DATA_NOT_FOUND, OPER_UPDATE_SUCCEEDED
@@ -17,7 +19,7 @@ def add_language(language_name):
         else:
             return OPER_ADD_FAILED_DATA_EXISTS, None
     except IntegrityError as e:
-        print(f'Data exists already in the database: {e}')
+        logging.info(f'Data exists already in the database: {e}')
         session.rollback()
         return OPER_ADD_FAILED_DATA_EXISTS, None
 
@@ -30,7 +32,7 @@ def is_language_in_db(language_name):
         else:
             return OPER_IS_IN_DB_FAILED, None
     except Exception as e:
-        print(f'Unexpected error: {e}')
+        logging.error(f'Unexpected error: {e}')
         return OPER_IS_IN_DB_FAILED, None
 
 def get_languages_list():
@@ -39,9 +41,9 @@ def get_languages_list():
         if languages_list:
             return OPER_GET_LIST_SUCCEEDED, languages_list
         else:
-            return OPER_GET_LIST_FAILED
+            return OPER_GET_LIST_FAILED, None
     except OperationalError as e:
-        print(f'Database error connection: {e}')
+        logging.error(f'Database error connection: {e}')
         return OPER_IS_IN_DB_FAILED
 
 def update_language(old_language_name, new_language_name):
@@ -55,7 +57,7 @@ def update_language(old_language_name, new_language_name):
             return OPER_UPDATE_FAILED_DATA_NOT_FOUND, None
     except IntegrityError as e:
         session.rollback()
-        print(f'Data exists already in the database: {e}')
+        logging.info(f'Data exists already in the database: {e}')
         return OPER_UPDATE_FAILED_DATA_EXISTS, None
 
 def delete_language(language_name):
@@ -68,7 +70,7 @@ def delete_language(language_name):
         else:
             return OPER_DELETE_FAILED_DATA_EXISTS
     except OperationalError as e:
-        print(f'Database error connection: {e}')
+        logging.error(f'Database error connection: {e}')
         return OPER_DELETE_FAILED_DATA_EXISTS
 
 

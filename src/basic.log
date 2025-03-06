@@ -1,0 +1,4 @@
+2025-03-01 21:35:00 DEBUG ✅ Test log zapisany poprawnie do basic.log przez FileHandler!
+2025-03-01 21:35:01 WARNING Author Vincent Severski is already in the database
+2025-03-01 21:37:27 DEBUG ✅ Test log zapisany poprawnie do basic.log przez FileHandler!
+2025-03-01 21:37:27 WARNING Author Vincent Severski is already in the database
