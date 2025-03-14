@@ -30,14 +30,17 @@ def add_address(new_street, new_number, new_flat_number, new_zip_code,
             )
             session.add(address)
             session.commit()
+            logging.info('Address addded to the database')
             return OPER_ADD_SUCCEEDED, address.id
         else:
-            return OPER_ADD_FAILED_DATA_EXISTS, None
+            logging.info('Address exists already in the database')
+            return OPER_ADD_FAILED_DATA_NOT_IN_DB, None
 
-    except IntegrityError as e:
-        logging.info(f'Data exists already in the database: {e}')
+
+    except OperationalError as e:
+        logging.error(f'No database connection: {e}')
         session.rollback()
-        return OPER_ADD_FAILED_DATA_EXISTS, None
+        return OPER_ADD_FAILED_NO_DATABASE_CONNECTION, None
 
 
 def is_address_in_db(street, number, flat_number, zip_code,city, country):
@@ -52,24 +55,29 @@ def is_address_in_db(street, number, flat_number, zip_code,city, country):
         ).first()
 
         if address:
+            logging.info('Address exists in the database')
             return OPER_IS_IN_DB_SUCCEEDED, address.id
         else:
+            logging.info('Address is not in the database')
             return OPER_IS_IN_DB_FAILED, None
 
-    except Exception as e:
-        logging.error(f'Unexpected error: {e}')
-        return OPER_IS_IN_DB_FAILED, None
+    except OperationalError as e:
+        logging.error(f'No database connection: {e}')
+        return OPER_IS_IN_DB_FAILED_NO_DB_CONNECTION, None
 
 def get_addresses_list():
     try:
         addresses_list = session.query(Address).all()
         if addresses_list:
+            logging.info('Address list got')
             return OPER_GET_LIST_SUCCEEDED, addresses_list
         else:
+            logging.info('Address list failed')
             return OPER_GET_LIST_FAILED, None
+
     except OperationalError as e:
         logging.error(f'Database error connection: {e}')
-        return OPER_IS_IN_DB_FAILED, None
+        return OPER_GET_LIST_FAILED_NO_DATABASE_CONNECTION, None
 
 def update_address(old_street, updated_street, old_number, updated_number, old_flat_number, updated_number_flat,
                     old_zip_code, updated_zip_code, old_city, updated_city, old_country, updated_country):
@@ -92,14 +100,15 @@ def update_address(old_street, updated_street, old_number, updated_number, old_f
             address.country=updated_country
 
             session.commit()
-
+            logging.info('Address updated')
             return OPER_UPDATE_SUCCEEDED, address.id
         else:
+            logging.info('Address is already in the database')
             return OPER_UPDATE_FAILED_DATA_EXISTS, None
-    except IntegrityError as e:
+    except OperationalError as e:
         session.rollback()
-        logging.info(f'Data exists already in the database: {e}')
-        return OPER_UPDATE_FAILED_DATA_EXISTS, None
+        logging.error(f'No database connection: {e}')
+        return OPER_UPDATE_FAILED_NO_DB_CONNECTION, None
 
 def delete_address(street, number, flat_number,zip_code, city, country):
     try:
@@ -114,10 +123,12 @@ def delete_address(street, number, flat_number,zip_code, city, country):
         if address:
             session.delete(address)
             session.commit()
+            logging.info('Address deleted')
             return OPER_DELETE_SUCCEEDED
         else:
+            logging.info('Data not found')
             return OPER_DELETE_FAILED_DATA_NOT_FOUND
     except OperationalError as e:
         logging.error(f'Database error connection: {e}')
-        return OPER_DELETE_FAILED_DATA_EXISTS
+        return OPER_DELETE_FAILED_NO_DB_CONNECTION
 

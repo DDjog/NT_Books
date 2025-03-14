@@ -1,9 +1,7 @@
 from sqlalchemy.exc import IntegrityError, OperationalError
-from sqlalchemy.testing.plugin.plugin_base import logging
+import logging
 
-from src.constans import OPER_ADD_SUCCEEDED, OPER_ADD_FAILED_DATA_EXISTS, OPER_GET_LIST_FAILED, OPER_GET_LIST_SUCCEEDED, \
-    OPER_UPDATE_FAILED_DATA_EXISTS, OPER_UPDATE_SUCCEEDED, OPER_DELETE_FAILED_DATA_EXISTS, OPER_DELETE_SUCCEEDED, \
-    OPER_IS_IN_DB_SUCCEEDED, OPER_IS_IN_DB_FAILED, OPER_UPDATE_FAILED_DATA_NOT_FOUND
+from src.constans import *
 from src.database.models import Tag
 from src.database.db import session
 
@@ -15,37 +13,43 @@ def add_tag(tag_name):
             tag = Tag(tag=tag_name)
             session.add(tag)
             session.commit()
+            logging.info('Tag was added to the database')
             return OPER_ADD_SUCCEEDED, tag.id
         else:
+            logging.info('Tag is in the database')
             return OPER_ADD_FAILED_DATA_EXISTS, None
-    except IntegrityError:
+    except OperationalError as e:
         session.rollback()
-        logging.error('Data exists already in the database')
-        return OPER_ADD_FAILED_DATA_EXISTS, None
+        logging.error('No database connection: {e}')
+        return OPER_ADD_FAILED_NO_DATABASE_CONNECTION, None
 
 def is_tag_in_db(tag_name):
     try:
         tag = session.query(Tag).filter_by(tag=tag_name).first()
 
         if tag:
+            logging.info('Tag is in the database')
             return OPER_IS_IN_DB_SUCCEEDED, tag.id
         else:
+            logging.info('Tag is not in the databse')
             return OPER_IS_IN_DB_FAILED, None
-    except Exception as e:
-        logging.error(f'Unexpected error: {e}')
-        return OPER_IS_IN_DB_FAILED, None
+    except OperationalError as e:
+        logging.error(f'No database connection: {e}')
+        return OPER_IS_IN_DB_FAILED_NO_DB_CONNECTION, None
 
 def get_tags_list():
     try:
         tags_list = session.query(Tag).all()
 
         if tags_list:
+            logging.info('Tags list obtained')
             return OPER_GET_LIST_SUCCEEDED, tags_list
         else:
+            logging.info('Tags list failed')
             return OPER_GET_LIST_FAILED, None
     except OperationalError as e:
-        logging.error(f'Database error connection: {e}')
-        return OPER_IS_IN_DB_FAILED, None
+        logging.error(f'No database connection: {e}')
+        return OPER_GET_LIST_FAILED_NO_DATABASE_CONNECTION, None
 
 def update_tag(old_tag_name, updated_tag_name):
     try:
@@ -54,13 +58,15 @@ def update_tag(old_tag_name, updated_tag_name):
         if tag:
             tag.tag = updated_tag_name
             session.commit()
+            logging.info('Tag was updated')
             return OPER_UPDATE_SUCCEEDED, tag.id
         else:
+            logging.info('Data not found')
             return OPER_UPDATE_FAILED_DATA_NOT_FOUND, None
-    except IntegrityError as e:
+    except OperationalError as e:
         session.rollback()
-        logging.info(f'Data exists already in the database: {e}')
-        return OPER_UPDATE_FAILED_DATA_EXISTS, None
+        logging.error(f'No database connection: {e}')
+        return OPER_UPDATE_FAILED_NO_DB_CONNECTION, None
 
 
 def delete_tag(tag_name):
@@ -70,11 +76,13 @@ def delete_tag(tag_name):
         if tag:
             session.delete(tag)
             session.commit()
+            logging.info('Tag was deleted')
             return OPER_DELETE_SUCCEEDED
         else:
-             return OPER_DELETE_FAILED_DATA_EXISTS
+             logging.info('Data not found')
+             return OPER_DELETE_FAILED_DATA_NOT_FOUND
     except OperationalError as e:
-        logging.errror(f'Database error connection: {e}')
-        return OPER_DELETE_FAILED_DATA_EXISTS
+        logging.errror(f'No database connection: {e}')
+        return OPER_DELETE_FAILED_NO_DB_CONNECTION
 
 

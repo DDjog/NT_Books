@@ -3,7 +3,7 @@ import src.logging_to_file
 from src.operations.language_operations import add_language
 from src.constans import  *
 
-l='Turkish'
+l='Fenglish'
 operation_status, language_id = add_language(l)
 
 if operation_status == OPER_ADD_SUCCEEDED:

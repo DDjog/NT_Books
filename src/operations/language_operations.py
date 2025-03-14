@@ -1,9 +1,7 @@
 from sqlalchemy.exc import IntegrityError, OperationalError
-from sqlalchemy.testing.plugin.plugin_base import logging
+import logging
 
-from src.constans import OPER_ADD_SUCCEEDED, OPER_ADD_FAILED_DATA_EXISTS, OPER_GET_LIST_FAILED, OPER_GET_LIST_SUCCEEDED, \
-    OPER_UPDATE_FAILED_DATA_EXISTS, OPER_DELETE_SUCCEEDED, OPER_DELETE_FAILED_DATA_EXISTS, \
-    OPER_IS_IN_DB_SUCCEEDED, OPER_IS_IN_DB_FAILED, OPER_UPDATE_FAILED_DATA_EXISTS, OPER_UPDATE_FAILED_DATA_NOT_FOUND, OPER_UPDATE_SUCCEEDED
+from src.constans import *
 from src.database.models import Language
 from src.database.db import session
 
@@ -15,36 +13,42 @@ def add_language(language_name):
             language = Language(language=language_name)
             session.add(language)
             session.commit()
+            logging.info('Language was added to the database')
             return OPER_ADD_SUCCEEDED, language.id
         else:
+            logging.info('Language is in the database')
             return OPER_ADD_FAILED_DATA_EXISTS, None
-    except IntegrityError as e:
-        logging.info(f'Data exists already in the database: {e}')
+    except OperationalError as e:
+        logging.info(f'No database connection: {e}')
         session.rollback()
-        return OPER_ADD_FAILED_DATA_EXISTS, None
+        return OPER_ADD_FAILED_NO_DATABASE_CONNECTION, None
 
 def is_language_in_db(language_name):
     try:
         language = session.query(Language).filter_by(language=language_name).first()
 
         if language:
+            logging.info('Language was added to the database')
             return OPER_IS_IN_DB_SUCCEEDED, language.id
         else:
+            logging.info('Language is in the database')
             return OPER_IS_IN_DB_FAILED, None
-    except Exception as e:
-        logging.error(f'Unexpected error: {e}')
-        return OPER_IS_IN_DB_FAILED, None
+    except OperationalError as e:
+        logging.error(f'No database connection: {e}')
+        return OPER_IS_IN_DB_FAILED_NO_DB_CONNECTION, None
 
 def get_languages_list():
     try:
         languages_list = session.query(Language).all()
         if languages_list:
+            logging.info('Languages list obtained')
             return OPER_GET_LIST_SUCCEEDED, languages_list
         else:
+            logging.info('Languages list failed')
             return OPER_GET_LIST_FAILED, None
     except OperationalError as e:
-        logging.error(f'Database error connection: {e}')
-        return OPER_IS_IN_DB_FAILED
+        logging.error(f'No database connection: {e}')
+        return OPER_GET_LIST_FAILED_NO_DATABASE_CONNECTION, None
 
 def update_language(old_language_name, new_language_name):
     try:
@@ -52,13 +56,15 @@ def update_language(old_language_name, new_language_name):
         if language:
             language.language = new_language_name
             session.commit()
+            logging.info('Language was updated')
             return OPER_UPDATE_SUCCEEDED, language.id
         else:
+            logging.info('Data not found')
             return OPER_UPDATE_FAILED_DATA_NOT_FOUND, None
-    except IntegrityError as e:
+    except OperationalError as e:
         session.rollback()
-        logging.info(f'Data exists already in the database: {e}')
-        return OPER_UPDATE_FAILED_DATA_EXISTS, None
+        logging.info(f'No database connection: {e}')
+        return OPER_UPDATE_FAILED_NO_DB_CONNECTION, None
 
 def delete_language(language_name):
     try:
@@ -66,12 +72,14 @@ def delete_language(language_name):
         if language:
             session.delete(language)
             session.commit()
+            logging.info('Language was deleted')
             return OPER_DELETE_SUCCEEDED
         else:
-            return OPER_DELETE_FAILED_DATA_EXISTS
+            logging.info('Data not found')
+            return OPER_DELETE_FAILED_DATA_NOT_FOUND
     except OperationalError as e:
-        logging.error(f'Database error connection: {e}')
-        return OPER_DELETE_FAILED_DATA_EXISTS
+        logging.error(f'No database connection: {e}')
+        return OPER_DELETE_FAILED_NO_DB_CONNECTION
 
 
 

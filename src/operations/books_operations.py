@@ -1,7 +1,6 @@
-from unicodedata import category
 
 from sqlalchemy.exc import IntegrityError, OperationalError
-from sqlalchemy.testing.plugin.plugin_base import logging
+import logging
 
 from src.operations.address_operations import is_address_in_db, add_address
 from src.operations.author_operations import is_author_in_db, add_author
@@ -14,11 +13,13 @@ from src.operations.shelf_signature_operations import is_shelf_signature_in_db, 
 from src.operations.tag_operations import is_tag_in_db, add_tag
 from src.database.db import session
 from src.database.models import Book, Address, Author, Title, Isbn, Language, ShelfSignature, Tag, Publisher, Category
-from src.constans import (OPER_DELETE_SUCCEEDED,OPER_UPDATE_SUCCEEDED, OPER_UPDATE_FAILED_DATA_NOT_FOUND,
+from src.constans import (OPER_DELETE_SUCCEEDED, OPER_UPDATE_SUCCEEDED, OPER_UPDATE_FAILED_DATA_NOT_FOUND,
                           OPER_DELETE_FAILED_DATA_EXISTS, OPER_ADD_FAILED_DATA_EXISTS, OPER_ADD_SUCCEEDED,
                           OPER_GET_LIST_FAILED, OPER_GET_LIST_SUCCEEDED, OPER_IS_IN_DB_FAILED, OPER_IS_IN_DB_SUCCEEDED,
-                          OPER_UPDATE_FAILED_DATA_EXISTS)
-
+                          OPER_UPDATE_FAILED_DATA_EXISTS, OPER_ADD_FAILED_NO_DATABASE_CONNECTION,
+                          OPER_IS_IN_DB_FAILED_NO_DB_CONNECTION, OPER_UPDATE_FAILED_NO_DB_CONNECTION,
+                          OPER_DELETE_FAILED_DATA_NOT_FOUND, OPER_DELETE_FAILED_NO_DB_CONNECTION,
+                          OPER_GET_LIST_FAILED_NO_DATABASE_CONNECTION)
 
 
 
@@ -45,6 +46,7 @@ def add_book(new_title, new_author_name, new_author_surname, new_isbn, new_langu
         ).first()
 
         if book:
+            logging.info('Book is already in the database')
             return OPER_ADD_FAILED_DATA_EXISTS, None
 
         try:
@@ -54,7 +56,9 @@ def add_book(new_title, new_author_name, new_author_surname, new_isbn, new_langu
             if title is None:
                 operation_status, id = add_title(new_title)
                 new_book.title_id = id
+                logging.info('Title was added to the book')
             else:
+                logging.info('Title was already added to the book')
                 new_book.title_id = title.id
 
 
@@ -62,23 +66,30 @@ def add_book(new_title, new_author_name, new_author_surname, new_isbn, new_langu
             if isbn_name is None:
                 operation_status, id = add_isbn(new_isbn)
                 new_book.isbn_id = id
+                logging.info('Isbn was added to the book')
             else:
+                logging.info('Isbn was already added to the book')
                 new_book.isbn_id = isbn_name.id
 
-            operation_status = is_language_in_db(new_language)
+            language = session.query(Language).filter_by(language=new_language).first()
+            operation_status, id = is_language_in_db(new_language)
             if not operation_status == OPER_IS_IN_DB_SUCCEEDED:
-                operation_status, id = add_language(new_language)
-                new_book.language_id = id
+                operation_status, language_id = add_language(new_language)
+                new_book.language_id = new_language.id
+                logging.info('Language was added to the book')
             else:
                 new_book.language_id = language.id
+                logging.info('Language exists in the database and was added to the book ')
 
 
             shelf_signature = session.query(ShelfSignature).filter_by(shelf_signature=new_shelf_signature).first()
             if shelf_signature is None:
-                operation_status, id = add_shelf_signature(new_shelf_signature)
-                new_book.shelf_signature_id = id
+                operation_status, shelf_signature_id = add_shelf_signature(new_shelf_signature)
+                new_book.shelf_signature_id = shelf_signature_id
+                logging.info('Shelf signature was added to the book')
             else:
                 new_book.shelf_signature_id = shelf_signature.id
+                logging.info('Shelf signature exists in the database and was added to the book')
 
 
             address = session.query(Address).filter_by(
@@ -92,8 +103,10 @@ def add_book(new_title, new_author_name, new_author_surname, new_isbn, new_langu
             if address is None:
                 operation_status, new_address_id = add_address(new_street, new_number, new_flat_number,new_zip_code,
                                                                new_city, new_country)
+                logging.info('New address was added to the database')
             else:
                 new_address_id = address.id
+                logging.info('Address exists in the database')
 
 
             publisher = session.query(Publisher).filter_by(
@@ -104,8 +117,10 @@ def add_book(new_title, new_author_name, new_author_surname, new_isbn, new_langu
             if publisher is None:
                 operation_status, id = add_publisher(new_publisher, new_publication_year, new_address_id)
                 new_book.publisher_id = id
+                logging.info('New publisher was added to the book')
             else:
                 new_book.publisher_id = publisher.id
+                logging.info('Publisher exists in the database and was added to the book')
 
 
             session.add(new_book)
@@ -119,38 +134,46 @@ def add_book(new_title, new_author_name, new_author_surname, new_isbn, new_langu
             ).first()
             if author is None:
                 operation_status, author_id = add_author(new_author_name, new_author_surname)
+                logging.info('New author was added to the book')
                 new_author = session.query(Author).filter_by(id=author_id).first()
             else:
                 new_author=author
+                logging.info('Author exists in the database and was added to the book')
 
             # relation to category
             category = session.query(Category).filter_by(category_name=new_category).first()
             if category is None:
                 operation_status, category_id = add_category(category_name=new_category)
+                logging.info('New category was added to the book')
                 new_category = session.query(Category).filter_by(id=category_id).first()
             else:
                 new_category=category
+
 
             # relation to tag
             tag = session.query(Tag).filter_by(tag=new_tag).first()
             if tag is None:
                 operation_status, tag_id = add_tag(tag_name=new_tag)
+                logging.info('New tag was added to the book')
                 new_tag = session.query(Tag).filter_by(id=tag_id).first()
             else:
                 new_tag=tag
 
-            new_book.authors.append(new_author)
-            new_book.categories.append(new_category)
-            new_book.tags.append(new_tag)
 
+            new_book.authors.append(new_author)
+            logging.info('Author exists in the database and was added to the book')
+            new_book.categories.append(new_category)
+            logging.info('Category exists in the database and was added to the book')
+            new_book.tags.append(new_tag)
+            logging.info('Tag exists in the database and was added to the book')
             session.commit()
 
             return OPER_ADD_SUCCEEDED, new_book.id
 
-        except IntegrityError:
+        except OperationalError as e:
             session.rollback()
-            logging.info('Data exists already in the database')
-            return OPER_ADD_FAILED_DATA_EXISTS
+            logging.info('No database connection: {e}')
+            return OPER_ADD_FAILED_NO_DATABASE_CONNECTION
 
 
 def is_book_in_db(title, isbn):
@@ -160,12 +183,14 @@ def is_book_in_db(title, isbn):
             Isbn.isbn_name==isbn
             ).first()
         if book:
+            logging.info('Book is in the database')
             return OPER_IS_IN_DB_SUCCEEDED, book.id
         else:
+            logging.info('Book is not in the database')
             return OPER_IS_IN_DB_FAILED, None
-    except Exception as e:
-        logging.error(f'Unexpected error: {e}')
-        return OPER_IS_IN_DB_FAILED, None
+    except OperationalError as e:
+        logging.error(f'No database connection: {e}')
+        return OPER_IS_IN_DB_FAILED_NO_DB_CONNECTION, None
 
 
 def get_books_list():
@@ -173,12 +198,14 @@ def get_books_list():
         books_list = session.query(Book).join(Title).join(Isbn).all()
 
         if books_list:
+            logging.info('Book list got')
             return OPER_GET_LIST_SUCCEEDED, books_list
         else:
+            logging.info('Book list failed')
             return OPER_GET_LIST_FAILED, None
     except OperationalError as e:
         logging.error(f'Database error connection: {e}')
-        return OPER_IS_IN_DB_FAILED
+        return OPER_GET_LIST_FAILED_NO_DATABASE_CONNECTION, None
 
 
 def update_book(old_title, new_title, old_author_name, new_author_name, old_author_surname, new_author_surname, old_isbn,
@@ -251,12 +278,13 @@ def update_book(old_title, new_title, old_author_name, new_author_name, old_auth
             category.categories=new_category
 
         session.commit()
+        logging.info('Book was updated')
         return OPER_UPDATE_SUCCEEDED, book.id
 
-    except IntegrityError as e:
+    except OperationalError as e:
         session.rollback()
-        logging.info(f'Data exists already in the database: {e}')
-        return OPER_UPDATE_FAILED_DATA_EXISTS, None
+        logging.info(f'No database connection: {e}')
+        return OPER_UPDATE_FAILED_NO_DB_CONNECTION, None
 
 
 def delete_book(title, isbn):
@@ -269,12 +297,14 @@ def delete_book(title, isbn):
         if book:
             session.delete(book)
             session.commit()
+            logging.info('Book was deleted')
             return OPER_DELETE_SUCCEEDED
         else:
-            return OPER_DELETE_FAILED_DATA_EXISTS
+            logging.info('Data not found')
+            return OPER_DELETE_FAILED_DATA_NOT_FOUND
     except OperationalError as e:
         logging.error(f'Database error connection: {e}')
-        return OPER_DELETE_FAILED_DATA_EXISTS
+        return OPER_DELETE_FAILED_NO_DB_CONNECTION
 
 
 
