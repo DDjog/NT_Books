@@ -1,13 +1,17 @@
+from os.path import split
 from tkinter import *
 
 import logging
+import src.logging_to_file
 
-from src.constans import OPER_GET_LIST_SUCCEEDED
-from src.operations.category_operations import add_category, get_categories_list, delete_category
+from src.constans import *
+from src.operations.category_operations import add_category, get_categories_list, delete_category, update_category
 from src.operations.author_operations import add_author, delete_author, get_authors_list, update_author
 from src.operations.title_operations import add_title, delete_title, get_titles_list
 from src.operations.language_operations import add_language, get_languages_list, delete_language
 from src.operations.tag_operations import add_tag, get_tags_list, delete_tag
+
+
 
 root = Tk()
 root.title('Books project')
@@ -242,21 +246,45 @@ def add_category_to_list():
         text_list.insert(END, text)
         e.delete(0, END)
         logging.info('Category added to the list')
+        category_add_successfull_window()
     else:
         logging.info('Category is already on the list')
         return None
 
+def category_add_successfull_window():
+    c_win_top = Toplevel()
+    c_win_top.grab_set()
+    top_label = Label(c_win_top, text='Category addition successfull.')
+    top_label.grid(row=0, column=0, padx=10, pady=10, sticky='nsew')
+
+    button_close = Button(c_win_top, text='Close', command=c_win_top.destroy)
+    button_close.grid(row=1, column=0, padx=10, pady=10)
+
 def add_author_to_list():
     global text
     text = e.get()
+    split_text = text.split()
+    author_name = split_text[0]
+    author_surname = split_text[1]
     if text not in text_list.get(0, END):
-        add_author(text[0], text[1])
+        add_author(author_name, author_surname)
         text_list.insert(END, text)
         e.delete(0, END)
         logging.info('Author added to the list')
+        author_add_successfull_window()
     else:
         logging.info('Author is already on the list')
         return None
+
+
+def author_add_successfull_window():
+    a_win_top = Toplevel()
+    a_win_top.grab_set()
+    top_label = Label(a_win_top, text='Author addition successfull.')
+    top_label.grid(row=0, column=0, padx=10, pady=10, sticky='nsew')
+
+    button_close = Button(a_win_top, text='Close', command=a_win_top.destroy)
+    button_close.grid(row=1, column=0, padx=10, pady=10)
 
 def add_title_to_list():
     global text
@@ -265,10 +293,20 @@ def add_title_to_list():
         add_title(text)
         text_list.insert(END, text)
         e.delete(0, END)
+        title_add_successfull_window()
         logging.info('Title added to the list')
     else:
         logging.info('Title is already on the list')
         return None
+
+def title_add_successfull_window():
+    t_win_top = Toplevel()
+    t_win_top.grab_set()
+    top_label = Label(t_win_top, text='Title addition successfull.')
+    top_label.grid(row=0, column=0, padx=10, pady=10, sticky='nsew')
+
+    button_close = Button(t_win_top, text='Close', command=t_win_top.destroy)
+    button_close.grid(row=1, column=0, padx=10, pady=10)
 
 def add_language_to_list():
     global text
@@ -277,10 +315,20 @@ def add_language_to_list():
         add_language(text)
         text_list.insert(END, text)
         e.delete(0, END)
+        language_add_successfull_window()
         logging.info('Language added to the list')
     else:
         logging.info('Language is already on the list')
         return None
+
+def language_add_successfull_window():
+    l_win_top = Toplevel()
+    l_win_top.grab_set()
+    top_label = Label(l_win_top, text='Language addition successfull.')
+    top_label.grid(row=0, column=0, padx=10, pady=10, sticky='nsew')
+
+    button_close = Button(l_win_top, text='Close', command=l_win_top.destroy)
+    button_close.grid(row=1, column=0, padx=10, pady=10)
 
 def add_tag_to_list():
     global text
@@ -289,10 +337,19 @@ def add_tag_to_list():
         add_tag(text)
         text_list.insert(END, text)
         e.delete(0, END)
+        tag_add_successfull_window()
         logging.info('Tag added to the list')
     else:
         logging.info('Tag is already on the list')
         return None
+
+def tag_add_successfull_window():
+    t_win_top = Toplevel()
+    top_label = Label(t_win_top, text='Tag addition successfull.')
+    top_label.grid(row=0, column=0, padx=10, pady=10, sticky='nsew')
+
+    button_close = Button(t_win_top, text='Close', command=t_win_top.destroy)
+    button_close.grid(row=1, column=0, padx=10, pady=10)
 
 def selected_to_be_deleted():
     global selected_indicate
@@ -308,14 +365,22 @@ def selected_to_be_deleted():
 def delete_selected_category():
     selected = text_list.curselection()
 
-    if not selected:
+    if selected:
+        delete_category(text_list.get(selected))
+        text_list.delete(selected)
+        category_delete_successfull_window()
+        logging.info('Category deleted')
+    else:
         logging.info('No record to be deleted')
-        return None
 
-    selected = selected[0]
-    delete_category(text_list.get(selected))
-    text_list.delete(selected)
-    logging.info('Category deleted')
+def category_delete_successfull_window():
+    c_d_win_top = Toplevel()
+    c_d_win_top.grab_set()
+    top_label = Label(c_d_win_top, text='Category delete successfull.')
+    top_label.grid(row=0, column=0, padx=10, pady=10, sticky='nsew')
+
+    button_close = Button(c_d_win_top, text='Close', command=c_d_win_top.destroy)
+    button_close.grid(row=1, column=0, padx=10, pady=10)
 
 def delete_selected_author():
 
@@ -323,16 +388,27 @@ def delete_selected_author():
 
     if not selected:
         logging.info('No record to be deleted')
+        return None
 
     selected = selected[0]
     selected_author =  text_list.get(selected)
     parts = selected_author.split()
     author_name = parts[0]
     author_surname = parts[1]
-
     delete_author(author_name, author_surname)
+    author_delete_successfull_window()
     text_list.delete(selected)
+
     logging.info('Author deleted')
+
+def author_delete_successfull_window():
+    a_d_win_top = Toplevel()
+    a_d_win_top.grab_set()
+    top_label = Label(a_d_win_top, text='Author delete successfull.')
+    top_label.grid(row=0, column=0, padx=10, pady=10, sticky='nsew')
+
+    button_close = Button(a_d_win_top, text='Close', command=a_d_win_top.destroy)
+    button_close.grid(row=1, column=0, padx=10, pady=10)
 
 def delete_selected_title():
     selected = text_list.curselection()
@@ -340,9 +416,19 @@ def delete_selected_title():
     if selected:
         delete_title(text_list.get(selected))
         text_list.delete(selected)
+        title_delete_successfull_window()
         logging.info('Title deleted')
     else:
         logging.info('No record to be deleted')
+
+def title_delete_successfull_window():
+    t_d_win_top = Toplevel()
+    t_d_win_top.grab_set()
+    top_label = Label(t_d_win_top, text='Title delete successfull.')
+    top_label.grid(row=0, column=0, padx=10, pady=10, sticky='nsew')
+
+    button_close = Button(t_d_win_top, text='Close', command=t_d_win_top.destroy)
+    button_close.grid(row=1, column=0, padx=10, pady=10)
 
 def delete_selected_language():
     selected = text_list.curselection()
@@ -350,9 +436,19 @@ def delete_selected_language():
     if selected:
         delete_language(text_list.get(selected))
         text_list.delete(selected)
+        language_delete_successfull_window()
         logging.info('Language deleted')
     else:
         logging.info('No record to be deleted')
+
+def language_delete_successfull_window():
+    l_d_win_top = Toplevel()
+    l_d_win_top.grab_set()
+    top_label = Label(l_d_win_top, text='Language delete successfull.')
+    top_label.grid(row=0, column=0, padx=10, pady=10, sticky='nsew')
+
+    button_close = Button(l_d_win_top, text='Close', command=l_d_win_top.destroy)
+    button_close.grid(row=1, column=0, padx=10, pady=10)
 
 def delete_selected_tag():
     selected = text_list.curselection()
@@ -360,15 +456,26 @@ def delete_selected_tag():
     if selected:
         delete_tag(text_list.get(selected))
         text_list.delete(selected)
+        tag_delete_successfull_window()
         logging.info('Tag deleted')
     else:
         logging.info('No record to be deleted')
 
+def tag_delete_successfull_window():
+    t_d_win_top = Toplevel()
+    t_d_win_top.grab_set()
+    top_label = Label(t_d_win_top, text='Tag delete successfull.')
+    top_label.grid(row=0, column=0, padx=10, pady=10, sticky='nsew')
+
+    button_close = Button(t_d_win_top, text='Close', command=t_d_win_top.destroy)
+    button_close.grid(row=1, column=0, padx=10, pady=10)
 
 def update_category_window():
     global old_category_name
     global new_category_name
     global selected_category
+    global selected_index
+    global top
 
     top = Toplevel()
     top.grab_set()
@@ -381,6 +488,7 @@ def update_category_window():
 
     top.title('Update category')
     selected_category = text_list.curselection()
+    selected_index = selected_category[0]
 
     old_category_name = Entry(top, width=50)
     old_category_name.grid(row=0, column=1, sticky='ew')
@@ -398,38 +506,52 @@ def update_category_window():
     new_category_label = Label(top, text='to')
     new_category_label.grid(row=1, column=0, padx=10, pady=10, sticky='nsew')
 
-    button_update = Button(top, text='Press to update', command=lambda: update_category(new_category_name, selected_index))
+    button_update = Button(top, text='Press to update', command=update_category_button_to_click)
     button_update.grid(row=2, column=1, padx=10, pady=10)
 
     button_close = Button(top, text='Close', command=top.destroy)
     button_close.grid(row=2, column=2, padx=10, pady=10)
 
-def update_category(new_category_name, selected_index):
+def update_category_button_to_click():
+    global top
+    old_category_selected = text_list.curselection()
 
-    updated_category = new_category_name.get()
-    if not updated_category:
-        logging.info("No category indicated for an update")
+    if not old_category_selected:
+        logging.info('No category selected for an update')
+        return
+    selected_index = old_category_selected[0]
+    old_category = text_list.get(selected_index)
+    new_category = new_category_name.get()
+
+    if new_category in text_list.get(0,END):
+        logging.info('Category is already on the categories list ')
         return None
+    operation_status, category_id = update_category(old_category, new_category)
+    if operation_status == OPER_UPDATE_SUCCEEDED:
+        text_list.delete(selected_index)
+        text_list.insert(selected_index, new_category)
+        top.destroy()
+        category_update_successfull_window()
+        logging.info('Category was updated')
+    else:
+        logging.info('Category update failed')
 
-    selected_category_text = text_list.get(selected_index)
-    delete_category(selected_category_text)
+def category_update_successfull_window():
+    c_u_win_top = Toplevel()
+    c_u_win_top.grab_set()
+    c_u_win_top.lift()
+    c_u_win_top.after(10, lambda: c_u_win_top.attributes('-topmost', False))
+    top_label = Label(c_u_win_top, text='Category update successfull.')
+    top_label.grid(row=0, column=0, padx=10, pady=10, sticky='nsew')
 
-    categories_list = []
-    for item in text_list.get(0, END):
-        categories_list.append(item.strip())
-    if updated_category in categories_list:
-        logging.info('Category is already on categories list')
-        return None
-    add_category(updated_category)
-
-    text_list.delete(selected_index)
-    text_list.insert(selected_index, updated_category)
-    logging.info('Category updated')
+    button_close = Button(c_u_win_top, text='Close', command=c_u_win_top.destroy)
+    button_close.grid(row=1, column=0, padx=10, pady=10)
 
 def update_author_window():
-    global old_author_
+    global old_author
     global new_author
-    global selected_author
+    global selected_index
+    global top
 
     top = Toplevel()
     top.grab_set()
@@ -442,6 +564,7 @@ def update_author_window():
 
     top.title('Update author')
     selected_author = text_list.curselection()
+    selected_index = selected_author[0]
 
     old_author = Entry(top, width=50)
     old_author.grid(row=0, column=1, sticky='ew')
@@ -459,36 +582,55 @@ def update_author_window():
     new_author_label = Label(top, text='to')
     new_author_label.grid(row=1, column=0, padx=10, pady=10, sticky='nsew')
 
-    button_update = Button(top, text='Press to update', command=lambda: update_author(new_author, selected_index))
+    button_update = Button(top, text='Press to update', command=update_author_button_to_click)
     button_update.grid(row=2, column=1, padx=10, pady=10)
 
     button_close = Button(top, text='Close', command=top.destroy)
     button_close.grid(row=2, column=2, padx=10, pady=10)
 
-def update_author(new_author, selected_index):
+def update_author_button_to_click():
+    global selected_index
+    old_author = text_list.get(selected_index)
+    if not old_author:
+        logging.info('No author selected for an update')
+        return
+    old_author = text_list.get(selected_index)
+    parts = old_author.split()
 
-    updated_author = new_author.get()
-    if not updated_author:
-        logging.info("No author indicated for an update")
-        return None
+    old_author_name = parts[0]
+    old_author_surname = parts[1]
+    new_author_value = new_author.get()
+    new_author_value_split = new_author_value.split()
+    new_author_name = new_author_value_split[0]
+    new_author_surname = new_author_value_split[1]
 
-    selected_author_text = text_list.get(selected_index)
-    delete_author(selected_author_text)
-
-    authors_list = text_list.get(0, END)
-    if updated_author in authors_list:
-        logging.info('Author is already on authors list')
-        return None
-    add_category(updated_author)
-
+    operation_status, author_id = update_author(old_author_name, new_author_name, old_author_surname, new_author_surname)
     text_list.delete(selected_index)
-    text_list.insert(selected_index, updated_author)
-    logging.info('Author updated')
+    if new_author_value in text_list.get(0, END):
+        logging.info('Author is already on the authors list ')
+        return None
+    if operation_status == OPER_UPDATE_SUCCEEDED:
+        text_list.insert(selected_index, f'{new_author_name} {new_author_surname}')
+        logging.info(f'Author: {old_author_name} {old_author_surname} was updated to {new_author_name} {new_author_surname}')
+        top.destroy()
+        author_update_successfull_window()
+    else:
+        logging.info('Author update failed')
+
+def author_update_successfull_window():
+    win_top = Toplevel()
+    top_label = Label(win_top, text='Author update successfull.')
+    top_label.grid(row=0, column=0, padx=10, pady=10, sticky='nsew')
+
+    button_close = Button(win_top, text='Close', command=win_top.destroy)
+    button_close.grid(row=1, column=0, padx=10, pady=10)
+
 
 def update_title_window():
     global old_title
     global new_title
     global selected_title
+    global top
 
     top = Toplevel()
     top.grab_set()
@@ -525,7 +667,7 @@ def update_title_window():
     button_close.grid(row=2, column=2, padx=10, pady=10)
 
 def update_title(new_title, selected_index):
-
+    global top
     updated_title = new_title.get()
     if not updated_title:
         logging.info("No title indicated for an update")
@@ -542,12 +684,27 @@ def update_title(new_title, selected_index):
 
     text_list.delete(selected_index)
     text_list.insert(selected_index, updated_title)
+    top.destroy()
+    title_update_successfull_window()
     logging.info('Title updated')
+
+def title_update_successfull_window():
+    t_u_win_top = Toplevel()
+    t_u_win_top.grab_set()
+    t_u_win_top.lift()
+    t_u_win_top.after(10, lambda: t_u_win_top.attributes('-topmost', False))
+    top_label = Label(t_u_win_top, text='Title update successfull.')
+    top_label.grid(row=0, column=0, padx=10, pady=10, sticky='nsew')
+
+    button_close = Button(t_u_win_top, text='Close', command=t_u_win_top.destroy)
+    button_close.grid(row=1, column=0, padx=10, pady=10)
+
 
 def update_language_window():
     global old_language
     global new_language
     global selected_language
+    global top
 
     top = Toplevel()
     top.grab_set()
@@ -597,16 +754,31 @@ def update_language(new_languge, selected_index):
     if updated_language in languages_list:
         logging.info('Language is already on authors list')
         return None
-    add_title(updated_language)
+    add_language(updated_language)
 
     text_list.delete(selected_index)
     text_list.insert(selected_index, updated_language)
+    top.destroy()
+    language_update_successfull_window()
     logging.info('Language updated')
+
+def language_update_successfull_window():
+    global top
+    l_u_win_top = Toplevel()
+    l_u_win_top.grab_set()
+    l_u_win_top.lift()
+    l_u_win_top.after(10, lambda: l_u_win_top.attributes('-topmost', False))
+    top_label = Label(l_u_win_top, text='Language update successfull.')
+    top_label.grid(row=0, column=0, padx=10, pady=10, sticky='nsew')
+
+    button_close = Button(l_u_win_top, text='Close', command=l_u_win_top.destroy)
+    button_close.grid(row=1, column=0, padx=10, pady=10)
 
 def update_tag_window():
     global old_tag
     global new_tag
     global selected_tag
+    global top
 
     top = Toplevel()
     top.grab_set()
@@ -643,7 +815,7 @@ def update_tag_window():
     button_close.grid(row=2, column=2, padx=10, pady=10)
 
 def update_tag(new_tag, selected_index):
-
+    global top
     updated_tag = new_tag.get()
     if not updated_tag:
         logging.info("No tag indicated for an update")
@@ -656,11 +828,25 @@ def update_tag(new_tag, selected_index):
     if updated_tag in tags_list:
         logging.info('Tag is already on authors list')
         return None
-    add_title(updated_tag)
+    add_tag(updated_tag)
 
     text_list.delete(selected_index)
     text_list.insert(selected_index, updated_tag)
+    top.destroy()
+    tag_update_successfull_window()
     logging.info('Title updated')
+
+def tag_update_successfull_window():
+    global top
+    t_u_win_top = Toplevel()
+    t_u_win_top.grab_set()
+    t_u_win_top.lift()
+    t_u_win_top.after(10, lambda: t_u_win_top.attributes('-topmost', False))
+    top_label = Label(t_u_win_top, text='Tag update successfull.')
+    top_label.grid(row=0, column=0, padx=10, pady=10, sticky='nsew')
+
+    button_close = Button(t_u_win_top, text='Close', command=t_u_win_top.destroy)
+    button_close.grid(row=1, column=0, padx=10, pady=10)
 
 
 myButton1 = Button(root, text='Categories operations', fg='blue', command=cat_oper_window)
@@ -680,5 +866,6 @@ myButton5.grid(row=4, column=3, padx=10, pady=10, sticky='ew')
 
 button_quit = Button(root, text='Close', command=root.quit)
 button_quit.grid(row=4, column=5)
+
 
 root.mainloop()

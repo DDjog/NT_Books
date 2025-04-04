@@ -82,7 +82,7 @@ def delete_tag(tag_name):
              logging.info('Data not found')
              return OPER_DELETE_FAILED_DATA_NOT_FOUND
     except OperationalError as e:
-        logging.errror(f'No database connection: {e}')
+        logging.error(f'No database connection: {e}')
         return OPER_DELETE_FAILED_NO_DB_CONNECTION
 
 

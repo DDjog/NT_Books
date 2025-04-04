@@ -213,3 +213,28 @@
 2025-03-11 20:10:15 INFO Category exists in the database and was added to the book
 2025-03-11 20:10:15 INFO Tag exists in the database and was added to the book
 2025-03-11 20:10:15 INFO New book:FHow to solve your own murder F978-1-52943-007-3 was added to the database
+2025-03-30 19:00:34 INFO Author added to the database
+2025-03-30 19:00:34 INFO Author Vincent Severski was added to the database
+2025-03-30 19:00:48 INFO Author already exists in the database
+2025-03-30 19:00:48 WARNING Author Vincent Severski is already in the database
+2025-03-31 20:02:16 INFO Authors list got
+2025-03-31 20:02:16 INFO Authors list was downloaded from the database:
+2025-03-31 20:02:16 INFO 1. C,  
+2025-03-31 20:02:16 INFO 2. D,  
+2025-03-31 20:02:16 INFO 3. A, A
+2025-03-31 20:02:16 INFO 4. Jo, Bill
+2025-03-31 20:02:16 INFO 5. C,   C
+2025-03-31 20:02:16 INFO 6. Marry, Colins
+2025-03-31 20:02:16 INFO 7. HGKristen, HGPerrin
+2025-03-31 20:02:16 INFO 8. IKristen, IPerri
+2025-03-31 20:02:16 INFO 9. IKristen, IPerrin
+2025-03-31 20:02:16 INFO 10. Jo, Kill
+2025-03-31 20:02:16 INFO 11. B, o b   D y l a n
+2025-03-31 20:02:16 INFO 12. J, o   S m i t h
+2025-03-31 20:02:16 INFO 13. Vincent, Severski
+2025-03-31 20:02:16 INFO 14. VVincent, SSeverski
+2025-03-31 20:02:16 INFO 15. VVVincent, SSSeverski
+2025-03-31 20:02:16 INFO 16. John, Uilly
+2025-03-31 20:02:16 INFO 17. JJohn, UUilly
+2025-03-31 20:02:16 INFO 18. JJJohn, UUUilly
+2025-03-31 20:02:16 INFO 19. Emma, Watt

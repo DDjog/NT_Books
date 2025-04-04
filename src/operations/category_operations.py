@@ -72,6 +72,8 @@ def delete_category(category_name):
     try:
         category = session.query(Category).filter_by(category_name=category_name).first()
         if category:
+            session.delete(category)
+            session.commit()
             logging.info('Category was deleted')
             return OPER_DELETE_SUCCEEDED
         else:

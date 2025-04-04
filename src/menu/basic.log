@@ -1,0 +1,473 @@
+2025-03-15 19:27:29 INFO Categories list got
+2025-03-15 19:27:43 INFO Category was deleted
+2025-03-15 19:27:43 INFO Category was added in the database
+2025-03-15 19:27:43 INFO Category updated
+2025-03-16 18:05:11 INFO Category was updated
+2025-03-16 18:05:11 INFO Updated category: Comedy is in the database
+2025-03-16 18:05:13 INFO Categories list got
+2025-03-16 18:05:56 INFO Data not found
+2025-03-16 18:05:56 WARNING Category: Comedy is not in the database
+2025-03-16 18:05:57 INFO Categories list got
+2025-03-16 18:06:05 INFO Category is already on the categories list 
+2025-03-16 18:06:07 INFO Category is already on the categories list 
+2025-03-16 18:17:00 INFO Data not found
+2025-03-16 18:17:00 WARNING Category: Comedy is not in the database
+2025-03-16 18:17:03 INFO Authors list got
+2025-03-16 18:17:14 INFO Author added to the database
+2025-03-16 18:17:14 INFO Author added to the list
+2025-03-16 18:17:20 INFO Author already exists in the database
+2025-03-16 18:17:20 INFO Author added to the list
+2025-03-16 18:17:26 INFO No author selected for an update
+2025-03-16 19:22:54 INFO Data not found
+2025-03-16 19:22:54 WARNING Category: Comedy is not in the database
+2025-03-16 19:23:00 INFO Authors list got
+2025-03-16 19:23:10 INFO Author already exists in the database
+2025-03-16 19:23:10 INFO Author added to the list
+2025-03-16 19:26:26 INFO Data not found
+2025-03-16 19:26:26 WARNING Category: Comedy is not in the database
+2025-03-16 19:26:29 INFO Authors list got
+2025-03-16 19:26:34 INFO Author already exists in the database
+2025-03-16 19:26:34 INFO Author added to the list
+2025-03-16 19:26:40 INFO No author selected for an update
+2025-03-16 19:27:43 INFO Data not found
+2025-03-16 19:27:43 WARNING Category: Comedy is not in the database
+2025-03-16 19:27:45 INFO Authors list got
+2025-03-16 19:27:51 INFO Author added to the database
+2025-03-16 19:27:52 INFO Author added to the list
+2025-03-16 19:27:59 INFO Author is already on the authors list 
+2025-03-16 19:31:13 INFO Data not found
+2025-03-16 19:31:13 WARNING Category: Comedy is not in the database
+2025-03-16 19:31:14 INFO Authors list got
+2025-03-16 19:31:26 INFO Author added to the database
+2025-03-16 19:31:26 INFO Author added to the list
+2025-03-16 19:35:05 INFO Data not found
+2025-03-16 19:35:05 WARNING Category: Comedy is not in the database
+2025-03-16 19:35:07 INFO Authors list got
+2025-03-16 19:35:14 INFO Author added to the database
+2025-03-16 19:35:14 INFO Author added to the list
+2025-03-16 19:37:08 INFO Data not found
+2025-03-16 19:37:08 WARNING Category: Comedy is not in the database
+2025-03-16 19:37:09 INFO Authors list got
+2025-03-16 19:37:15 INFO No author selected for an update
+2025-03-18 20:18:24 INFO Title was added to the database
+2025-03-18 20:18:24 INFO Title was added to the book
+2025-03-18 20:18:24 INFO Isbn was already added to the book
+2025-03-18 20:18:24 INFO Language is in the database
+2025-03-18 20:18:24 INFO Language was added to the database
+2025-03-27 20:16:04 INFO Title was already added to the book
+2025-03-27 20:16:04 INFO Isbn was already added to the book
+2025-03-27 20:16:04 INFO Language was added to the database
+2025-03-27 20:16:04 INFO Language exists in the database and was added to the book 
+2025-03-27 20:16:04 INFO Shelf signature exists in the database and was added to the book
+2025-03-27 20:16:04 INFO Address exists in the database
+2025-03-27 20:16:04 INFO Publisher exists in the database and was added to the book
+2025-03-27 20:16:04 INFO Author exists in the database and was added to the book
+2025-03-27 20:16:04 INFO Tag was added to the database
+2025-03-27 20:16:04 INFO New tag was added to the book
+2025-03-27 20:16:04 INFO Author exists in the database and was added to the book
+2025-03-27 20:16:04 INFO Category exists in the database and was added to the book
+2025-03-27 20:16:04 INFO Tag exists in the database and was added to the book
+2025-03-27 20:16:04 INFO New book:FHow to solve your own murder F978-1-52943-007-3 was added to the database
+2025-03-27 20:16:04 INFO Book was updated
+2025-03-27 20:16:04 INFO Book: ['FHow to solve your own murder', 'GHow to solve your own murder', 'FKristen', 'GKristen', 'FPerrin', 'GPerrin', 'F978-1-52943-007-3', 'G978-1-52943-007-3', 'Fenglish', 'Genglish', '423112', '523112', 'Fmurder', 'Gmurder', 'FQuercus', 'GQuercus', 'FViktoria Embankment', 'GViktoria Embankment', '42150', '442150', '4211', '421EC4Y', '0356', '40356', 'FLondon', 'GLondon', 'FGreat Britain', 'GGreat Britain', '2024', '42024', 'Fnovel', 'Gnovel'] is in the database
+2025-03-27 20:16:04 INFO Data not found
+2025-03-27 20:16:04 WARNING Category: Comedy is not in the database
+2025-03-27 20:16:06 INFO Categories list got
+2025-03-27 20:16:59 INFO Category is already on the list
+2025-03-27 20:17:01 INFO Category is already on the list
+2025-03-27 20:17:11 INFO Category was added in the database
+2025-03-27 20:17:11 INFO Category added to the list
+2025-03-27 20:20:31 INFO Authors list got
+2025-03-27 20:20:41 INFO Author added to the database
+2025-03-27 20:20:41 INFO Author added to the list
+2025-03-27 20:23:22 INFO Title was added to the database
+2025-03-27 20:23:22 INFO Title was added to the book
+2025-03-27 20:23:53 INFO Title was already added to the book
+2025-03-27 20:23:53 INFO Isbn was already added to the book
+2025-03-27 20:23:53 INFO Language is in the database
+2025-03-27 20:23:53 INFO Language was added to the database
+2025-03-27 20:24:08 INFO Title was already added to the book
+2025-03-27 20:24:08 INFO Isbn was already added to the book
+2025-03-27 20:24:08 INFO Language was added to the database
+2025-03-27 20:24:08 INFO Language exists in the database and was added to the book 
+2025-03-27 20:26:55 INFO Title was already added to the book
+2025-03-27 20:26:55 INFO Isbn was already added to the book
+2025-03-27 20:26:55 INFO Language was added to the database
+2025-03-27 20:26:55 INFO Language exists in the database and was added to the book 
+2025-03-27 20:26:55 INFO Shelf signature exists in the database and was added to the book
+2025-03-27 20:26:55 INFO Address exists in the database
+2025-03-27 20:26:55 INFO Publisher exists in the database and was added to the book
+2025-03-27 20:31:14 INFO Title was already added to the book
+2025-03-27 20:31:14 INFO Isbn was already added to the book
+2025-03-27 20:31:14 INFO Language was added to the database
+2025-03-27 20:31:14 INFO Language exists in the database and was added to the book 
+2025-03-27 20:31:14 INFO Shelf signature exists in the database and was added to the book
+2025-03-27 20:31:14 INFO Address exists in the database
+2025-03-27 20:31:14 INFO Publisher exists in the database and was added to the book
+2025-03-27 20:32:22 INFO Title was already added to the book
+2025-03-27 20:32:22 INFO Isbn was already added to the book
+2025-03-27 20:32:22 INFO Language was added to the database
+2025-03-27 20:32:22 INFO Language exists in the database and was added to the book 
+2025-03-27 20:32:22 INFO Shelf signature exists in the database and was added to the book
+2025-03-27 20:32:22 INFO Address exists in the database
+2025-03-27 20:32:49 INFO Title was already added to the book
+2025-03-27 20:32:49 INFO Isbn was already added to the book
+2025-03-27 20:32:49 INFO Language was added to the database
+2025-03-27 20:32:49 INFO Language exists in the database and was added to the book 
+2025-03-27 20:32:49 INFO Shelf signature exists in the database and was added to the book
+2025-03-27 20:32:49 INFO Address exists in the database
+2025-03-27 20:32:49 INFO Publisher exists in the database and was added to the book
+2025-03-27 20:32:49 INFO Author added to the database
+2025-03-27 20:32:49 INFO New author was added to the book
+2025-03-27 20:32:49 INFO Tag was added to the database
+2025-03-27 20:32:49 INFO New tag was added to the book
+2025-03-27 20:32:49 INFO Author exists in the database and was added to the book
+2025-03-27 20:32:49 INFO Category exists in the database and was added to the book
+2025-03-27 20:32:49 INFO Tag exists in the database and was added to the book
+2025-03-27 20:32:49 INFO New book:FHow to solve your own murder F978-1-52943-007-3 was added to the database
+2025-03-27 20:32:49 INFO Book was updated
+2025-03-27 20:32:49 INFO Book: ['FHow to solve your own murder', 'GHow to solve your own murder', 'FKristen', 'GKristen', 'FPerrin', 'GPerrin', 'F978-1-52943-007-3', 'G978-1-52943-007-3', 'Fenglish', 'Genglish', '423112', '523112', 'Fmurder', 'Gmurder', 'FQuercus', 'GQuercus', 'FViktoria Embankment', 'GViktoria Embankment', '42150', '442150', '4211', '421EC4Y', '0356', '40356', 'FLondon', 'GLondon', 'FGreat Britain', 'GGreat Britain', '2024', '42024', 'Fnovel', 'Gnovel'] is in the database
+2025-03-27 20:32:49 INFO Data not found
+2025-03-27 20:32:49 WARNING Category: Comedy is not in the database
+2025-03-27 20:34:25 INFO Authors list got
+2025-03-27 20:36:28 INFO Title was added to the database
+2025-03-27 20:36:28 INFO Title was added to the book
+2025-03-27 20:36:51 INFO Title was already added to the book
+2025-03-27 20:36:51 INFO Isbn was already added to the book
+2025-03-27 20:36:51 INFO Language is in the database
+2025-03-27 20:36:51 INFO Language was added to the database
+2025-03-27 20:38:17 INFO Authors list got
+2025-03-27 20:38:31 INFO Author added to the database
+2025-03-27 20:38:31 INFO Author added to the list
+2025-03-27 20:42:27 INFO Author is not in the database
+2025-03-27 20:42:27 WARNING Author: John Smith is not in the database
+2025-03-27 20:42:31 INFO Authors list got
+2025-03-27 20:42:42 INFO Author added to the database
+2025-03-27 20:42:42 INFO Author added to the list
+2025-03-27 20:43:21 INFO Author is not in the database
+2025-03-27 20:43:21 WARNING Author: John Smith is not in the database
+2025-03-27 20:43:23 INFO Authors list got
+2025-03-27 21:17:56 INFO Title was already added to the book
+2025-03-27 21:17:56 INFO Isbn was already added to the book
+2025-03-27 21:17:56 INFO Language was added to the database
+2025-03-27 21:17:56 INFO Language exists in the database and was added to the book 
+2025-03-27 21:17:56 INFO Shelf signature was added
+2025-03-27 21:17:56 INFO Shelf signature was added to the book
+2025-03-27 21:17:56 INFO Address exists in the database
+2025-03-27 21:17:56 INFO Publisher exists in the database and was added to the book
+2025-03-27 21:18:28 INFO Title was already added to the book
+2025-03-27 21:18:28 INFO Isbn was already added to the book
+2025-03-27 21:18:28 INFO Language was added to the database
+2025-03-27 21:18:28 INFO Language exists in the database and was added to the book 
+2025-03-27 21:18:28 INFO Shelf signature exists in the database and was added to the book
+2025-03-27 21:18:28 INFO Address exists in the database
+2025-03-27 21:18:28 INFO Publisher exists in the database and was added to the book
+2025-03-27 21:18:28 INFO Author added to the database
+2025-03-27 21:18:28 INFO New author was added to the book
+2025-03-27 21:18:28 INFO Tag was added to the database
+2025-03-27 21:18:28 INFO New tag was added to the book
+2025-03-27 21:18:28 INFO Author exists in the database and was added to the book
+2025-03-27 21:18:28 INFO Category exists in the database and was added to the book
+2025-03-27 21:18:28 INFO Tag exists in the database and was added to the book
+2025-03-27 21:18:28 INFO New book:FHow to solve your own murder F978-1-52943-007-3 was added to the database
+2025-03-27 21:18:28 INFO Author is not in the database
+2025-03-27 21:18:28 WARNING Author: John Smith is not in the database
+2025-03-27 21:18:28 INFO Book was updated
+2025-03-27 21:18:28 INFO Book: ['FHow to solve your own murder', 'GHow to solve your own murder', 'FKristen', 'GKristen', 'FPerrin', 'GPerrin', 'F978-1-52943-007-3', 'G978-1-52943-007-3', 'Fenglish', 'Genglish', '423112', '523112', 'Fmurder', 'Gmurder', 'FQuercus', 'GQuercus', 'FViktoria Embankment', 'GViktoria Embankment', '42150', '442150', '4211', '421EC4Y', '0356', '40356', 'FLondon', 'GLondon', 'FGreat Britain', 'GGreat Britain', '2024', '42024', 'Fnovel', 'Gnovel'] is in the database
+2025-03-27 21:18:32 INFO Authors list got
+2025-03-27 21:20:19 INFO Title was added to the database
+2025-03-27 21:20:19 INFO Title was added to the book
+2025-03-27 21:20:19 INFO Isbn was added to the database
+2025-03-27 21:20:19 INFO Isbn was added to the book
+2025-03-27 21:20:19 INFO Language is in the database
+2025-03-27 21:20:19 INFO Language was added to the database
+2025-03-27 21:20:58 INFO Authors list got
+2025-03-27 21:21:06 INFO Author was updated
+2025-03-27 21:21:06 INFO Author: John Willy was updated to John Uilly
+2025-03-27 21:21:06 INFO Data not found
+2025-03-27 21:21:06 INFO Author update failed
+2025-03-27 21:21:12 INFO Author not in the database
+2025-03-27 21:21:12 INFO Author: John Willy was updated to John Uilly
+2025-03-27 21:21:12 INFO Data not found
+2025-03-27 21:21:12 INFO Author update failed
+2025-03-27 21:27:50 INFO Authors list got
+2025-03-27 21:29:14 INFO Author is already on the list
+2025-03-27 21:29:54 INFO Author was updated
+2025-03-27 21:36:35 INFO Authors list got
+2025-03-27 21:36:56 INFO No author selected for an update
+2025-03-27 21:39:41 INFO Authors list got
+2025-03-27 21:40:15 INFO No author selected for an update
+2025-03-27 21:44:39 INFO Authors list got
+2025-03-27 21:44:54 INFO No author selected for an update
+2025-03-27 21:45:47 INFO Authors list got
+2025-03-27 21:45:59 INFO No author selected for an update
+2025-03-27 21:53:19 INFO Authors list got
+2025-03-27 21:53:32 INFO No author selected for an update
+2025-03-30 17:58:31 INFO Authors list got
+2025-03-30 17:59:32 INFO No author selected for an update
+2025-03-30 18:04:16 INFO Authors list got
+2025-03-30 18:04:49 INFO No author selected for an update
+2025-03-30 18:08:25 INFO Authors list got
+2025-03-30 18:12:37 INFO Authors list got
+2025-03-30 18:14:04 INFO Authors list got
+2025-03-30 18:19:46 INFO Authors list got
+2025-03-30 18:24:31 INFO Authors list got
+2025-03-30 18:36:50 INFO Authors list got
+2025-03-30 18:37:02 INFO Author was updated
+2025-03-30 18:38:15 INFO Authors list got
+2025-03-30 18:38:27 INFO Author was updated
+2025-03-30 18:38:27 INFO Author: GKristen GPerrin was updated to IKristen IPerrin
+2025-03-30 18:38:27 INFO Author is already on the authors list 
+2025-03-30 18:43:39 INFO Authors list got
+2025-03-30 18:43:53 INFO Author was updated
+2025-03-30 18:43:53 INFO Author: John Uilly was updated to JJohn UUilly
+2025-03-30 18:52:32 INFO Authors list got
+2025-03-30 18:52:48 INFO Author was updated
+2025-03-30 18:52:48 INFO Author: JJohn UUilly was updated to John Uilly
+2025-03-30 18:57:06 INFO Authors list got
+2025-03-30 18:57:21 INFO Author was updated
+2025-03-30 18:57:21 INFO Author: John Uilly was updated to JJohn UUilly
+2025-03-30 18:58:39 INFO Authors list got
+2025-03-30 18:58:51 INFO Author was updated
+2025-03-30 18:58:51 INFO Author: JJohn UUilly was updated to John Uilly
+2025-03-30 18:59:40 INFO Categories list got
+2025-03-30 19:01:22 INFO Authors list got
+2025-03-30 19:01:31 INFO Author is already on the list
+2025-03-30 19:06:50 INFO Author added to the database
+2025-03-30 19:06:50 INFO Author added to the list
+2025-03-30 19:18:26 INFO Authors list got
+2025-03-30 19:18:39 INFO Author added to the database
+2025-03-30 19:18:39 INFO Author added to the list
+2025-03-30 19:20:24 INFO Authors list got
+2025-03-30 19:20:38 INFO Author added to the database
+2025-03-30 19:20:38 INFO Author added to the list
+2025-03-30 19:21:23 INFO Authors list got
+2025-03-30 19:21:36 INFO Author added to the database
+2025-03-30 19:21:36 INFO Author added to the list
+2025-03-31 19:44:29 INFO Authors list got
+2025-03-31 19:44:37 INFO Author added to the database
+2025-03-31 19:44:37 INFO Author added to the list
+2025-03-31 19:48:32 INFO Authors list got
+2025-03-31 19:48:38 INFO Author added to the database
+2025-03-31 19:48:38 INFO Author added to the list
+2025-03-31 19:51:39 INFO Authors list got
+2025-03-31 19:51:46 INFO Author added to the database
+2025-03-31 19:51:46 INFO Author added to the list
+2025-03-31 19:59:33 INFO Authors list got
+2025-03-31 19:59:41 INFO Author added to the database
+2025-03-31 19:59:41 INFO Author added to the list
+2025-03-31 20:08:48 INFO Authors list got
+2025-03-31 20:09:01 INFO Author added to the database
+2025-03-31 20:09:01 INFO Author added to the list
+2025-03-31 20:12:48 INFO Authors list got
+2025-03-31 20:12:54 INFO Author added to the database
+2025-03-31 20:12:54 INFO Author added to the list
+2025-03-31 20:13:07 INFO Author was updated
+2025-03-31 20:13:07 INFO Author: Gil JO was updated to Hil Joo
+2025-03-31 20:13:48 INFO Author deleted
+2025-03-31 20:13:48 INFO Author deleted
+2025-03-31 20:13:50 INFO No record to be deleted
+2025-03-31 20:13:52 INFO Author deleted
+2025-03-31 20:13:52 INFO Author deleted
+2025-03-31 20:15:43 INFO Author deleted
+2025-03-31 20:15:43 INFO Author deleted
+2025-03-31 20:16:29 INFO Authors list got
+2025-03-31 20:16:34 INFO Author deleted
+2025-03-31 20:16:34 INFO Author deleted
+2025-03-31 20:20:13 INFO Categories list got
+2025-03-31 20:20:36 INFO Category was added in the database
+2025-03-31 20:20:36 INFO Category added to the list
+2025-03-31 20:20:46 INFO Category was updated
+2025-03-31 20:20:46 INFO Category was updated
+2025-03-31 20:20:54 INFO Category was deleted
+2025-03-31 20:20:54 INFO Category deleted
+2025-03-31 20:28:21 INFO Category was added in the database
+2025-03-31 20:28:21 INFO Category added to the list
+2025-03-31 20:28:35 INFO Category is already on the categories list 
+2025-03-31 20:28:37 INFO Category is already on the categories list 
+2025-03-31 20:28:40 INFO Category was deleted
+2025-03-31 20:28:40 INFO Category deleted
+2025-03-31 20:30:09 INFO Category was added in the database
+2025-03-31 20:30:09 INFO Category added to the list
+2025-03-31 20:45:43 INFO Categories list got
+2025-03-31 20:45:52 INFO Category was updated
+2025-03-31 20:45:52 INFO Category was updated
+2025-03-31 20:45:59 INFO No category selected for an update
+2025-03-31 20:46:04 INFO Category was deleted
+2025-03-31 20:46:04 INFO Category deleted
+2025-03-31 20:46:11 INFO Category was deleted
+2025-03-31 20:46:11 INFO Category deleted
+2025-03-31 20:46:19 INFO Category was added in the database
+2025-03-31 20:46:19 INFO Category added to the list
+2025-03-31 20:53:49 INFO Titles list obtained
+2025-03-31 20:53:54 INFO Title was added to the database
+2025-03-31 20:53:54 INFO Title added to the list
+2025-03-31 20:54:01 INFO Title was deleted
+2025-03-31 20:54:01 INFO Title was added to the database
+2025-03-31 20:54:01 INFO Title updated
+2025-03-31 20:54:45 INFO Title was deleted
+2025-03-31 20:54:45 INFO Title deleted
+2025-03-31 20:58:09 INFO Categories list got
+2025-03-31 20:58:18 INFO Category was updated
+2025-03-31 20:58:52 INFO Categories list got
+2025-03-31 20:58:59 INFO Category was updated
+2025-03-31 20:58:59 INFO Category was updated
+2025-03-31 21:00:19 INFO Authors list got
+2025-03-31 21:00:39 INFO Author was updated
+2025-03-31 21:00:39 INFO Author: A A was updated to a a
+2025-03-31 21:01:30 INFO Titles list obtained
+2025-03-31 21:01:37 INFO Title was deleted
+2025-03-31 21:01:37 INFO Title was added to the database
+2025-03-31 21:01:37 INFO Title updated
+2025-03-31 21:02:25 INFO Title was deleted
+2025-03-31 21:02:25 INFO Title is already on authors list
+2025-03-31 21:02:35 INFO Title was deleted
+2025-03-31 21:02:35 INFO Title was added to the database
+2025-03-31 21:02:35 INFO Title updated
+2025-03-31 21:04:49 INFO Authors list got
+2025-03-31 21:05:19 INFO Author was updated
+2025-03-31 21:05:19 INFO Author: IKristen IPerri was updated to CC VV
+2025-03-31 21:07:27 INFO Author was updated
+2025-03-31 21:07:27 INFO Author: VVincent SSeverski was updated to VV BB
+2025-03-31 21:11:19 INFO Titles list obtained
+2025-03-31 21:11:29 INFO Title was deleted
+2025-03-31 21:11:29 INFO Title was added to the database
+2025-03-31 21:11:29 INFO Title updated
+2025-03-31 21:21:16 INFO Authors list got
+2025-03-31 21:23:02 INFO Authors list got
+2025-03-31 21:23:15 INFO Author was updated
+2025-03-31 21:23:15 INFO Author: John Uilly was updated to Johny Uillyy
+2025-03-31 21:23:33 INFO Titles list obtained
+2025-03-31 21:23:43 INFO Title was deleted
+2025-03-31 21:23:43 INFO Title was added to the database
+2025-03-31 21:23:43 INFO Title updated
+2025-03-31 21:28:28 INFO Languages list obtained
+2025-03-31 21:28:39 INFO Language was deleted
+2025-03-31 21:28:39 INFO Language was added to the database
+2025-03-31 21:28:39 INFO Language updated
+2025-03-31 21:30:15 INFO Languages list obtained
+2025-03-31 21:30:29 INFO Language was deleted
+2025-03-31 21:30:29 INFO Language was added to the database
+2025-03-31 21:30:29 INFO Language updated
+2025-03-31 21:31:02 INFO Languages list obtained
+2025-03-31 21:31:13 INFO Language was deleted
+2025-03-31 21:31:13 INFO Language was added to the database
+2025-03-31 21:31:13 INFO Language updated
+2025-03-31 21:32:08 INFO Languages list obtained
+2025-03-31 21:32:12 INFO Language was deleted
+2025-03-31 21:32:12 INFO Language deleted
+2025-03-31 21:32:20 INFO Language was added to the database
+2025-03-31 21:32:20 INFO Language added to the list
+2025-03-31 21:37:17 INFO Tags list obtained
+2025-03-31 21:37:23 INFO Tag was added to the database
+2025-03-31 21:37:23 INFO Tag added to the list
+2025-03-31 21:38:43 INFO Tag was deleted
+2025-03-31 21:38:43 INFO Tag was added to the database
+2025-03-31 21:38:43 INFO Title updated
+2025-03-31 21:38:55 INFO Tag was deleted
+2025-03-31 21:38:55 INFO Tag deleted
+2025-03-31 21:47:41 INFO Tags list obtained
+2025-03-31 21:47:48 INFO Tag was deleted
+2025-03-31 21:47:48 INFO Tag was added to the database
+2025-03-31 21:47:48 INFO Title updated
+2025-03-31 21:47:52 INFO Tag was deleted
+2025-03-31 21:47:52 INFO Tag deleted
+2025-03-31 21:47:59 INFO Tag was added to the database
+2025-03-31 21:47:59 INFO Tag added to the list
+2025-04-02 20:06:13 INFO Authors list got
+2025-04-02 20:06:25 INFO Author added to the database
+2025-04-02 20:06:25 INFO Author added to the list
+2025-04-02 20:06:58 INFO Authors list got
+2025-04-02 20:07:07 INFO Author was updated
+2025-04-02 20:07:07 INFO Author: CC VV was updated to C V
+2025-04-02 20:07:31 INFO Authors list got
+2025-04-02 20:07:36 INFO Author not found in the database
+2025-04-02 20:07:36 INFO Author deleted
+2025-04-02 20:08:06 INFO Authors list got
+2025-04-02 20:08:11 INFO Author not found in the database
+2025-04-02 20:08:11 INFO Author deleted
+2025-04-02 20:14:47 INFO Authors list got
+2025-04-02 20:14:50 INFO Author not found in the database
+2025-04-02 20:14:50 INFO Author deleted
+2025-04-02 20:15:15 INFO Authors list got
+2025-04-02 20:15:19 INFO Author not found in the database
+2025-04-02 20:15:19 INFO Author deleted
+2025-04-02 20:19:29 INFO Authors list got
+2025-04-02 20:19:39 INFO Author not found in the database
+2025-04-02 20:19:39 INFO Author deleted
+2025-04-02 20:20:30 INFO Authors list got
+2025-04-02 20:20:37 INFO Author deleted
+2025-04-02 20:20:37 INFO Author deleted
+2025-04-02 20:21:04 INFO Authors list got
+2025-04-02 20:21:10 INFO Author deleted
+2025-04-02 20:21:10 INFO Author deleted
+2025-04-02 20:21:31 INFO Categories list got
+2025-04-02 20:21:45 INFO Category was added in the database
+2025-04-02 20:21:45 INFO Category added to the list
+2025-04-02 20:22:06 INFO Categories list got
+2025-04-02 20:22:17 INFO No category selected for an update
+2025-04-02 20:23:05 INFO Categories list got
+2025-04-02 20:23:14 INFO No category selected for an update
+2025-04-02 20:31:05 INFO Categories list got
+2025-04-02 20:31:17 INFO No category selected for an update
+2025-04-02 20:32:17 INFO Categories list got
+2025-04-02 20:32:24 INFO No category selected for an update
+2025-04-02 20:32:29 INFO No category selected for an update
+2025-04-02 20:33:59 INFO Categories list got
+2025-04-02 20:34:06 INFO No category selected for an update
+2025-04-02 20:55:23 INFO Titles list obtained
+2025-04-02 20:55:29 INFO Title was added to the database
+2025-04-02 20:55:29 INFO Title added to the list
+2025-04-02 20:55:36 INFO Title was deleted
+2025-04-02 20:55:36 INFO Title was added to the database
+2025-04-02 20:55:36 INFO Title updated
+2025-04-02 20:55:42 INFO Title was deleted
+2025-04-02 20:55:42 INFO Title deleted
+2025-04-02 20:55:49 INFO Title was added to the database
+2025-04-02 20:55:49 INFO Title added to the list
+2025-04-02 20:55:53 INFO Title was added to the database
+2025-04-02 20:55:53 INFO Title added to the list
+2025-04-02 20:56:12 INFO Titles list obtained
+2025-04-02 20:56:15 INFO Title was deleted
+2025-04-02 20:56:15 INFO Title deleted
+2025-04-02 20:56:52 INFO Titles list obtained
+2025-04-02 20:56:55 INFO Title was added to the database
+2025-04-02 20:56:55 INFO Title added to the list
+2025-04-02 20:56:59 INFO Title was deleted
+2025-04-02 20:56:59 INFO Title deleted
+2025-04-02 20:57:07 INFO Title was deleted
+2025-04-02 20:57:07 INFO Title was added to the database
+2025-04-02 20:57:07 INFO Title updated
+2025-04-02 20:57:23 INFO Languages list obtained
+2025-04-02 20:57:27 INFO Language was added to the database
+2025-04-02 20:57:27 INFO Language added to the list
+2025-04-02 20:57:51 INFO Languages list obtained
+2025-04-02 20:57:55 INFO Language was deleted
+2025-04-02 20:57:55 INFO Language was added to the database
+2025-04-02 20:57:55 INFO Language updated
+2025-04-02 20:58:16 INFO Languages list obtained
+2025-04-02 20:58:19 INFO Language was deleted
+2025-04-02 20:58:19 INFO Language deleted
+2025-04-02 20:58:36 INFO Tags list obtained
+2025-04-02 20:58:39 INFO Tag was added to the database
+2025-04-02 20:58:39 INFO Tag added to the list
+2025-04-02 20:58:52 INFO Tag was deleted
+2025-04-02 20:58:52 INFO Tag was added to the database
+2025-04-02 20:58:52 INFO Title updated
+2025-04-02 20:59:04 INFO Tags list obtained
+2025-04-02 20:59:06 INFO Tag was deleted
+2025-04-02 20:59:06 INFO Tag deleted
+2025-04-02 21:00:14 INFO Categories list got
+2025-04-02 21:00:39 INFO Category was deleted
+2025-04-02 21:00:39 INFO Category deleted
+2025-04-02 21:03:58 INFO Categories list got
+2025-04-02 21:04:02 INFO Category was deleted
+2025-04-02 21:04:02 INFO Category deleted
+2025-04-02 21:07:02 INFO Categories list got
+2025-04-02 21:10:35 INFO Categories list got
+2025-04-02 21:12:59 INFO Categories list got
+2025-04-02 21:13:02 INFO Category was deleted
+2025-04-02 21:13:02 INFO Category deleted
+2025-04-02 21:13:20 INFO Categories list got
+2025-04-02 21:13:23 INFO Category was deleted
+2025-04-02 21:13:23 INFO Category deleted

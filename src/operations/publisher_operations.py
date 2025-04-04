@@ -1,5 +1,5 @@
 from sqlalchemy.exc import IntegrityError, OperationalError
-from sqlalchemy.testing.plugin.plugin_base import logging
+import logging
 
 from src.database.models import Publisher
 from src.database.db import session
