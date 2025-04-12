@@ -1,0 +1,10 @@
+alembic init alembic
+alembic revision --autogenerate -m 'Init'
+alembic upgrade head
+
+
+
+
+python3 -m venv venv
+source venv/bin/activate
+
