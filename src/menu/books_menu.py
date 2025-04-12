@@ -251,7 +251,6 @@ def add_empty():
     button_close.grid(row=1, column=0, padx=10, pady=10)
 
 def add_category_to_list():
-    global text
     text = e.get()
     if not text.strip():
         add_empty()
