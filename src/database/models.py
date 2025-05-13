@@ -61,7 +61,7 @@ class Book(Base):
     title_id = Column(Integer, ForeignKey('titles.id'), nullable=True, unique=True)
     isbn_id = Column(Integer, ForeignKey('isbn.id'), nullable=True, unique=True)
     language_id = Column(Integer, ForeignKey('languages.id'), nullable=True)
-    # cover_page_id = Column(Integer, ForeignKey('cover_pages.id'), nullable=True, unique=True)
+    # cover_page_id = Column(LargeBinary, ForeignKey('cover_pages.id'), nullable=True, unique=True)
     shelf_signature_id = Column(Integer, ForeignKey('shelf_signatures.id'), nullable=True)
     publisher_id = Column(Integer, ForeignKey('publishers.id'), nullable=True)
 
@@ -97,10 +97,10 @@ class Isbn(Base):
     isbn_name = Column(String(50), nullable=True, unique=True)
 
 
-# class Cover_page(Base):
-#     __tablename__ = "cover_pages"
-#     id = Column(Integer, primary_key=True)
-#     cover_page = Column(String(10), nullable=True)
+class Cover_page(Base):
+    __tablename__ = "cover_pages"
+    id = Column(Integer, primary_key=True)
+    cover_page = Column(LargeBinary, nullable=True)
 
 class Address(Base):
     __tablename__ = "addresses"

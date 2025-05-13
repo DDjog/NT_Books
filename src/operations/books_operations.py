@@ -1,5 +1,5 @@
 
-from sqlalchemy.exc import IntegrityError, OperationalError
+from sqlalchemy.exc import OperationalError
 import logging
 
 from src.operations.address_operations import is_address_in_db, add_address
@@ -76,7 +76,7 @@ def add_book(new_title, new_author_name, new_author_surname, new_isbn, new_langu
             operation_status, id = is_language_in_db(new_language)
             if not operation_status == OPER_IS_IN_DB_SUCCEEDED:
                 operation_status, language_id = add_language(new_language)
-                new_book.language_id = new_language.id
+                new_book.language_id = language_id
                 logging.info('Language was added to the book')
             else:
                 new_book.language_id = language.id

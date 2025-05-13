@@ -241,6 +241,49 @@ def tag_oper_window():
     button_quit = Button(ta_top, text='Close', command=ta_top.destroy)
     button_quit.grid(row=3, column=2)
 
+# def image_oper_window():
+#     global i_top
+#     global text_list
+#     global e
+#
+#     i_top=Toplevel()
+#     i_top.grab_set()
+#
+#     i_top.title('Image operations')
+#
+#     i_top.columnconfigure(0, weight=1)
+#     i_top.columnconfigure(1, weight=1)
+#     i_top.columnconfigure(2, weight=1)
+#     i_top.columnconfigure(3, weight=1)
+#     i_top.rowconfigure(0, weight=1)
+#
+#     e=Entry(i_top, width=50)
+#     e.grid(row=0, column=0, sticky='ew')
+#
+#     add_in_e=Button(i_top, text='Add image', command=add_image_to_list)
+#     add_in_e.grid(row=0, column=1, padx=10, pady=10, sticky='ew')
+#
+#     delete_in_e = Button(i_top, text='Delete image', command=delete_selected_image)
+#     delete_in_e.grid(row=0, column=2, padx=10, pady=10, sticky='ew')
+#
+#     text_list = Listbox(i_top, width=60, height=15)
+#     text_list.grid(row=2, column=0, padx=10, pady=10, sticky='nsew')
+#
+#     button_update = Button(i_top, text='Update image', command=update_image_window)
+#     button_update.grid(row=1, column=1, padx=10, pady=10, sticky='nsew')
+#
+#     operation_status, im = get_images_list()
+#     if operation_status == OPER_GET_LIST_SUCCEEDED:
+#         for i in im:
+#             text_list.insert(END, i.image)
+#
+#     text_list_label = Label(i_top, text='List of images:')
+#     text_list_label.grid(row=1, column=0, padx=10, pady=10, sticky='nsew')
+#
+#     button_quit = Button(l_top, text='Close', command=i_top.destroy)
+#     button_quit.grid(row=3, column=2)
+
+
 def message_window_empty_data():
     e_d_top = Toplevel()
     e_d_top.grab_set()
@@ -404,6 +447,34 @@ def tag_add_successfull_window():
     top_label.grid(row=0, column=0, padx=10, pady=10, sticky='nsew')
 
     button_close = Button(ta_win_top, text='Close', command=ta_win_top.destroy)
+    button_close.grid(row=1, column=0, padx=10, pady=10)
+
+#############*********#################
+
+# def add_image_to_list():
+#     text = e.get()
+#     if not text.strip():
+#         message_window_empty_data()
+#         return None
+#     else:
+#         if text not in text_list.get(0, END):
+#             add_category(text)
+#             text_list.insert(END, text)
+#             e.delete(0, END)
+#             logging.info('Category added to the list')
+#             category_add_successfull_window()
+#             return None
+#         else:
+#             logging.info('Category is already on the list')
+#             return None
+
+def category_add_successfull_window():
+    c_win_top = Toplevel()
+    c_win_top.grab_set()
+    top_label = Label(c_win_top, text='Category addition successfull.')
+    top_label.grid(row=0, column=0, padx=10, pady=10, sticky='nsew')
+
+    button_close = Button(c_win_top, text='Close', command=c_win_top.destroy)
     button_close.grid(row=1, column=0, padx=10, pady=10)
 
 #############*********#################
