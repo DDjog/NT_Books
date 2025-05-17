@@ -12,7 +12,8 @@ from src.operations.isbn_operations import is_isbn_in_db, add_isbn
 from src.operations.shelf_signature_operations import is_shelf_signature_in_db, add_shelf_signature
 from src.operations.tag_operations import is_tag_in_db, add_tag
 from src.database.db import session
-from src.database.models import Book, Address, Author, Title, Isbn, Language, ShelfSignature, Tag, Publisher, Category
+from src.database.models import Book, Address, Author, Title, Isbn, Language, ShelfSignature, Tag, Publisher, Category, \
+    Cover_page
 from src.constans import (OPER_DELETE_SUCCEEDED, OPER_UPDATE_SUCCEEDED, OPER_UPDATE_FAILED_DATA_NOT_FOUND,
                           OPER_DELETE_FAILED_DATA_EXISTS, OPER_ADD_FAILED_DATA_EXISTS, OPER_ADD_SUCCEEDED,
                           OPER_GET_LIST_FAILED, OPER_GET_LIST_SUCCEEDED, OPER_IS_IN_DB_FAILED, OPER_IS_IN_DB_SUCCEEDED,
@@ -25,7 +26,7 @@ from src.constans import (OPER_DELETE_SUCCEEDED, OPER_UPDATE_SUCCEEDED, OPER_UPD
 
 def add_book(new_title, new_author_name, new_author_surname, new_isbn, new_language,
              new_shelf_signature, new_tag, new_publisher,  new_street, new_number, new_flat_number, new_zip_code,
-             new_city, new_country, new_publication_year, new_category):
+             new_city, new_country, new_publication_year, new_category, new_cover_page):
 
         operation_status = -1
         id = -1
@@ -122,7 +123,6 @@ def add_book(new_title, new_author_name, new_author_surname, new_isbn, new_langu
             else:
                 new_book.publisher_id = publisher.id
                 logging.info('Publisher exists in the database and was added to the book')
-
 
             session.add(new_book)
             session.commit()

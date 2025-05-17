@@ -3,9 +3,10 @@ import src.logging_to_file
 from src.operations.cover_page_operations import  add_cover_page
 from src.constans import OPER_ADD_SUCCEEDED, OPER_ADD_FAILED_DATA_EXISTS
 
-i = (1,'src/images/2_Circles.jpg')
-operation_status, book_id = add_cover_page(i)
+
+file_path='/Users/dorota/PycharmProjects/NT_Books/src/images/2_Circles.jpg'
+operation_status, cover_page_id = add_cover_page(file_path)
 if operation_status == OPER_ADD_SUCCEEDED:
-    logging.info(f'Image was added to the book with ID: {book_id}')
+    logging.info(f'Cover page was added')
 elif operation_status == OPER_ADD_FAILED_DATA_EXISTS:
-    logging.warning(f'Image: {i} exists already in the database')
+    logging.warning(f'Cover page exists already in the database')
