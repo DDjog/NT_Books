@@ -13,7 +13,7 @@ from src.operations.author_operations import add_author, delete_author, get_auth
 from src.operations.title_operations import add_title, delete_title, get_titles_list
 from src.operations.language_operations import add_language, get_languages_list, delete_language
 from src.operations.tag_operations import add_tag, get_tags_list, delete_tag
-
+from src.operations.cover_page_operations import add_cover_page, delete_cover_page, get_cover_page, get_cover_page_list
 
 
 root = Tk()
@@ -241,47 +241,47 @@ def tag_oper_window():
     button_quit = Button(ta_top, text='Close', command=ta_top.destroy)
     button_quit.grid(row=3, column=2)
 
-# def image_oper_window():
-#     global i_top
-#     global text_list
-#     global e
-#
-#     i_top=Toplevel()
-#     i_top.grab_set()
-#
-#     i_top.title('Image operations')
-#
-#     i_top.columnconfigure(0, weight=1)
-#     i_top.columnconfigure(1, weight=1)
-#     i_top.columnconfigure(2, weight=1)
-#     i_top.columnconfigure(3, weight=1)
-#     i_top.rowconfigure(0, weight=1)
-#
-#     e=Entry(i_top, width=50)
-#     e.grid(row=0, column=0, sticky='ew')
-#
-#     add_in_e=Button(i_top, text='Add image', command=add_image_to_list)
-#     add_in_e.grid(row=0, column=1, padx=10, pady=10, sticky='ew')
-#
-#     delete_in_e = Button(i_top, text='Delete image', command=delete_selected_image)
-#     delete_in_e.grid(row=0, column=2, padx=10, pady=10, sticky='ew')
-#
-#     text_list = Listbox(i_top, width=60, height=15)
-#     text_list.grid(row=2, column=0, padx=10, pady=10, sticky='nsew')
-#
-#     button_update = Button(i_top, text='Update image', command=update_image_window)
-#     button_update.grid(row=1, column=1, padx=10, pady=10, sticky='nsew')
-#
-#     operation_status, im = get_images_list()
-#     if operation_status == OPER_GET_LIST_SUCCEEDED:
-#         for i in im:
-#             text_list.insert(END, i.image)
-#
-#     text_list_label = Label(i_top, text='List of images:')
-#     text_list_label.grid(row=1, column=0, padx=10, pady=10, sticky='nsew')
-#
-#     button_quit = Button(l_top, text='Close', command=i_top.destroy)
-#     button_quit.grid(row=3, column=2)
+def cover_page_oper_window():
+    global cp_top
+    global text_list
+    global e
+
+    cp_top=Toplevel()
+    cp_top.grab_set()
+
+    cp_top.title('Cover page operations')
+
+    cp_top.columnconfigure(0, weight=1)
+    cp_top.columnconfigure(1, weight=1)
+    cp_top.columnconfigure(2, weight=1)
+    cp_top.columnconfigure(3, weight=1)
+    cp_top.rowconfigure(0, weight=1)
+
+    e=Entry(cp_top, width=50)
+    e.grid(row=0, column=0, sticky='ew')
+
+    add_in_e=Button(cp_top, text='Add cover page', command=add_cover_page_to_list)
+    add_in_e.grid(row=0, column=1, padx=10, pady=10, sticky='ew')
+
+    delete_in_e = Button(cp_top, text='Delete cover page', command=delete_selected_cover_page)
+    delete_in_e.grid(row=0, column=2, padx=10, pady=10, sticky='ew')
+
+    text_list = Listbox(cp_top, width=60, height=15)
+    text_list.grid(row=2, column=0, padx=10, pady=10, sticky='nsew')
+
+    button_update = Button(cp_top, text='Update cover page', command=update_cover_page_window)
+    button_update.grid(row=1, column=1, padx=10, pady=10, sticky='nsew')
+
+    operation_status, cover_pages = get_cover_page_list()
+    if operation_status == OPER_GET_LIST_SUCCEEDED:
+        for cp in cover_pages:
+            text_list.insert(END, cp.cover_page)
+
+    text_list_label = Label(cp_top, text='List of cover pages:')
+    text_list_label.grid(row=1, column=0, padx=10, pady=10, sticky='nsew')
+
+    button_quit = Button(cp_top, text='Close', command=cp_top.destroy)
+    button_quit.grid(row=3, column=2)
 
 
 def message_window_empty_data():
@@ -330,7 +330,8 @@ def category_add_successfull_window():
     button_close = Button(c_win_top, text='Close', command=c_win_top.destroy)
     button_close.grid(row=1, column=0, padx=10, pady=10)
 
-##################**********###################
+
+###################**********###################
 
 def add_author_to_list():
     text = e.get()
@@ -449,24 +450,35 @@ def tag_add_successfull_window():
     button_close = Button(ta_win_top, text='Close', command=ta_win_top.destroy)
     button_close.grid(row=1, column=0, padx=10, pady=10)
 
-#############*********#################
+##################**********###################
 
-# def add_image_to_list():
-#     text = e.get()
-#     if not text.strip():
-#         message_window_empty_data()
-#         return None
-#     else:
-#         if text not in text_list.get(0, END):
-#             add_category(text)
-#             text_list.insert(END, text)
-#             e.delete(0, END)
-#             logging.info('Category added to the list')
-#             category_add_successfull_window()
-#             return None
-#         else:
-#             logging.info('Category is already on the list')
-#             return None
+def add_cover_page_to_list():
+    text = e.get()
+    if not text.strip():
+        message_window_empty_data()
+        return None
+    else:
+        if text not in text_list.get(0, END):
+            add_cover_page(text)
+            text_list.insert(END, text)
+            e.delete(0, END)
+            logging.info('Cover page added to the list')
+            category_add_successfull_window()
+            return None
+        else:
+            logging.info('Cover page is already on the list')
+            return None
+
+def cover_page__add_successfull_window():
+    cp_win_top = Toplevel()
+    cp_win_top.grab_set()
+    top_label = Label(cp_win_top, text='Cover page addition successfull.')
+    top_label.grid(row=0, column=0, padx=10, pady=10, sticky='nsew')
+
+    button_close = Button(cp_win_top, text='Close', command=cp_win_top.destroy)
+    button_close.grid(row=1, column=0, padx=10, pady=10)
+
+#################**********#################
 
 def category_add_successfull_window():
     c_win_top = Toplevel()
@@ -641,6 +653,33 @@ def tag_delete_successfull_window():
     button_close.grid(row=1, column=0, padx=10, pady=10)
 
 ############**********#############
+
+def delete_selected_cover_page():
+    delete_for_sure(_delete_selected_cover_page)
+    return None
+
+def _delete_selected_cover_page():
+    selected = text_list.curselection()
+    if selected:
+        delete_cover_page(text_list.get(selected))
+        text_list.delete(selected)
+        cover_page_delete_successfull_window()
+        logging.info('Cover page deleted')
+        return None
+    else:
+        logging.info('No record to be deleted')
+        return None
+
+def cover_page_delete_successfull_window():
+    cp_d_win_top = Toplevel()
+    cp_d_win_top.grab_set()
+    top_label = Label(cp_d_win_top, text='Cover page delete successfull.')
+    top_label.grid(row=0, column=0, padx=10, pady=10, sticky='nsew')
+
+    button_close = Button(cp_d_win_top, text='Close', command=cp_d_win_top.destroy)
+    button_close.grid(row=1, column=0, padx=10, pady=10)
+
+###########********##############
 
 def update_category_window():
     global old_category_name
@@ -1027,6 +1066,81 @@ def tag_update_successfull_window():
     button_close = Button(t_u_win_top, text='Close', command=t_u_win_top.destroy)
     button_close.grid(row=1, column=0, padx=10, pady=10)
 
+#############********#############
+
+def update_cover_page_window():
+    global top
+
+    top = Toplevel()
+    top.grab_set()
+
+    top.columnconfigure(0, weight=1)
+    top.columnconfigure(1, weight=1)
+    top.columnconfigure(2, weight=1)
+    top.columnconfigure(3, weight=1)
+    top.rowconfigure(0, weight=1)
+
+    top.title('Update cover page')
+    selected_cover_page = text_list.curselection()
+
+    old_cover_page = Entry(top, width=50)
+    old_cover_page.grid(row=0, column=1, sticky='ew')
+    if selected_cover_page:
+        selected_index = selected_cover_page[0]
+        selected_cover_page = text_list.get(selected_index)
+        old_cover_page.insert(0, selected_cover_page)
+
+    new_cover_page = Entry(top, width=50)
+    new_cover_page.grid(row=1, column=1, sticky='ew')
+
+    old_cover_page = Label(top, text='from')
+    old_cover_page.grid(row=0, column=0, padx=10, pady=10, sticky='nsew')
+
+    new_cover_page_label = Label(top, text='to')
+    new_cover_page_label.grid(row=1, column=0, padx=10, pady=10, sticky='nsew')
+
+    button_update = Button(top, text='Press to update', command=lambda: update_language(new_cover_page, selected_index))
+    button_update.grid(row=2, column=1, padx=10, pady=10)
+
+    button_close = Button(top, text='Close', command=top.destroy)
+    button_close.grid(row=2, column=2, padx=10, pady=10)
+
+def update_cover_page(new_cover_page, selected_index):
+
+    updated_cover_page = new_cover_page.get()
+    if not updated_cover_page:
+        logging.info("No cover page indicated for an update")
+        return None
+    else:
+        selected_cover_page_text = text_list.get(selected_index)
+        delete_cover_page(selected_cover_page_text)
+
+        cover_page_list = text_list.get(0, END)
+        if not updated_cover_page in cover_page_list:
+            add_cover_page(updated_cover_page)
+            text_list.delete(selected_index)
+            text_list.insert(selected_index, updated_cover_page)
+            top.destroy()
+            cover_page_update_successfull_window()
+            logging.info('Cover page updated')
+        else:
+            logging.info('Cover page is already on authors list')
+            message_window_data_exists()
+            top.destroy()
+            return None
+
+
+def cover_page_update_successfull_window():
+    cp_u_win_top = Toplevel()
+    cp_u_win_top.grab_set()
+    cp_u_win_top.lift()
+    cp_u_win_top.after(10, lambda: cp_u_win_top.attributes('-topmost', False))
+    top_label = Label(cp_u_win_top, text='Cover page update successfull.')
+    top_label.grid(row=0, column=0, padx=10, pady=10, sticky='nsew')
+
+    button_close = Button(cp_u_win_top, text='Close', command=cp_u_win_top.destroy)
+    button_close.grid(row=1, column=0, padx=10, pady=10)
+
 
 myButton1 = Button(root, text='Categories operations', fg='blue', command=cat_oper_window)
 myButton1.grid(row=0, column=3, padx=10, pady=10, sticky='ew')
@@ -1043,8 +1157,11 @@ myButton4.grid(row=3, column=3, padx=10, pady=10, sticky='ew')
 myButton5 = Button(root, text='Tags operations', fg='purple', command= tag_oper_window)
 myButton5.grid(row=4, column=3, padx=10, pady=10, sticky='ew')
 
+myButton5 = Button(root, text='Cover pages operations', fg='orange', command= cover_page_oper_window)
+myButton5.grid(row=5, column=3, padx=10, pady=10, sticky='ew')
+
 button_quit = Button(root, text='Close', command=root.quit)
-button_quit.grid(row=4, column=5)
+button_quit.grid(row=5, column=5)
 
 
 root.mainloop()

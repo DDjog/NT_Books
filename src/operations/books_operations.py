@@ -41,7 +41,7 @@ def add_book(new_title, new_author_name, new_author_surname, new_isbn, new_langu
         category = None
         tag = None
 
-## trial##
+
         book = session.query(Book).join(Title).join(Isbn).filter(
             Title.title==new_title,
             Isbn.isbn_name==new_isbn

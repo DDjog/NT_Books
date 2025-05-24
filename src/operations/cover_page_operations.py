@@ -25,6 +25,34 @@ def add_cover_page(file_path):
         session.rollback()
         return OPER_ADD_FAILED_NO_DATABASE_CONNECTION, None
 
+def get_cover_page(cover_page_id, output_path):
+    try:
+        cover_page = session.query(Cover_page).filter_by(id = cover_page_id).first()
+        if cover_page:
+            with open(output_path, 'wb') as file:
+                file.write(cover_page.cover_page)
+            logging.info(f'Cover page obtained and saved to {output_path}')
+            return OPER_GET_LIST_SUCCEEDED, output_path
+        else:
+            logging.info('Cover page failed')
+            return OPER_GET_LIST_FAILED, None
+    except OperationalError as e:
+        logging.error(f'No database connection: {e}')
+        return OPER_GET_LIST_FAILED_NO_DATABASE_CONNECTION, None
+
+def get_cover_page_list():
+    try:
+        cover_page_list = session.query(Cover_page).all()
+        if cover_page_list:
+            logging.info(' Cover page list obtained')
+            return OPER_GET_LIST_SUCCEEDED, cover_page_list
+        else:
+            logging.info('Cover page list failed')
+            return OPER_GET_LIST_FAILED, None
+    except OperationalError as e:
+        logging.error(f'No database connection: {e}')
+        return OPER_GET_LIST_FAILED_NO_DATABASE_CONNECTION, None
+
 def update_book_with_cover_page(new_cover_page_id, book_id):
     try:
         book = session.query(Book).filter_by(id = book_id).first()
@@ -35,6 +63,26 @@ def update_book_with_cover_page(new_cover_page_id, book_id):
             return OPER_UPDATE_SUCCEEDED
         else:
             logging.info(f'Book with ID: {book_id} not found')
+            return OPER_UPDATE_FAILED_DATA_NOT_FOUND, None
+    except OperationalError as e:
+        session.rollback()
+        logging.info(f'No database connection: {e}')
+        return OPER_UPDATE_FAILED_NO_DB_CONNECTION, None
+
+def update_cover_page(old_file_path, new_file_path):
+    try:
+        with open(old_file_path, 'rb') as file:
+            old_file = file.read()
+        with open(new_file_path, 'rb') as file:
+            new_file = file.read()
+        cover_page = session.query(Cover_page).filter_by(cover_page=old_file).first()
+        if cover_page:
+            cover_page.cover_page = new_file
+            session.commit()
+            logging.info('Cover page was updated')
+            return OPER_UPDATE_SUCCEEDED, cover_page.id
+        else:
+            logging.info('Data not found')
             return OPER_UPDATE_FAILED_DATA_NOT_FOUND, None
     except OperationalError as e:
         session.rollback()
