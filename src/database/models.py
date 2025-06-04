@@ -47,13 +47,13 @@ book_m2m_category = Table(
 #     Column("shelf_signature_id", Integer, ForeignKey("shelf_signatures.id", ondelete="CASCADE")),
 #                         )
 
-book_m2m_cover_page = Table(
-    "book_m2m_cover_page",
-    Base.metadata,
-    Column("id", Integer, primary_key=True),
-    Column("book_id", Integer, ForeignKey("books.id", ondelete="CASCADE")),
-    Column("cover_page_id", Integer, ForeignKey("cover_pages.id", ondelete="CASCADE")),
-                        )
+# book_m2m_cover_page = Table(
+#     "book_m2m_cover_page",
+#     Base.metadata,
+#     Column("id", Integer, primary_key=True),
+#     Column("book_id", Integer, ForeignKey("books.id", ondelete="CASCADE")),
+#     Column("cover_page_id", Integer, ForeignKey("cover_pages.id", ondelete="CASCADE")),
+#                         )
 
 class Book(Base):
     __tablename__ = "books"
@@ -61,14 +61,13 @@ class Book(Base):
     title_id = Column(Integer, ForeignKey('titles.id'), nullable=True, unique=True)
     isbn_id = Column(Integer, ForeignKey('isbn.id'), nullable=True, unique=True)
     language_id = Column(Integer, ForeignKey('languages.id'), nullable=True)
-    cover_page_id = Column(Integer, ForeignKey('cover_pages.id'), nullable=True, unique=True)
     shelf_signature_id = Column(Integer, ForeignKey('shelf_signatures.id'), nullable=True)
     publisher_id = Column(Integer, ForeignKey('publishers.id'), nullable=True)
 
     title = relationship('Title', backref='books')
     isbn = relationship('Isbn', backref='books')
     language = relationship('Language', backref='books')
-    cover_page = relationship('Cover_page', backref='books')
+    cover_pages = relationship("Cover_page", back_populates="book", cascade="all, delete-orphan")
     authors = relationship("Author", secondary=book_m2m_author, backref="books")
     tags = relationship("Tag", secondary=book_m2m_tag, backref="books")
     publisher = relationship('Publisher', backref='books')
@@ -101,6 +100,9 @@ class Cover_page(Base):
     __tablename__ = "cover_pages"
     id = Column(Integer, primary_key=True)
     cover_page = Column(LargeBinary, nullable=True)
+
+    book_id = Column(Integer, ForeignKey('books.id'))
+    book = relationship("Book", back_populates="cover_pages")
 
 class Address(Base):
     __tablename__ = "addresses"

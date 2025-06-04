@@ -26,7 +26,7 @@ from src.constans import (OPER_DELETE_SUCCEEDED, OPER_UPDATE_SUCCEEDED, OPER_UPD
 
 def add_book(new_title, new_author_name, new_author_surname, new_isbn, new_language,
              new_shelf_signature, new_tag, new_publisher,  new_street, new_number, new_flat_number, new_zip_code,
-             new_city, new_country, new_publication_year, new_category, new_cover_page):
+             new_city, new_country, new_publication_year, new_category):
 
         operation_status = -1
         id = -1
