@@ -46,7 +46,7 @@ image_label.pack(padx=10, pady=10)
 
 image_refs = {}
 
-def show_cover(event, image_data):
+def show_cover(image_data):
     if image_data:
             image = Image.open(io.BytesIO(image_data))
             image = image.resize((200, 250))

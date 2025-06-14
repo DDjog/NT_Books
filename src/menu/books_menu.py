@@ -1,7 +1,11 @@
 from os.path import split
 from tkinter import *
-
+from PIL import Image, ImageTk
+import pygame
 import logging
+import time
+import io
+from tkinter import ttk
 
 from sqlalchemy import column
 
@@ -14,9 +18,11 @@ from src.operations.title_operations import add_title, delete_title, get_titles_
 from src.operations.language_operations import add_language, get_languages_list, delete_language
 from src.operations.tag_operations import add_tag, get_tags_list, delete_tag
 from src.operations.cover_page_operations import add_cover_page, delete_cover_page, get_cover_page, get_cover_page_list
-
+from src.tests_category.test_get_categories_list import categories_list
+from src.tests_title.test_get_titles_list import titles_list
 
 root = Tk()
+clock_label = None
 root.title('Books project')
 
 root.rowconfigure(0, weight=1)
@@ -283,6 +289,118 @@ def cover_page_oper_window():
     button_quit = Button(cp_top, text='Close', command=cp_top.destroy)
     button_quit.grid(row=3, column=2)
 
+def books_oper_window():
+    global b_top
+    global book_text_list
+    global e_titles_list
+    global e_authors_list
+    global e_languages_list
+    global e_categories_list
+    global e_tags_list
+
+
+
+    b_top = Toplevel()
+    b_top.grab_set()
+
+    b_top.title('Books operations')
+
+    b_top.columnconfigure(0, weight=1)
+    b_top.columnconfigure(1, weight=1)
+    b_top.columnconfigure(2, weight=1)
+    b_top.columnconfigure(3, weight=1)
+    b_top.rowconfigure(0, weight=1)
+
+
+    operation_status, titles = get_titles_list()
+    titles_list=[]
+    if operation_status == OPER_GET_LIST_SUCCEEDED:
+        for t in titles:
+            titles_list.append(t.title)
+
+    e_titles_list = ttk.Combobox(b_top, values=titles_list, width =47)
+    e_titles_list.set('---Choose title from the list---')
+    e_titles_list.grid(row=0, column=0, padx=10, pady=10, sticky='ew')
+
+    add_in_e_titles_list = Button(b_top, text='Add title', command=add_title_to_book)
+    add_in_e_titles_list.grid(row=0, column=1, padx=10, pady=10, sticky='ew')
+
+    delete_in_e_titles_list = Button(b_top, text='Delete title', command=delete_title_from_book)
+    delete_in_e_titles_list.grid(row=0, column=2, padx=10, pady=10, sticky='ew')
+
+    book_text_list = Listbox(b_top, width=60, height=15)
+    book_text_list.grid(row=7, column=0, padx=10, pady=10, sticky='nsew')
+
+    book_text_list_label = Label(b_top, text='Added book:')
+    book_text_list_label.grid(row=6, column=0, padx=10, pady=10, sticky='nsew')
+
+    operation_status, authors_list = get_authors_list()
+    authors_names = []
+    if operation_status == OPER_GET_LIST_SUCCEEDED:
+        for a in authors_list:
+            authors_names.append(f'{a.author_name} {a.author_surname}')
+
+    e_authors_list = ttk.Combobox(b_top, values=authors_names, width=47)
+    e_authors_list.set('---Choose author from the list---')
+    e_authors_list.grid(row=1, column=0, padx=10, pady=10, sticky='ew')
+
+    add_in_e_authors_list = Button(b_top, text='Add author', command=add_author_to_book)
+    add_in_e_authors_list.grid(row=1, column=1, padx=10, pady=10, sticky='ew')
+
+    delete_in_e_authors_list = Button(b_top, text='Delete author', command=delete_author_from_book)
+    delete_in_e_authors_list.grid(row=1, column=2, padx=10, pady=10, sticky='ew')
+
+    operation_status, languages = get_languages_list()
+    languages_list=[]
+    if operation_status == OPER_GET_LIST_SUCCEEDED:
+        for l in languages:
+            languages_list.append(l.language)
+
+    e_languages_list = ttk.Combobox(b_top, values=languages_list, width =47)
+    e_languages_list.set('---Choose language from the list---')
+    e_languages_list.grid(row=2, column=0, padx=10, pady=10, sticky='ew')
+
+    add_in_e_languages_list = Button(b_top, text='Add language', command=add_language_to_book)
+    add_in_e_languages_list.grid(row=2, column=1, padx=10, pady=10, sticky='ew')
+
+    delete_in_e_languages_list = Button(b_top, text='Delete language', command=delete_language_from_book)
+    delete_in_e_languages_list.grid(row=2, column=2, padx=10, pady=10, sticky='ew')
+
+    operation_status, categories = get_categories_list()
+    categories_list = []
+    if operation_status == OPER_GET_LIST_SUCCEEDED:
+        for c in categories:
+            categories_list.append(c.category_name)
+
+    e_categories_list = ttk.Combobox(b_top, values=categories_list, width=47)
+    e_categories_list.set('---Choose category from the list---')
+    e_categories_list.grid(row=3, column=0, padx=10, pady=10, sticky='ew')
+
+    add_in_e_categories_list = Button(b_top, text='Add category', command=add_category_to_book)
+    add_in_e_categories_list.grid(row=3, column=1, padx=10, pady=10, sticky='ew')
+
+    delete_in_e_categories_list = Button(b_top, text='Delete category', command=delete_category_from_book)
+    delete_in_e_categories_list.grid(row=3, column=2, padx=10, pady=10, sticky='ew')
+
+    operation_status, tags = get_tags_list()
+    tags_list = []
+    if operation_status == OPER_GET_LIST_SUCCEEDED:
+        for t in tags:
+            tags_list.append(t.tag)
+
+    e_tags_list = ttk.Combobox(b_top, values=tags_list, width=47)
+    e_tags_list.set('---Choose tag from the list---')
+    e_tags_list.grid(row=4, column=0, padx=10, pady=10, sticky='ew')
+
+    add_in_e_tags_list = Button(b_top, text='Add tag', command=add_tag_to_book)
+    add_in_e_tags_list.grid(row=4, column=1, padx=10, pady=10, sticky='ew')
+
+    delete_in_e_tags_list = Button(b_top, text='Delete tag', command=delete_tag_from_book)
+    delete_in_e_tags_list.grid(row=4, column=2, padx=10, pady=10, sticky='ew')
+
+    button_quit = Button(b_top, text='Close', command=b_top.destroy)
+    button_quit.grid(row=8, column=2)
+
 
 def message_window_empty_data():
     e_d_top = Toplevel()
@@ -321,6 +439,28 @@ def add_category_to_list():
             logging.info('Category is already on the list')
             return None
 
+def add_category_to_book():
+    global book_text_list
+    global e_categories_list
+
+    text = e_categories_list.get()
+    if not text.strip():
+        message_window_empty_data()
+        return None
+    else:
+        formatted_text = f'Category: {text}'
+        if formatted_text not in book_text_list.get(0, END):
+            book_text_list.insert(END, formatted_text)
+            e_categories_list.delete(0, END)
+            category_add_successfull_window()
+            e_categories_list.set('---Choose category from the list---')
+            logging.info('Category added to the book')
+            return None
+        else:
+            logging.info('Category was already added to the book')
+            return None
+
+
 def category_add_successfull_window():
     c_win_top = Toplevel()
     c_win_top.grab_set()
@@ -334,7 +474,8 @@ def category_add_successfull_window():
 ###################**********###################
 
 def add_author_to_list():
-    text = e.get()
+    global e_authors_list
+    text = e_authors_list.get()
     if not text.strip():
         message_window_empty_data()
         return None
@@ -356,6 +497,31 @@ def add_author_to_list():
             else:
                 logging.info('Author is already on the list')
                 return None
+
+def add_author_to_book():
+    global e_authors_list
+    text = e_authors_list.get()
+    if not text.strip():
+        message_window_empty_data()
+        return None
+    else:
+        split_text = text.split()
+        if len(split_text) < 2:
+            message_window_empty_data()
+            return None
+        else:
+            if f'Author: {text}' not in book_text_list.get(0, END):
+                formatted_text=f'Author: {text}'
+                book_text_list.insert(END, formatted_text)
+                e_authors_list.delete(0, END)
+                author_add_successfull_window()
+                e_authors_list.set('---Choose author from the list---')
+                logging.info('Author added to the book')
+                return None
+            else:
+                logging.info('Author was already added')
+                return None
+
 
 def author_add_successfull_window():
     a_win_top = Toplevel()
@@ -383,6 +549,27 @@ def add_title_to_list():
             return None
         else:
             logging.info('Title is already on the list')
+            return None
+
+def add_title_to_book():
+    global book_text_list
+    global e_titles_list
+
+    text = e_titles_list.get()
+    if not text.strip():
+        message_window_empty_data()
+        return None
+    else:
+        formatted_text = f'Title: {text}'
+        if formatted_text not in book_text_list.get(0, END):
+            book_text_list.insert(END, formatted_text)
+            e_titles_list.delete(0, END)
+            title_add_successfull_window()
+            e_titles_list.set('---Choose title from the list---')
+            logging.info('Title added to the book')
+            return None
+        else:
+            logging.info('Title was already added to the book')
             return None
 
 def title_add_successfull_window():
@@ -413,6 +600,27 @@ def add_language_to_list():
             logging.info('Language is already on the list')
             return None
 
+def add_language_to_book():
+    global book_text_list
+    global e_languages_list
+
+    text = e_languages_list.get()
+    if not text.strip():
+        message_window_empty_data()
+        return None
+    else:
+        formatted_text = f'Language: {text}'
+        if formatted_text not in book_text_list.get(0, END):
+            book_text_list.insert(END, formatted_text)
+            e_languages_list.delete(0, END)
+            language_add_successfull_window()
+            e_languages_list.set('---Choose language from the list---')
+            logging.info('Language added to the book')
+            return None
+        else:
+            logging.info('Language was already added to the book')
+            return None
+
 def language_add_successfull_window():
     l_win_top = Toplevel()
     l_win_top.grab_set()
@@ -439,6 +647,27 @@ def add_tag_to_list():
             return None
         else:
             logging.info('Tag is already on the list')
+            return None
+
+def add_tag_to_book():
+    global book_text_list
+    global e_tags_list
+
+    text = e_tags_list.get()
+    if not text.strip():
+        message_window_empty_data()
+        return None
+    else:
+        formatted_text = f'Tag: {text}'
+        if formatted_text not in book_text_list.get(0, END):
+            book_text_list.insert(END, formatted_text)
+            e_tags_list.delete(0, END)
+            tag_add_successfull_window()
+            e_tags_list.set('---Choose tag from the list---')
+            logging.info('Tag added to the book')
+            return None
+        else:
+            logging.info('Tag was already added to the book')
             return None
 
 def tag_add_successfull_window():
@@ -530,6 +759,18 @@ def _delete_selected_category():
         logging.info('No record to be deleted')
         return None
 
+def delete_category_from_book():
+    global book_text_list
+    global e_categories_list
+    selected = book_text_list.curselection()
+    if selected:
+        book_text_list.delete(selected)
+        category_delete_successfull_window()
+        e_categories_list.set('---Choose category from the list---')
+        logging.info('Category deleted from the book')
+    else:
+        logging.info('No category selected to be deleted')
+
 def category_delete_successfull_window():
     c_d_win_top = Toplevel()
     c_d_win_top.grab_set()
@@ -561,6 +802,16 @@ def _delete_selected_author():
         text_list.delete(selected)
         logging.info('Author deleted')
         return None
+
+def delete_author_from_book():
+    global book_text_list
+    selected = book_text_list.curselection()
+    if selected:
+        book_text_list.delete(selected)
+        author_delete_successfull_window()
+        logging.info('Author deleted from the book')
+    else:
+        logging.info('No author selected to be deleted')
 
 def author_delete_successfull_window():
     a_d_win_top = Toplevel()
@@ -598,6 +849,19 @@ def title_delete_successfull_window():
     button_close = Button(t_d_win_top, text='Close', command=t_d_win_top.destroy)
     button_close.grid(row=1, column=0, padx=10, pady=10)
 
+def delete_title_from_book():
+    global book_text_list
+    global e_titles_list
+    selected = book_text_list.curselection()
+    if selected:
+        book_text_list.delete(selected)
+        title_delete_successfull_window()
+        e_titles_list.set('---Choose title from the list---')
+        logging.info('Title deleted from the book')
+    else:
+        logging.info('No title selected to be deleted')
+
+
 ###########********##############
 
 def delete_selected_language():
@@ -615,6 +879,18 @@ def _delete_selected_language():
     else:
         logging.info('No record to be deleted')
         return None
+
+def delete_language_from_book():
+    global book_text_list
+    global e_languages_list
+    selected = book_text_list.curselection()
+    if selected:
+        book_text_list.delete(selected)
+        language_delete_successfull_window()
+        e_languages_list.set('---Choose language from the list---')
+        logging.info('Language deleted from the book')
+    else:
+        logging.info('No language selected to be deleted')
 
 def language_delete_successfull_window():
     l_d_win_top = Toplevel()
@@ -642,6 +918,18 @@ def _delete_selected_tag():
     else:
         logging.info('No record to be deleted')
         return None
+
+def delete_tag_from_book():
+    global book_text_list
+    global e_tags_list
+    selected = book_text_list.curselection()
+    if selected:
+        book_text_list.delete(selected)
+        tag_delete_successfull_window()
+        e_tags_list.set('---Choose tag from the list---')
+        logging.info('Tag deleted from the book')
+    else:
+        logging.info('No tag selected to be deleted')
 
 def tag_delete_successfull_window():
     t_d_win_top = Toplevel()
@@ -1142,26 +1430,56 @@ def cover_page_update_successfull_window():
     button_close.grid(row=1, column=0, padx=10, pady=10)
 
 
+
 myButton1 = Button(root, text='Categories operations', fg='blue', command=cat_oper_window)
-myButton1.grid(row=0, column=3, padx=10, pady=10, sticky='ew')
+myButton1.grid(row=0, column=0, padx=10, pady=10, sticky='ew')
 
 myButton2 = Button(root, text='Authors operations', fg='red', command=aut_oper_window)
-myButton2.grid(row=1, column=3, padx=10, pady=10, sticky='ew')
+myButton2.grid(row=1, column=0, padx=10, pady=10, sticky='ew')
 
 myButton3 = Button(root, text='Titles operations', fg='brown', command= tit_oper_window)
-myButton3.grid(row=2, column=3, padx=10, pady=10, sticky='ew')
+myButton3.grid(row=2, column=0, padx=10, pady=10, sticky='ew')
 
 myButton4 = Button(root, text='Languages operations', fg='green', command= lang_oper_window)
-myButton4.grid(row=3, column=3, padx=10, pady=10, sticky='ew')
+myButton4.grid(row=3, column=0, padx=10, pady=10, sticky='ew')
 
 myButton5 = Button(root, text='Tags operations', fg='purple', command= tag_oper_window)
-myButton5.grid(row=4, column=3, padx=10, pady=10, sticky='ew')
+myButton5.grid(row=4, column=0, padx=10, pady=10, sticky='ew')
 
-myButton5 = Button(root, text='Cover pages operations', fg='orange', command= cover_page_oper_window)
-myButton5.grid(row=5, column=3, padx=10, pady=10, sticky='ew')
+myButton5 = Button(root, text='Cover pages operations', fg='black', command= cover_page_oper_window)
+myButton5.grid(row=5, column=0, padx=10, pady=10, sticky='ew')
+
+myButton6 = Button(root, text='Books operations', fg='black', highlightbackground='orange', command= books_oper_window, width=20, height=3)
+myButton6.grid(row=1, column=1, padx=10, pady=10, sticky='ew')
+
+digit_clock_label = Label(root, font=('Calibri', 20), fg='orange', bg='grey')
+digit_clock_label.grid(row=2, column=1, padx=10, pady=10, sticky='nsew')
+
+logo_label = Label(root)
+logo_label.grid(row=3, column=1, padx=10, pady=10, sticky='nsew')
 
 button_quit = Button(root, text='Close', command=root.quit)
-button_quit.grid(row=5, column=5)
+button_quit.grid(row=5, column=3)
 
+# digital clock display
+
+def digit_clock():
+
+    current_time = time.strftime("%H:%M")
+    digit_clock_label.config(text=current_time)
+    root.after(1000, digit_clock)
+
+digit_clock()
+
+def show_logo(logo):
+    global logo_img
+    image = Image.open(io.BytesIO(logo))
+    image = image.resize((100, 120))
+    logo_img = ImageTk.PhotoImage(image)
+    logo_label.config(image=logo_img)
+
+with open("../images/logo.png", 'rb') as f:
+    logo=f.read()
+show_logo(logo)
 
 root.mainloop()
