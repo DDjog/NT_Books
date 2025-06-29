@@ -41,7 +41,6 @@ def add_book(new_title, new_author_name, new_author_surname, new_isbn, new_langu
         category = None
         tag = None
 
-
         book = session.query(Book).join(Title).join(Isbn).filter(
             Title.title==new_title,
             Isbn.isbn_name==new_isbn
@@ -214,6 +213,19 @@ def update_book(old_title, new_title, old_author_name, new_author_name, old_auth
                 old_publisher, new_publisher, old_street, new_street, old_number, new_number, old_flat_number, new_flat_number,
                 old_zip_code, new_zip_code, old_city, new_city, old_country, new_country, old_publication_year,
                 new_publication_year, old_category, new_category):
+    existing_isbn = session.query(Isbn).filter(Isbn.isbn_name == new_isbn).first()
+
+
+    if existing_isbn and existing_isbn.id != Book.isbn_id:
+        return OPER_UPDATE_FAILED_DATA_NOT_FOUND, None
+
+    try:
+        session.commit()
+    except:
+        session.rollback()
+        logging.error(f'New isbn exists already: {new_isbn}')
+        return OPER_UPDATE_FAILED_DATA_EXISTS, None
+
     try:
         book = session.query(Book).join(Title).join(Isbn).filter(
             Title.title==old_title,
