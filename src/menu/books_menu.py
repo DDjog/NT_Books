@@ -7,8 +7,12 @@ import logging
 import time
 import io
 from tkinter import ttk
+from tkinter import messagebox
+
+from sqlalchemy.sql.operators import filter_op
+
 from src.database.db import session
-from src.database.models import Author, Category, Tag, Title, Language
+from src.database.models import Author, Category, Tag, Title, Language, Book
 
 
 from sqlalchemy import column
@@ -25,7 +29,7 @@ from src.operations.cover_page_operations import add_cover_page, delete_cover_pa
 from src.tests_author.test_delete_author import author_surname
 from src.tests_author.test_is_author_in_db import author_name
 from src.tests_book.test_add_book import operation_status, new_author_surname, new_category
-from src.tests_book.test_update_book import new_author_name
+from src.tests_book.test_update_book import new_author_name, new_title
 from src.tests_category.test_get_categories_list import categories_list
 from src.tests_title.test_get_titles_list import titles_list
 
@@ -64,7 +68,7 @@ def cat_oper_window():
     e_category=Entry(top, width=50)
     e_category.grid(row=0, column=0, sticky='ew')
 
-    add_in_e=Button(top, text='Add category', command=add_category_to_list)
+    add_in_e=Button(top, text='Add category', command=add_category_to_db)
     add_in_e.grid(row=0, column=1, padx=10, pady=10, sticky='ew')
 
     delete_in_e = Button(top, text='Delete category', command=delete_selected_category)
@@ -105,7 +109,7 @@ def aut_oper_window():
     e=Entry(a_top, width=50)
     e.grid(row=0, column=0, sticky='ew')
 
-    add_in_e=Button(a_top, text='Add author', command=add_author_to_list)
+    add_in_e=Button(a_top, text='Add author', command=add_author_to_db)
     add_in_e.grid(row=0, column=1, padx=10, pady=10, sticky='ew')
 
     delete_in_e = Button(a_top, text='Delete author', command=delete_selected_author)
@@ -129,7 +133,6 @@ def aut_oper_window():
     button_quit.grid(row=3, column=2)
 
 def tit_oper_window():
-    global t_e
     global t_text_list
     global e_title
 
@@ -146,17 +149,17 @@ def tit_oper_window():
     t_top.rowconfigure(2, weight=1)
     t_top.rowconfigure(3, weight=1)
 
+
     e_title=Entry(t_top, width=50)
     e_title.grid(row=0, column=0, sticky='ew')
 
-    add_in_e=Button(t_top, text='Add title', command=add_title_to_list)
+    add_in_e=Button(t_top, text='Add title', command=add_title_to_db)
     add_in_e.grid(row=0, column=1, padx=10, pady=10, sticky='ew')
 
     delete_in_e = Button(t_top, text='Delete title', command=delete_selected_title)
     delete_in_e.grid(row=0, column=3, padx=10, pady=10, sticky='ew')
 
-    t_text_list = Listbox(t_top, width=60, height=15)
-    t_text_list.grid(row=2, column=0, padx=10, pady=10, sticky='nsew')
+
 
     button_update = Button(t_top, text='Update title', command=update_title_window)
     button_update.grid(row=1, column=1, padx=10, pady=10, sticky='nsew')
@@ -190,7 +193,7 @@ def lang_oper_window():
     e=Entry(l_top, width=50)
     e.grid(row=0, column=0, sticky='ew')
 
-    add_in_e=Button(l_top, text='Add language', command=add_language_to_list)
+    add_in_e=Button(l_top, text='Add language', command=add_language_to_db)
     add_in_e.grid(row=0, column=1, padx=10, pady=10, sticky='ew')
 
     delete_in_e = Button(l_top, text='Delete language', command=delete_selected_language)
@@ -231,7 +234,7 @@ def tag_oper_window():
     e=Entry(ta_top, width=50)
     e.grid(row=0, column=0, sticky='ew')
 
-    add_in_e=Button(ta_top, text='Add tag', command=add_tag_to_list)
+    add_in_e=Button(ta_top, text='Add tag', command=add_tag_to_db)
     add_in_e.grid(row=0, column=1, padx=10, pady=10, sticky='ew')
 
     delete_in_e = Button(ta_top, text='Delete tag', command=delete_selected_tag)
@@ -305,6 +308,9 @@ def books_oper_window():
     global e_author
     global b_top
     global e_category
+    global e_title
+    global e_language
+    global e_tag
 
 
 
@@ -330,7 +336,7 @@ def books_oper_window():
     e_titles_list.set('---Choose title from the list---')
     e_titles_list.grid(row=0, column=0, padx=10, pady=10, sticky='ew')
 
-    add_in_e_titles_list = Button(b_top, text='Add title', command=add_title_to_book)
+    add_in_e_titles_list = Button(b_top, text='Add title', command=add_title_to_book_text_list)
     add_in_e_titles_list.grid(row=0, column=1, padx=10, pady=10, sticky='ew')
 
     e_title = Entry(b_top, width=50)
@@ -342,7 +348,7 @@ def books_oper_window():
     book_text_list = Listbox(b_top, width=60, height=15)
     book_text_list.grid(row=12, column=0, padx=10, pady=10, sticky='nsew')
 
-    book_text_list_label = Label(b_top, text='Added book:')
+    book_text_list_label = Label(b_top, text='Press button - Add book - to add book with the below parameters to database')
     book_text_list_label.grid(row=11, column=0, padx=10, pady=10, sticky='nsew')
 
     operation_status, authors_list = get_authors_list()
@@ -355,7 +361,7 @@ def books_oper_window():
     e_authors_list.set('---Choose author from the list---')
     e_authors_list.grid(row=2, column=0, padx=10, pady=10, sticky='ew')
 
-    add_in_e_authors_list = Button(b_top, text='Add author', command=add_author_to_book)
+    add_in_e_authors_list = Button(b_top, text='Add author', command=add_author_to_book_text_list)
     add_in_e_authors_list.grid(row=2, column=1, padx=10, pady=10, sticky='ew')
 
     e_author = Entry(b_top, width=50)
@@ -374,7 +380,7 @@ def books_oper_window():
     e_languages_list.set('---Choose language from the list---')
     e_languages_list.grid(row=4, column=0, padx=10, pady=10, sticky='ew')
 
-    add_in_e_languages_list = Button(b_top, text='Add language', command=add_language_to_book)
+    add_in_e_languages_list = Button(b_top, text='Add language', command=add_language_to_book_text_list)
     add_in_e_languages_list.grid(row=4, column=1, padx=10, pady=10, sticky='ew')
 
     e_language = Entry(b_top, width=50)
@@ -383,8 +389,8 @@ def books_oper_window():
     add_in_e_nt = Button(b_top, text='Add new language', command=add_new_language_to_db)
     add_in_e_nt.grid(row=5, column=1, padx=10, pady=10, sticky='ew')
 
-    delete_in_e_languages_list = Button(b_top, text='Delete', command=delete_from_book)
-    delete_in_e_languages_list.grid(row=5, column=2, padx=10, pady=10, sticky='ew')
+    delete_in_e_languages_list = Button(b_top, text='Delete book', command=delete_book)
+    delete_in_e_languages_list.grid(row=12, column=2, padx=10, pady=10, sticky='ew')
 
     operation_status, categories = get_categories_list()
     categories_list = []
@@ -396,7 +402,7 @@ def books_oper_window():
     e_categories_list.set('---Choose category from the list---')
     e_categories_list.grid(row=6, column=0, padx=10, pady=10, sticky='ew')
 
-    add_in_e_categories_list = Button(b_top, text='Add category', command=add_category_to_book)
+    add_in_e_categories_list = Button(b_top, text='Add category', command=add_category_to_book_text_list)
     add_in_e_categories_list.grid(row=6, column=1, padx=10, pady=10, sticky='ew')
 
     e_category = Entry(b_top, width=50)
@@ -416,14 +422,17 @@ def books_oper_window():
     e_tags_list.set('---Choose tag from the list---')
     e_tags_list.grid(row=9, column=0, padx=10, pady=10, sticky='ew')
 
-    add_in_e_tags_list = Button(b_top, text='Add tag', command=add_tag_to_book)
+    add_in_e_tags_list = Button(b_top, text='Add tag', command=add_tag_to_book_text_list)
     add_in_e_tags_list.grid(row=9, column=1, padx=10, pady=10, sticky='ew')
 
     e_tag = Entry(b_top, width=50)
     e_tag.grid(row=10, column=0, sticky='ew')
 
-    add_in_e_nt = Button(b_top, text='Add new tag', command=lambda: add_new_tag_to_db(t_e.get()))
+    add_in_e_nt = Button(b_top, text='Add new tag', command=add_new_tag_to_db)
     add_in_e_nt.grid(row=10, column=1, padx=10, pady=10, sticky='ew')
+
+    add_book = Button(b_top, text='Add book', command=add_data_to_book)
+    add_book.grid(row=12, column=1, padx=10, pady=10, sticky='ew')
 
     button_quit = Button(b_top, text='Close', command=b_top.destroy)
     button_quit.grid(row=13, column=2)
@@ -449,16 +458,17 @@ def message_window_data_exists():
 
 ##############***********####################
 
-def add_category_to_list():
-    text = e.get()
-    if not text.strip():
+def add_category_to_book_text_list():
+    global choosen_category
+    choosen_category = e_categories_list.get()
+    if not choosen_category.strip():
         message_window_empty_data()
         return None
     else:
-        if text not in c_text_list.get(0, END):
-            add_category(text)
-            c_text_list.insert(END, text)
-            e.delete(0, END)
+        if choosen_category and choosen_category != '---Choose category from the list---':
+            book_text_list.insert(END, f"Category: {choosen_category}")
+            e_category.delete(0, END)
+            e_categories_list.set('---Choose category from the list---')
             logging.info('Category added to the list')
             category_add_successfull_window()
             return None
@@ -466,7 +476,7 @@ def add_category_to_list():
             logging.info('Category is already on the list')
             return None
 
-def add_category_to_book():
+def add_category_to_db():
     global c_text_list
     global e_categories_list
 
@@ -481,6 +491,7 @@ def add_category_to_book():
             e_categories_list.delete(0, END)
             category_add_successfull_window()
             e_categories_list.set('---Choose category from the list---')
+
             logging.info('Category added to the book')
             return None
         else:
@@ -489,14 +500,13 @@ def add_category_to_book():
 
 def add_new_category_to_db():
     global book_text_list
+    global c_text_list
     global e_category
     global b_top
 
     new_category = e_category.get()
     print(f"print {new_category}")
     if not new_category in book_text_list.get(0, END):
-        formatted_category = f'Category: {new_category}'
-        book_text_list.insert(END, formatted_category)
         session.add(Category(category_name=new_category))
         session.commit()
         category_add_successfull_window()
@@ -519,7 +529,7 @@ def category_add_successfull_window():
 
 ###################**********###################
 
-def add_author_to_list():
+def add_author_to_db():
     global e_authors_list
     text = e_authors_list.get()
     if not text.strip():
@@ -544,20 +554,21 @@ def add_author_to_list():
                 logging.info('Author is already on the list')
                 return None
 
-def add_author_to_book():
+def add_author_to_book_text_list():
     global e_authors_list
-    text = e_authors_list.get()
-    if not text.strip():
+    global choosen_author
+    choosen_author = e_authors_list.get()
+    if not choosen_author.strip():
         message_window_empty_data()
         return None
     else:
-        split_text = text.split()
+        split_text = choosen_author.split()
         if len(split_text) < 2:
             message_window_empty_data()
             return None
         else:
-            if f'Author: {text}' not in book_text_list.get(0, END):
-                formatted_text=f'Author: {text}'
+            if f'Author: {choosen_author}' and choosen_author!= '---Choose author from the list---':
+                formatted_text=f'Author: {choosen_author}'
                 book_text_list.insert(END, formatted_text)
                 e_authors_list.delete(0, END)
                 author_add_successfull_window()
@@ -581,13 +592,10 @@ def add_new_author_to_db(new_author_name, new_author_surname):
         author_surname=new_author_surname
     ).first()
 
-    print(f'new author nAME: {new_author_name}')
     if not author:
         new_author = Author(author_name=new_author_name, author_surname=new_author_surname)
 
         formatted_author = f'Author: {new_author_name} {new_author_surname}'
-        print(f'{formatted_author}')
-        book_text_list.insert(END, formatted_author)
         session.add(new_author)
         session.commit()
         author_add_successfull_window()
@@ -609,25 +617,39 @@ def author_add_successfull_window():
 
 ##############***********####################
 
-def add_title_to_list():
-    global t_e
-    text = t_e.get()
-    if not text.strip():
-        message_window_empty_data()
+def add_title_to_book_text_list():
+    global choosen_title
+    choosen_title = e_titles_list.get()
+    if choosen_title and choosen_title != '---Choose title from the list---':
+        book_text_list.insert(END, f"Title: {choosen_title}")
+        e_titles_list.set('---Choose title from the list---')
+        title_add_successfull_window()
+
+
+
+def add_new_title_to_db():
+    global t_text_list
+    global b_top
+    global e_title
+    # e_title = Entry(b_top, width=50)
+
+    new_title = e_title.get()
+    print(f"print {new_title}")
+    if not new_title in titles_list:
+        # formatted_title = f'Title: {new_title}'
+        # t_text_list.insert(END, formatted_title)
+        # add_title(new_title)
+        session.add(Title(title=new_title))
+        session.commit()
+        title_add_successfull_window()
+        e_title.delete(0, END)
+        logging.info('Title was added to the database')
         return None
     else:
-        if text not in t_text_list.get(0, END):
-            add_title(text)
-            t_text_list.insert(END, text)
-            t_e.delete(0, END)
-            title_add_successfull_window()
-            logging.info('Title added to the list')
-            return None
-        else:
-            logging.info('Title is already on the list')
-            return None
+        logging.info('Title is already in the database')
+        return None
 
-def add_title_to_book():
+def add_title_to_db():
     global book_text_list
     global e_titles_list
 
@@ -649,24 +671,6 @@ def add_title_to_book():
             logging.info('Title was already added to the book')
             return None
 
-def add_new_title_to_db():
-    global book_text_list
-    global e_title
-
-    new_title = e_title.get()
-    print(f"print {new_title}")
-    if not new_title in book_text_list.get(0, END):
-        formatted_title = f'Title: {new_title}'
-        book_text_list.insert(END, formatted_title)
-        session.add(Title(title=new_title))
-        session.commit()
-        title_add_successfull_window()
-        e_title.delete(0, END)
-        logging.info('Title was added to the database')
-        return None
-    else:
-        logging.info('Title is already in the database')
-        return None
 
 def title_add_successfull_window():
     t_win_top = Toplevel()
@@ -679,16 +683,17 @@ def title_add_successfull_window():
 
 #############********##################
 
-def add_language_to_list():
-    text = e.get()
-    if not text.strip():
+def add_language_to_book_text_list():
+    global choosen_language
+    choosen_language = e_languages_list.get()
+    if not choosen_language.strip():
         message_window_empty_data()
         return None
     else:
-        if text not in l_text_list.get(0, END):
-            add_language(text)
-            l_text_list.insert(END, text)
-            e.delete(0, END)
+        if choosen_language and choosen_language != '---Choose language from the list---':
+            book_text_list.insert(END, f"Language: {choosen_language}")
+            e_language.delete(0, END)
+            e_languages_list.set('---Choose language from the list---')
             language_add_successfull_window()
             logging.info('Language added to the list')
             return None
@@ -696,7 +701,7 @@ def add_language_to_list():
             logging.info('Language is already on the list')
             return None
 
-def add_language_to_book():
+def add_language_to_db():
     global book_text_list
     global e_languages_list
 
@@ -717,7 +722,7 @@ def add_language_to_book():
             logging.info('Language was already added to the book')
             return None
 
-def add_new_language_to_db(new_language):
+def add_new_language_to_db():
     global book_text_list
     global e_language
 
@@ -725,7 +730,6 @@ def add_new_language_to_db(new_language):
     print(f"print {new_language}")
     if not new_language in book_text_list.get(0, END):
         formatted_language = f'Language: {new_language}'
-        book_text_list.insert(END, formatted_language)
         session.add(Language(language=new_language))
         session.commit()
         language_add_successfull_window()
@@ -747,16 +751,17 @@ def language_add_successfull_window():
 
 ############**********##################
 
-def add_tag_to_list():
-    text = e.get()
-    if not text.strip():
+def add_tag_to_book_text_list():
+    global choosen_tag
+    choosen_tag = e_tags_list.get()
+    if not choosen_tag.strip():
         message_window_empty_data()
         return None
     else:
-        if text not in ta_text_list.get(0, END):
-            add_tag(text)
-            ta_text_list.insert(END, text)
-            e.delete(0, END)
+        if choosen_tag and choosen_tag != '---Choose tag from the list---':
+            book_text_list.insert(END, f"Tag: {choosen_tag}")
+            e_tag.delete(0, END)
+            e_tags_list.set('---Choose tag from the list---')
             tag_add_successfull_window()
             logging.info('Tag added to the list')
             return None
@@ -785,19 +790,17 @@ def add_tag_to_book():
             logging.info('Tag was already added to the book')
             return None
 
-def add_new_tag_to_db(new_tag):
+def add_new_tag_to_db():
     global book_text_list
     global e_tag
     global b_top
 
     new_tag = e_tag.get()
-    print(f"print {new_tag}")
     if not new_tag in book_text_list.get(0, END):
-        formatted_tag = f'Tag: {new_tag}'
-        book_text_list.insert(END, formatted_tag)
         session.add(Tag(tag=new_tag))
         session.commit()
         category_add_successfull_window()
+        e_tags_list.insert(0, new_tag)
         e_tag.delete(0, END)
         logging.info('Tag was added to the database')
         return None
@@ -1045,7 +1048,7 @@ def cover_page_delete_successfull_window():
 
 ###########************###################
 
-def delete_from_book():
+def delete_book():
     global ta_text_list
     selected = book_text_list.curselection()
     if selected:
@@ -1086,6 +1089,73 @@ def delete_from_book():
             logging.info('Category deleted from the book')
         else:
             logging.info('No category selected to be deleted')
+
+def delete_book():
+    selected = book_text_list.curselection()
+    if not selected:
+        logging.info('No book selected for deletion.')
+        return
+
+    selected_text = book_text_list.get(selected[0])
+    logging.info(f"Attempting to delete book entry: {selected_text}")
+
+    # Extract components from the list entries
+    title = None
+    author_name = None
+    author_surname = None
+    language = None
+    category = None
+    tag = None
+
+    for i in range(book_text_list.size()):
+        line = book_text_list.get(i)
+        if line.startswith("Title: "):
+            title = line.replace("Title: ", "").strip()
+        elif line.startswith("Author: "):
+            parts = line.replace("Author: ", "").strip().split()
+            if len(parts) >= 2:
+                author_name, author_surname = parts[0], parts[1]
+        elif line.startswith("Language: "):
+            language = line.replace("Language: ", "").strip()
+        elif line.startswith("Category: "):
+            category = line.replace("Category: ", "").strip()
+        elif line.startswith("Tag: "):
+            tag = line.replace("Tag: ", "").strip()
+
+    if not all([title, author_name, author_surname, language, category, tag]):
+        logging.warning("Book data incomplete. Aborting deletion.")
+        message_window_empty_data()
+        return
+
+    # Look up corresponding database objects
+    title_obj = session.query(Title).filter_by(title=title).first()
+    author_obj = session.query(Author).filter_by(author_name=author_name, author_surname=author_surname).first()
+    language_obj = session.query(Language).filter_by(language=language).first()
+    category_obj = session.query(Category).filter_by(category_name=category).first()
+    tag_obj = session.query(Tag).filter_by(tag=tag).first()
+
+    if not all([title_obj, author_obj, language_obj, category_obj, tag_obj]):
+        logging.warning("One or more related entities not found in DB.")
+        message_window_empty_data()
+        return
+
+    # Find the book
+    book = session.query(Book).filter_by(title_id=title_obj.id, language_id=language_obj.id).first()
+    if book and author_obj in book.authors and category_obj in book.categories and tag_obj in book.tags:
+        # Remove relations first
+        book.authors.remove(author_obj)
+        book.categories.remove(category_obj)
+        book.tags.remove(tag_obj)
+        session.delete(book)
+        session.commit()
+
+        # Update UI
+        book_text_list.delete(0, END)
+        delete_successfull_window()
+        logging.info(f"Book '{title}' deleted successfully.")
+    else:
+        logging.info("Book not found or associations mismatched.")
+        message_window_empty_data()
 
 
 def delete_successfull_window():
@@ -1561,6 +1631,53 @@ def cover_page_update_successfull_window():
     button_close = Button(cp_u_win_top, text='Close', command=cp_u_win_top.destroy)
     button_close.grid(row=1, column=0, padx=10, pady=10)
 
+def add_data_to_book():
+    global choosen_title
+
+    title_text = e_titles_list.get()
+    author_text = e_authors_list.get()
+    language_text = e_languages_list.get()
+    category_text = e_categories_list.get()
+    tag_text = e_tags_list.get()
+
+    if not all([title_text.strip(), author_text.strip(), language_text.strip(), category_text.strip(), tag_text.strip()]):
+        message_window_empty_data()
+        return
+
+    author_parts = author_text.strip().split()
+    # if len(author_parts) < 2:
+    #     messagebox.showerror("Błąd", "Wpisz imię i nazwisko autora.")
+    #     return
+
+    author_name = author_parts[0]
+    author_surname = " ".join(author_parts[1:])
+
+    title_obj = session.query(Title).filter_by(title=title_text).first()
+    author_obj = session.query(Author).filter_by(author_name=author_name, author_surname=author_surname).first()
+    language_obj = session.query(Language).filter_by(language=language_text).first()
+    category_obj = session.query(Category).filter_by(category_name=category_text).first()
+    tag_obj = session.query(Tag).filter_by(tag=tag_text).first()
+
+    if not all ([title_obj, author_obj, language_obj, category_obj, tag_obj]):
+        messagebox.showerror("Error, no data found in database")
+        return
+
+    existing_book = session.query(Book).filter_by(title_id=title_obj.id).first()
+    if existing_book:
+        message_window_empty_data()
+        return
+
+    new_book = Book(
+        title=title_obj,
+        language=language_obj
+    )
+    new_book.authors.append(author_obj)
+    new_book.categories.append(category_obj)
+    new_book.tags.append(tag_obj)
+
+    session.add(new_book)
+    session.commit()
+
 
 
 myButton1 = Button(root, text='Categories operations', fg='blue', command=cat_oper_window)
@@ -1613,5 +1730,7 @@ def show_logo(logo):
 with open("../images/logo.png", 'rb') as f:
     logo=f.read()
 show_logo(logo)
+
+
 
 root.mainloop()
