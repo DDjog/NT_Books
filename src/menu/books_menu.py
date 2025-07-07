@@ -9,6 +9,7 @@ import io
 from tkinter import ttk
 from tkinter import messagebox
 
+from sqlalchemy.exc import OperationalError
 from sqlalchemy.sql.operators import filter_op
 
 from src.database.db import session
@@ -431,7 +432,7 @@ def books_oper_window():
     add_in_e_nt = Button(b_top, text='Add new tag', command=add_new_tag_to_db)
     add_in_e_nt.grid(row=10, column=1, padx=10, pady=10, sticky='ew')
 
-    add_book = Button(b_top, text='Add book', command=add_data_to_book)
+    add_book = Button(b_top, text='Add book', command=lambda:add_book)
     add_book.grid(row=12, column=1, padx=10, pady=10, sticky='ew')
 
     button_quit = Button(b_top, text='Close', command=b_top.destroy)
@@ -1631,49 +1632,51 @@ def cover_page_update_successfull_window():
     button_close = Button(cp_u_win_top, text='Close', command=cp_u_win_top.destroy)
     button_close.grid(row=1, column=0, padx=10, pady=10)
 
-def add_data_to_book():
-    global choosen_title
+def add_book():
 
-    title_text = e_titles_list.get()
-    author_text = e_authors_list.get()
-    language_text = e_languages_list.get()
-    category_text = e_categories_list.get()
-    tag_text = e_tags_list.get()
+    new_book = Book()
 
-    if not all([title_text.strip(), author_text.strip(), language_text.strip(), category_text.strip(), tag_text.strip()]):
+    try:
+        title_text = book_text_list.get()
+        title_obj = session.query(Title).filter_by(title=title_text).first()
+        if title_text.startswith("Title:"):
+            existing_book = session.query(Book).filter_by(title_id=title_obj.id).first()
+            if existing_book:
+                message_window_empty_data()
+                return
+
+            new_book = Book(title=title_obj)
+
+        language_text = e_languages_list.get()
+        language_obj = session.query(Language).filter_by(language=language_text).first()
+        if language_text.startswith("Language:"):
+            new_book.languages.append(language_obj)
+
+        author_text = e_authors_list.get()
+        author_parts = author_text.strip().split()
+        if len(author_parts) < 2:
+            messagebox.showerror("Error: Enter author name and surname")
+            return
+
+        author_name = author_parts[0]
+        author_surname = " ".join(author_parts[1:])
+        author_obj = session.query(Author).filter_by(author_name=author_name, author_surname=author_surname).first()
+        if author_text.startswith("Author:"):
+            new_book.authors.append(author_obj)
+
+        category_text = e_categories_list.get()
+        category_obj = session.query(Category).filter_by(category_name=category_text).first()
+        if category_text.startswith("Category:"):
+            new_book.categories.append(category_obj)
+
+        tag_text = e_tags_list.get()
+        tag_obj = session.query(Tag).filter_by(tag=tag_text).first()
+        if tag_text.startswith("Tag:"):
+            new_book.tags.append(tag_obj)
+
+    except OperationalError as e:
         message_window_empty_data()
         return
-
-    author_parts = author_text.strip().split()
-    # if len(author_parts) < 2:
-    #     messagebox.showerror("Błąd", "Wpisz imię i nazwisko autora.")
-    #     return
-
-    author_name = author_parts[0]
-    author_surname = " ".join(author_parts[1:])
-
-    title_obj = session.query(Title).filter_by(title=title_text).first()
-    author_obj = session.query(Author).filter_by(author_name=author_name, author_surname=author_surname).first()
-    language_obj = session.query(Language).filter_by(language=language_text).first()
-    category_obj = session.query(Category).filter_by(category_name=category_text).first()
-    tag_obj = session.query(Tag).filter_by(tag=tag_text).first()
-
-    if not all ([title_obj, author_obj, language_obj, category_obj, tag_obj]):
-        messagebox.showerror("Error, no data found in database")
-        return
-
-    existing_book = session.query(Book).filter_by(title_id=title_obj.id).first()
-    if existing_book:
-        message_window_empty_data()
-        return
-
-    new_book = Book(
-        title=title_obj,
-        language=language_obj
-    )
-    new_book.authors.append(author_obj)
-    new_book.categories.append(category_obj)
-    new_book.tags.append(tag_obj)
 
     session.add(new_book)
     session.commit()
