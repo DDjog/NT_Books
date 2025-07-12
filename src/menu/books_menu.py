@@ -438,6 +438,8 @@ def books_oper_window():
     button_quit = Button(b_top, text='Close', command=b_top.destroy)
     button_quit.grid(row=13, column=2)
 
+    print(type(book_text_list))
+
 
 def message_window_empty_data():
     e_d_top = Toplevel()
@@ -1048,48 +1050,51 @@ def cover_page_delete_successfull_window():
     button_close.grid(row=1, column=0, padx=10, pady=10)
 
 ###########************###################
-
-def delete_book():
-    global ta_text_list
-    selected = book_text_list.curselection()
-    if selected:
-        book_text_list.delete(selected)
-        delete_successfull_window()
-
-        selected_area = ta_text_list.curselection()
-        if selected_area:
-            ta_text_list.set('---Choose tag from the list---')
-            logging.info('Tag deleted from the book')
-        else:
-            logging.info('No tag selected to be deleted')
-
-        selected_area = t_text_list.curselection()
-        if selected_area:
-            t_text_list.set('---Choose title from the list---')
-            logging.info('Title deleted from the book')
-        else:
-            logging.info('No title selected to be deleted')
-
-        selected_area = a_text_list.curselection()
-        if selected_area:
-            a_text_list.set('---Choose author from the list---')
-            logging.info('Author deleted from the book')
-        else:
-            logging.info('No author selected to be deleted')
-
-        selected_area = l_text_list.curselection()
-        if selected_area:
-            l_text_list.set('---Choose language from the list---')
-            logging.info('Language deleted from the book')
-        else:
-            logging.info('No language selected to be deleted')
-
-        selected_area = c_text_list.curselection()
-        if selected_area:
-            c_text_list.set('---Choose category from the list---')
-            logging.info('Category deleted from the book')
-        else:
-            logging.info('No category selected to be deleted')
+#
+# def delete_book():
+#     # book_to_be_deleted = book_text_list.get()
+#     # if book_to_be_deleted.sta
+#
+#     global ta_text_list
+#     selected = book_text_list.curselection()
+#     if selected:
+#         book_text_list.delete(selected)
+#         delete_successfull_window()
+#
+#         selected_area = ta_text_list.curselection()
+#         if selected_area:
+#             ta_text_list.set('---Choose tag from the list---')
+#             logging.info('Tag deleted from the book')
+#         else:
+#             logging.info('No tag selected to be deleted')
+#
+#         selected_area = t_text_list.curselection()
+#         if selected_area:
+#             t_text_list.set('---Choose title from the list---')
+#             logging.info('Title deleted from the book')
+#         else:
+#             logging.info('No title selected to be deleted')
+#
+#         selected_area = a_text_list.curselection()
+#         if selected_area:
+#             a_text_list.set('---Choose author from the list---')
+#             logging.info('Author deleted from the book')
+#         else:
+#             logging.info('No author selected to be deleted')
+#
+#         selected_area = l_text_list.curselection()
+#         if selected_area:
+#             l_text_list.set('---Choose language from the list---')
+#             logging.info('Language deleted from the book')
+#         else:
+#             logging.info('No language selected to be deleted')
+#
+#         selected_area = c_text_list.curselection()
+#         if selected_area:
+#             c_text_list.set('---Choose category from the list---')
+#             logging.info('Category deleted from the book')
+#         else:
+#             logging.info('No category selected to be deleted')
 
 def delete_book():
     selected = book_text_list.curselection()
@@ -1100,7 +1105,6 @@ def delete_book():
     selected_text = book_text_list.get(selected[0])
     logging.info(f"Attempting to delete book entry: {selected_text}")
 
-    # Extract components from the list entries
     title = None
     author_name = None
     author_surname = None
@@ -1124,11 +1128,10 @@ def delete_book():
             tag = line.replace("Tag: ", "").strip()
 
     if not all([title, author_name, author_surname, language, category, tag]):
-        logging.warning("Book data incomplete. Aborting deletion.")
+        logging.warning("Book data incomplete")
         message_window_empty_data()
         return
 
-    # Look up corresponding database objects
     title_obj = session.query(Title).filter_by(title=title).first()
     author_obj = session.query(Author).filter_by(author_name=author_name, author_surname=author_surname).first()
     language_obj = session.query(Language).filter_by(language=language).first()
@@ -1136,26 +1139,23 @@ def delete_book():
     tag_obj = session.query(Tag).filter_by(tag=tag).first()
 
     if not all([title_obj, author_obj, language_obj, category_obj, tag_obj]):
-        logging.warning("One or more related entities not found in DB.")
+        logging.warning("One or more related entities not found in db")
         message_window_empty_data()
         return
 
-    # Find the book
     book = session.query(Book).filter_by(title_id=title_obj.id, language_id=language_obj.id).first()
     if book and author_obj in book.authors and category_obj in book.categories and tag_obj in book.tags:
-        # Remove relations first
         book.authors.remove(author_obj)
         book.categories.remove(category_obj)
         book.tags.remove(tag_obj)
         session.delete(book)
         session.commit()
 
-        # Update UI
         book_text_list.delete(0, END)
         delete_successfull_window()
-        logging.info(f"Book '{title}' deleted successfully.")
+        logging.info(f"Book '{title}' deleted successfully")
     else:
-        logging.info("Book not found or associations mismatched.")
+        logging.info("Book not found")
         message_window_empty_data()
 
 
