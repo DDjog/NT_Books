@@ -28,14 +28,7 @@ from src.operations.title_operations import add_title, delete_title, get_titles_
 from src.operations.language_operations import add_language, get_languages_list, delete_language
 from src.operations.tag_operations import add_tag, get_tags_list, delete_tag
 from src.operations.cover_page_operations import add_cover_page, delete_cover_page, get_cover_page, get_cover_page_list
-from src.tests_author.test_delete_author import author_surname
-from src.tests_author.test_is_author_in_db import author_name
-from src.tests_book.test_add_book import operation_status, new_author_surname, new_category
-from src.tests_book.test_update_book import new_author_name, new_title
-from src.tests_category.test_get_categories_list import categories_list
-from src.tests_isbn.test_get_isbns_list import isbns_list
-from src.tests_isbn.test_update_isbn import old_isbn_number
-from src.tests_title.test_get_titles_list import titles_list
+
 
 root = Tk()
 clock_label = None
@@ -54,6 +47,9 @@ root.columnconfigure(2, weight=1)
 root.columnconfigure(3, weight=1)
 root.columnconfigure(4, weight=1)
 root.columnconfigure(5, weight=1)
+
+# t_text_list = None
+# lista tytułów w oknie book_oper_window
 
 def cat_oper_window():
     global c_text_list
@@ -307,7 +303,7 @@ def isbn_oper_window():
 
 def cover_page_oper_window():
     global cp_text_list
-    global e
+    global e_cover_page
 
     cp_top=Toplevel()
     cp_top.grab_set()
@@ -320,8 +316,8 @@ def cover_page_oper_window():
     cp_top.columnconfigure(3, weight=1)
     cp_top.rowconfigure(0, weight=1)
 
-    e_cover_page_text_list=Entry(cp_top, width=50)
-    e_cover_page_text_list.grid(row=0, column=0, sticky='ew')
+    e_cover_page=Entry(cp_top, width=50)
+    e_cover_page.grid(row=0, column=0, sticky='ew')
 
     add_in_e=Button(cp_top, text='Add cover page', command=add_cover_page_to_list)
     add_in_e.grid(row=0, column=1, padx=10, pady=10, sticky='ew')
@@ -335,10 +331,13 @@ def cover_page_oper_window():
     button_update = Button(cp_top, text='Update cover page', command=update_cover_page_window)
     button_update.grid(row=1, column=1, padx=10, pady=10, sticky='nsew')
 
+    button_update = Button(cp_top, text='Select file', command=select_file_from_disc)
+    button_update.grid(row=1, column=2, padx=10, pady=10, sticky='nsew')
+
     operation_status, cover_pages = get_cover_page_list()
     if operation_status == OPER_GET_LIST_SUCCEEDED:
         for cp in cover_pages:
-            cp_text_list.insert(END, cp.cover_page)
+            cp_text_list.insert(END, cp.id)
 
     cp_text_list_label = Label(cp_top, text='List of cover pages:')
     cp_text_list_label.grid(row=1, column=0, padx=10, pady=10, sticky='nsew')
@@ -417,7 +416,7 @@ def books_oper_window():
     e_author = Entry(b_top, width=50)
     e_author.grid(row=3, column=0, sticky='ew')
 
-    add_in_e_nt = Button(b_top, text='Add new author', command=lambda: add_new_author_to_db(new_author_name, new_author_surname))
+    add_in_e_nt = Button(b_top, text='Add new author', command=lambda: add_new_author_to_db)
     add_in_e_nt.grid(row=3, column=1, padx=10, pady=10, sticky='ew')
 
     operation_status, languages = get_languages_list()
@@ -491,7 +490,7 @@ def books_oper_window():
     e_isbns_list.set('---Choose isbn from the list---')
     e_isbns_list.grid(row=11, column=0, padx=10, pady=10, sticky='ew')
 
-    add_in_e_isbn_list = Button(b_top, text='Add isbn', command=add_isbn_to_book_text_list)
+    add_in_e_isbn_list = Button(b_top, text='Add isbn', command=add_isbn_to_db)
     add_in_e_isbn_list.grid(row=11, column=1, padx=10, pady=10, sticky='ew')
 
     e_isbn = Entry(b_top, width=50)
@@ -500,7 +499,7 @@ def books_oper_window():
     add_in_e_ni = Button(b_top, text='Add new isbn', command=add_new_isbn_to_db)
     add_in_e_ni.grid(row=12, column=1, padx=10, pady=10, sticky='ew')
 
-    add_book = Button(b_top, text='Add book', command=lambda:add_book)
+    add_book = Button(b_top, text='Add book', command=lambda:add_book_to_db)
     add_book.grid(row=13, column=1, padx=10, pady=10, sticky='ew')
 
     button_quit = Button(b_top, text='Close', command=b_top.destroy)
@@ -649,7 +648,7 @@ def add_author_to_book_text_list():
                 logging.info('Author was already added')
                 return None
 
-def add_new_author_to_db(new_author_name, new_author_surname):
+def add_new_author_to_db():
     global e_author
     global book_text_list
 
@@ -698,13 +697,13 @@ def add_title_to_book_text_list():
 
 
 def add_new_title_to_db():
-    global t_text_list
+    global e_titles_list
     global b_top
     global e_title
     # e_title = Entry(b_top, width=50)
 
     new_title = e_title.get()
-    if not new_title in titles_list:
+    if not new_title in e_titles_list:
         # formatted_title = f'Title: {new_title}'
         # add_title(new_title)
         session.add(Title(title=new_title))
@@ -929,17 +928,18 @@ def isbn_add_successfull_window():
 ###############**********####################
 
 def add_cover_page_to_list():
-    text = e.get()
+    text = e_cover_page.get()
     if not text.strip():
         message_window_empty_data()
         return None
     else:
         if text not in cp_text_list.get(0, END):
-            add_cover_page(text)
-            cp_text_list.insert(END, text)
-            e.delete(0, END)
-            logging.info('Cover page added to the list')
-            category_add_successfull_window()
+            r=add_cover_page(text)
+            if r[0] == OPER_ADD_SUCCEEDED:
+                cp_text_list.insert(END, r[1] )
+                e_cover_page.delete(0, END)
+                logging.info('Cover page added to the list')
+                category_add_successfull_window()
             return None
         else:
             logging.info('Cover page is already on the list')
@@ -1313,6 +1313,7 @@ def update_category_window():
     global selected_category
     global selected_index
     global top
+    global e_category
 
     top = Toplevel()
     top.grab_set()
@@ -1329,13 +1330,19 @@ def update_category_window():
 
     old_category_name = Entry(top, width=50)
     old_category_name.grid(row=0, column=1, sticky='ew')
+
+    new_category_name = Entry(top, width=50)
+    new_category_name.grid(row=1, column=1, sticky='ew')
+
+    c_entry_content = e_category.get()
+
     if selected_category:
         selected_index = selected_category[0]
         selected_category_content = c_text_list.get(selected_index)
         old_category_name.insert(0, selected_category_content)
+        new_category_name.insert(0, c_entry_content)
 
-    new_category_name = Entry(top, width=50)
-    new_category_name.grid(row=1, column=1, sticky='ew')
+
 
     old_category_label = Label(top, text='from')
     old_category_label.grid(row=0, column=0, padx=10, pady=10, sticky='nsew')
@@ -1350,7 +1357,7 @@ def update_category_window():
     button_close.grid(row=2, column=2, padx=10, pady=10)
 
 def update_category_button_to_click():
-    updated_category = new_category_name.get()
+    updated_category = e_category.get()
     selected = c_text_list.curselection()
     if not selected:
         logging.info("No category indicated for an update")
@@ -1413,6 +1420,7 @@ def category_update_successfull_window():
 
 def update_author_window():
     global top
+    global e_author
 
     top = Toplevel()
     top.grab_set()
@@ -1429,13 +1437,17 @@ def update_author_window():
 
     old_author = Entry(top, width=50)
     old_author.grid(row=0, column=1, sticky='ew')
+
+    new_author = Entry(top, width=50)
+    new_author.grid(row=1, column=1, sticky='ew')
+
     if selected_author:
         selected_index = selected_author[0]
         selected_author_content = a_text_list.get(selected_index)
         old_author.insert(0, selected_author_content)
+        a_entry_content = e_author.get()
+        new_author.insert(0, a_entry_content)
 
-    new_author = Entry(top, width=50)
-    new_author.grid(row=1, column=1, sticky='ew')
 
     old_author_label = Label(top, text='from')
     old_author_label.grid(row=0, column=0, padx=10, pady=10, sticky='nsew')
@@ -1495,6 +1507,7 @@ def author_update_successfull_window():
 
 def update_title_window():
     global top
+    global e_title
 
     top = Toplevel()
     top.grab_set()
@@ -1510,13 +1523,18 @@ def update_title_window():
 
     old_title = Entry(top, width=50)
     old_title.grid(row=0, column=1, sticky='ew')
+
+    new_title = Entry(top, width=50)
+    new_title.grid(row=1, column=1, sticky='ew')
+
     if selected_title:
         selected_index = selected_title[0]
         selected_title_content = t_text_list.get(selected_index)
         old_title.insert(0, selected_title_content)
+        t_entry_content = e_title.get()
+        new_title.insert(0, t_entry_content)
 
-    new_title = Entry(top, width=50)
-    new_title.grid(row=1, column=1, sticky='ew')
+
 
     old_title_label = Label(top, text='from')
     old_title_label.grid(row=0, column=0, padx=10, pady=10, sticky='nsew')
@@ -1569,6 +1587,7 @@ def title_update_successfull_window():
 
 def update_language_window():
     global top
+    global e_language
 
     top = Toplevel()
     top.grab_set()
@@ -1584,13 +1603,18 @@ def update_language_window():
 
     old_language = Entry(top, width=50)
     old_language.grid(row=0, column=1, sticky='ew')
+
+    new_language = Entry(top, width=50)
+    new_language.grid(row=1, column=1, sticky='ew')
+
     if selected_language:
         selected_index = selected_language[0]
         selected_language_content = l_text_list.get(selected_index)
         old_language.insert(0, selected_language_content)
+        l_entry_content = e_language.get()
+        new_language.insert(0,l_entry_content)
 
-    new_language = Entry(top, width=50)
-    new_language.grid(row=1, column=1, sticky='ew')
+
 
     old_language_label = Label(top, text='from')
     old_language_label.grid(row=0, column=0, padx=10, pady=10, sticky='nsew')
@@ -1645,6 +1669,7 @@ def language_update_successfull_window():
 
 def update_tag_window():
     global top
+    global e_tag
 
     top = Toplevel()
     top.grab_set()
@@ -1660,13 +1685,17 @@ def update_tag_window():
 
     old_tag = Entry(top, width=50)
     old_tag.grid(row=0, column=1, sticky='ew')
+
+    new_tag = Entry(top, width=50)
+    new_tag.grid(row=1, column=1, sticky='ew')
+
     if selected_tag:
         selected_index = selected_tag[0]
         selected_tag_content = ta_text_list.get(selected_index)
         old_tag.insert(0, selected_tag_content)
+        ta_entry_content = e_tag.get()
+        new_tag.insert(0, ta_entry_content)
 
-    new_tag = Entry(top, width=50)
-    new_tag.grid(row=1, column=1, sticky='ew')
 
     old_tag_label = Label(top, text='from')
     old_tag_label.grid(row=0, column=0, padx=10, pady=10, sticky='nsew')
@@ -1725,6 +1754,7 @@ def update_isbn_window():
     global selected_isbn
     global selected_index
     global top
+    global e_isbn
 
     top = Toplevel()
     top.grab_set()
@@ -1742,16 +1772,19 @@ def update_isbn_window():
 
 
     old_isbn_name = Entry(top, width=50)
-    print(old_isbn_name)
     old_isbn_name.grid(row=0, column=1, sticky='ew')
+
+    new_isbn_name = Entry(top, width=50)
+    new_isbn_name.grid(row=1, column=1, sticky='ew')
+
     if selected_isbn:
         selected_index = selected_isbn[0]
         selected_isbn_content = i_text_list.get(selected_index)
         old_isbn_name.insert(0, selected_isbn_content)
+        i_entry_content = e_isbn.get()
+        new_isbn_name.insert(0, i_entry_content)
 
 
-    new_isbn_name = Entry(top, width=50)
-    new_isbn_name.grid(row=1, column=1, sticky='ew')
 
     old_isbn_label = Label(top, text='from')
     old_isbn_label.grid(row=0, column=0, padx=10, pady=10, sticky='nsew')
@@ -1878,7 +1911,10 @@ def cover_page_update_successfull_window():
     button_close = Button(cp_u_win_top, text='Close', command=cp_u_win_top.destroy)
     button_close.grid(row=1, column=0, padx=10, pady=10)
 
-def add_book():
+def select_file_from_disc():
+    pass
+
+def add_book_to_db():
 
     new_book = Book()
 
