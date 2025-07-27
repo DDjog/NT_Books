@@ -339,7 +339,7 @@ def cover_page_oper_window():
     button_update = Button(cp_top, text='Update cover page', command=update_cover_page_window)
     button_update.grid(row=1, column=1, padx=10, pady=10, sticky='nsew')
 
-    button_select_file = Button(cp_top, text='Select file', command=select_file_from_disc(e_cover_page))
+    button_select_file = Button(cp_top, text='Select file', command=lambda:select_file_from_disc(e_cover_page))
     button_select_file.grid(row=1, column=2, padx=10, pady=10, sticky='nsew')
 
     cover_page_images = {}
@@ -1955,7 +1955,7 @@ def cover_page_update_successfull_window():
     button_close.grid(row=1, column=0, padx=10, pady=10)
 
 def select_file_from_disc(event_object):
-    filepath = filedialog.askopenfile(initialdir=".",
+    filepath = filedialog.askopenfilename(initialdir=".",
                                       title="File with cover",
                                       filetypes=(("PNG files", ".png"),
                                                  ("JPEG files", ".jpeg;.jpg"),
@@ -2020,7 +2020,6 @@ def add_book_to_db():
     session.commit()
 
     logging.info(f"Book '{title}' was added to db")
-    delete_successfull_window()
 
 
 myButton1 = Button(root, text='Categories operations', fg='blue', command=cat_oper_window)
