@@ -6,15 +6,16 @@ import pygame
 import logging
 import time
 import io
+import os
 from tkinter import ttk
 from tkinter import messagebox
+from tkinter import filedialog
 
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.sql.operators import filter_op
 
 from src.database.db import session
-from src.database.models import Author, Category, Tag, Title, Language, Book, Isbn
-
+from src.database.models import Author, Category, Tag, Title, Language, Book, Isbn, Cover_page
 
 from sqlalchemy import column
 
@@ -28,7 +29,8 @@ from src.operations.title_operations import add_title, delete_title, get_titles_
 from src.operations.language_operations import add_language, get_languages_list, delete_language
 from src.operations.tag_operations import add_tag, get_tags_list, delete_tag
 from src.operations.cover_page_operations import add_cover_page, delete_cover_page, get_cover_page, get_cover_page_list
-
+from src.tests_author.test_delete_author import author_surname
+from src.tests_author.test_is_author_in_db import author_name
 
 root = Tk()
 clock_label = None
@@ -304,6 +306,9 @@ def isbn_oper_window():
 def cover_page_oper_window():
     global cp_text_list
     global e_cover_page
+    global cp_top
+    global cover_page_images
+    global cover_image_label
 
     cp_top=Toplevel()
     cp_top.grab_set()
@@ -315,6 +320,9 @@ def cover_page_oper_window():
     cp_top.columnconfigure(2, weight=1)
     cp_top.columnconfigure(3, weight=1)
     cp_top.rowconfigure(0, weight=1)
+    cp_top.rowconfigure(1, weight=1)
+    cp_top.rowconfigure(2, weight=1)
+    cp_top.rowconfigure(3, weight=1)
 
     e_cover_page=Entry(cp_top, width=50)
     e_cover_page.grid(row=0, column=0, sticky='ew')
@@ -331,9 +339,10 @@ def cover_page_oper_window():
     button_update = Button(cp_top, text='Update cover page', command=update_cover_page_window)
     button_update.grid(row=1, column=1, padx=10, pady=10, sticky='nsew')
 
-    button_update = Button(cp_top, text='Select file', command=select_file_from_disc)
-    button_update.grid(row=1, column=2, padx=10, pady=10, sticky='nsew')
+    button_select_file = Button(cp_top, text='Select file', command=select_file_from_disc(e_cover_page))
+    button_select_file.grid(row=1, column=2, padx=10, pady=10, sticky='nsew')
 
+    cover_page_images = {}
     operation_status, cover_pages = get_cover_page_list()
     if operation_status == OPER_GET_LIST_SUCCEEDED:
         for cp in cover_pages:
@@ -342,8 +351,12 @@ def cover_page_oper_window():
     cp_text_list_label = Label(cp_top, text='List of cover pages:')
     cp_text_list_label.grid(row=1, column=0, padx=10, pady=10, sticky='nsew')
 
+    cover_image_label = Label(cp_top, text='Image')
+    cover_image_label.grid(row=2, column=1, padx=10, pady=10, sticky='nsew')
+
     button_quit = Button(cp_top, text='Close', command=cp_top.destroy)
     button_quit.grid(row=3, column=2)
+
 
 def books_oper_window():
     global book_text_list
@@ -373,6 +386,9 @@ def books_oper_window():
     b_top.columnconfigure(2, weight=1)
     b_top.columnconfigure(3, weight=1)
     b_top.rowconfigure(0, weight=1)
+    b_top.rowconfigure(1, weight=1)
+    b_top.rowconfigure(2, weight=1)
+    b_top.rowconfigure(3, weight=1)
 
 
     operation_status, titles = get_titles_list()
@@ -490,7 +506,7 @@ def books_oper_window():
     e_isbns_list.set('---Choose isbn from the list---')
     e_isbns_list.grid(row=11, column=0, padx=10, pady=10, sticky='ew')
 
-    add_in_e_isbn_list = Button(b_top, text='Add isbn', command=add_isbn_to_db)
+    add_in_e_isbn_list = Button(b_top, text='Add isbn', command=add_isbn_to_book_text_list)
     add_in_e_isbn_list.grid(row=11, column=1, padx=10, pady=10, sticky='ew')
 
     e_isbn = Entry(b_top, width=50)
@@ -499,7 +515,7 @@ def books_oper_window():
     add_in_e_ni = Button(b_top, text='Add new isbn', command=add_new_isbn_to_db)
     add_in_e_ni.grid(row=12, column=1, padx=10, pady=10, sticky='ew')
 
-    add_book = Button(b_top, text='Add book', command=lambda:add_book_to_db)
+    add_book = Button(b_top, text='Add book', command=add_book_to_db)
     add_book.grid(row=13, column=1, padx=10, pady=10, sticky='ew')
 
     button_quit = Button(b_top, text='Close', command=b_top.destroy)
@@ -574,7 +590,6 @@ def add_new_category_to_db():
     global b_top
 
     new_category = e_category.get()
-    print(f"print {new_category}")
     if not new_category in book_text_list.get(0, END):
         session.add(Category(category_name=new_category))
         session.commit()
@@ -656,17 +671,17 @@ def add_new_author_to_db():
     new_author_split = new_author.split()
     new_author_name = new_author_split[0]
     new_author_surname = new_author_split[1]
-    author = session.query(Author).filter_by(
+    existing_author = session.query(Author).filter_by(
         author_name=new_author_name,
         author_surname=new_author_surname
     ).first()
 
-    if not author:
-        new_author = Author(author_name=new_author_name, author_surname=new_author_surname)
-
-        formatted_author = f'Author: {new_author_name} {new_author_surname}'
-        session.add(new_author)
+    if not existing_author:
+        session.add(Author(author_name=new_author_name, author_surname=new_author_surname))
         session.commit()
+        tmp_list = list(e_authors_list['values'])
+        tmp_list.append(new_author)
+        e_authors_list['values'] = tmp_list
         author_add_successfull_window()
         e_author.delete(0, END)
         logging.info('New author added to the database')
@@ -703,9 +718,8 @@ def add_new_title_to_db():
     # e_title = Entry(b_top, width=50)
 
     new_title = e_title.get()
-    if not new_title in e_titles_list:
-        # formatted_title = f'Title: {new_title}'
-        # add_title(new_title)
+    existing_title = session.query(Title).filter_by(title=new_title).first()
+    if not existing_title:
         session.add(Title(title=new_title))
         session.commit()
         title_add_successfull_window()
@@ -793,18 +807,20 @@ def add_new_language_to_db():
     global e_language
 
     new_language = e_language.get()
-    print(f"print {new_language}")
-    if not new_language in book_text_list.get(0, END):
-        formatted_language = f'Language: {new_language}'
+    existing_language = session.query(Language).filter_by(language=new_language).first()
+    if not existing_language:
         session.add(Language(language=new_language))
         session.commit()
+        tmp_list = list(e_languages_list['values'])
+        tmp_list.append(new_language)
+        e_languages_list['values'] = tmp_list
         language_add_successfull_window()
         e_language.delete(0, END)
         logging.info('Language was added to the database')
         return None
     else:
         logging.info('Language is already in the database')
-        return None
+        return OPER_ADD_FAILED_DATA_EXISTS
 
 def language_add_successfull_window():
     l_win_top = Toplevel()
@@ -859,9 +875,13 @@ def add_new_tag_to_db():
     global b_top
 
     new_tag = e_tag.get()
-    if not new_tag in book_text_list.get(0, END):
+    existing_tag = session.query(Tag).filter_by(Tag.tag == new_tag).first()
+    if not existing_tag:
         session.add(Tag(tag=new_tag))
         session.commit()
+        tmp_list = list(e_tags_list['values'])
+        tmp_list.append(new_tag)
+        e_tags_list['values'] = tmp_list
         category_add_successfull_window()
         e_tags_list.insert(0, new_tag)
         e_tag.delete(0, END)
@@ -881,6 +901,25 @@ def tag_add_successfull_window():
     button_close.grid(row=1, column=0, padx=10, pady=10)
 
 ##################**********###################
+
+def add_isbn_to_book_text_list():
+    global choosen_isbn
+    choosen_isbn = e_isbns_list.get()
+    if not choosen_isbn.strip():
+        message_window_empty_data()
+        return None
+    else:
+        if choosen_isbn and choosen_isbn != '---Choose isbn from the list---':
+            book_text_list.insert(END, f"Isbn: {choosen_isbn}")
+            e_isbn.delete(0, END)
+            e_isbns_list.set('---Choose isbn from the list---')
+            isbn_add_successfull_window()
+            logging.info('Isbn added to the list')
+            return None
+        else:
+            logging.info('Isbn is already on the list')
+            return None
+
 
 def add_isbn_to_db():
 
@@ -905,10 +944,13 @@ def add_new_isbn_to_db():
     global e_isbn
 
     new_isbn = e_isbn.get()
-    if not new_isbn in book_text_list.get(0, END):
-        # formatted_language = f'Language: {new_isbn}'
+    existing_isbn = session.query(Isbn).filter(Isbn.isbn_name == new_isbn).first()
+    if not existing_isbn:
         session.add(Isbn(isbn_name=new_isbn))
         session.commit()
+        tmp_list = list(e_isbns_list['values'])
+        tmp_list.append(new_isbn)
+        e_isbns_list['values'] = tmp_list
         isbn_add_successfull_window()
         e_isbn.delete(0, END)
         logging.info('Isbn was added to the db')
@@ -1840,6 +1882,7 @@ def isbn_update_successfull_window():
 
 def update_cover_page_window():
     global top
+    global cp_text_list
 
     top = Toplevel()
     top.grab_set()
@@ -1851,13 +1894,13 @@ def update_cover_page_window():
     top.rowconfigure(0, weight=1)
 
     top.title('Update cover page')
-    selected_cover_page = text_list.curselection()
+    selected_cover_page = cp_text_list.curselection()
 
     old_cover_page = Entry(top, width=50)
     old_cover_page.grid(row=0, column=1, sticky='ew')
     if selected_cover_page:
         selected_index = selected_cover_page[0]
-        selected_cover_page = text_list.get(selected_index)
+        selected_cover_page = cp_text_list.get(selected_index)
         old_cover_page.insert(0, selected_cover_page)
 
     new_cover_page = Entry(top, width=50)
@@ -1869,7 +1912,7 @@ def update_cover_page_window():
     new_cover_page_label = Label(top, text='to')
     new_cover_page_label.grid(row=1, column=0, padx=10, pady=10, sticky='nsew')
 
-    button_update = Button(top, text='Press to update', command=lambda: update_language(new_cover_page, selected_index))
+    button_update = Button(top, text='Press to update', command=lambda: update_cover_page(new_cover_page, selected_index))
     button_update.grid(row=2, column=1, padx=10, pady=10)
 
     button_close = Button(top, text='Close', command=top.destroy)
@@ -1911,58 +1954,73 @@ def cover_page_update_successfull_window():
     button_close = Button(cp_u_win_top, text='Close', command=cp_u_win_top.destroy)
     button_close.grid(row=1, column=0, padx=10, pady=10)
 
-def select_file_from_disc():
-    pass
+def select_file_from_disc(event_object):
+    filepath = filedialog.askopenfile(initialdir=".",
+                                      title="File with cover",
+                                      filetypes=(("PNG files", ".png"),
+                                                 ("JPEG files", ".jpeg;.jpg"),
+                                                 ("All Files", ".*")))
+    if filepath == "":
+        event_object.delete(0, END)
+    else:
+        event_object.delete(0, END)
+        event_object.insert(0, str(filepath))
 
 def add_book_to_db():
-
     new_book = Book()
 
-    try:
-        title_text = book_text_list.get()
-        title_obj = session.query(Title).filter_by(title=title_text).first()
-        if title_text.startswith("Title:"):
-            existing_book = session.query(Book).filter_by(title_id=title_obj.id).first()
-            if existing_book:
-                message_window_empty_data()
-                return
+    lines = book_text_list.get(0, END)
 
-            new_book = Book(title=title_obj)
+    title = author_name = author_surname = language = category = tag = isbn = None
 
-        language_text = e_languages_list.get()
-        language_obj = session.query(Language).filter_by(language=language_text).first()
-        if language_text.startswith("Language:"):
-            new_book.languages.append(language_obj)
+    for line in lines:
+        if line.startswith("Title: "):
+            title = line.replace("Title: ", "").strip()
+        elif line.startswith("Author: "):
+            parts = line.replace("Author: ", "").strip().split()
+            if len(parts) >= 2:
+                author_name = parts[0]
+                author_surname = " ".join(parts[1:])
+        elif line.startswith("Language: "):
+            language = line.replace("Language: ", "").strip()
+        elif line.startswith("Category: "):
+            category = line.replace("Category: ", "").strip()
+        elif line.startswith("Tag: "):
+            tag = line.replace("Tag: ", "").strip()
+        elif line.startswith("Isbn: "):
+            isbn = line.replace("Isbn: ", "").strip()
 
-        author_text = e_authors_list.get()
-        author_parts = author_text.strip().split()
-        if len(author_parts) < 2:
-            messagebox.showerror("Error: Enter author name and surname")
-            return
-
-        author_name = author_parts[0]
-        author_surname = " ".join(author_parts[1:])
-        author_obj = session.query(Author).filter_by(author_name=author_name, author_surname=author_surname).first()
-        if author_text.startswith("Author:"):
-            new_book.authors.append(author_obj)
-
-        category_text = e_categories_list.get()
-        category_obj = session.query(Category).filter_by(category_name=category_text).first()
-        if category_text.startswith("Category:"):
-            new_book.categories.append(category_obj)
-
-        tag_text = e_tags_list.get()
-        tag_obj = session.query(Tag).filter_by(tag=tag_text).first()
-        if tag_text.startswith("Tag:"):
-            new_book.tags.append(tag_obj)
-
-    except OperationalError as e:
+    if not all([title, author_name, author_surname, language, category, tag, isbn]):
+        logging.warning("Some book data are missing")
         message_window_empty_data()
         return
+
+    title_obj = session.query(Title).filter_by(title=title).first()
+    author_obj = session.query(Author).filter_by(author_name=author_name, author_surname=author_surname).first()
+    language_obj = session.query(Language).filter_by(language=language).first()
+    category_obj = session.query(Category).filter_by(category_name=category).first()
+    tag_obj = session.query(Tag).filter_by(tag=tag).first()
+    isbn_obj = session.query(Isbn).filter_by(isbn_name=isbn).first()
+
+    existing_book = session.query(Book).filter_by(title_id=title_obj.id, language_id=language_obj.id).first()
+    if existing_book:
+        logging.info("Book exists already in db")
+        message_window_data_exists()
+        return
+
+    new_book.title_id = title_obj.id
+    new_book.language_id = language_obj.id
+    new_book.authors.append(author_obj)
+    new_book.categories.append(category_obj)
+    new_book.tags.append(tag_obj)
+    new_book.isbn = isbn_obj
+
 
     session.add(new_book)
     session.commit()
 
+    logging.info(f"Book '{title}' was added to db")
+    delete_successfull_window()
 
 
 myButton1 = Button(root, text='Categories operations', fg='blue', command=cat_oper_window)
@@ -2020,5 +2078,28 @@ with open("../images/logo.png", 'rb') as f:
 show_logo(logo)
 
 
+
+
+def show_cover_image(event):
+    global cp_text_list
+
+    selection = cp_text_list.curselection()
+    if selection:
+        selected_id = cp_text_list.get(selection[0])
+        cover_data = session.query(Cover_page).filter(Cover_page.id == selected_id).scalar()
+        if cover_data:
+            try:
+                image = Image.open(io.BytesIO(cover_data))
+                image = image.resize((150, 200))
+                photo = ImageTk.PhotoImage(image)
+                cover_image_label.config(image=photo, text='')
+                cover_image_label.image = photo
+            except Exception:
+                cover_image_label.config(image='', text='Error loading image')
+        else:
+            cover_image_label.config(image='', text='No cover found')
+
+
+    cp_text_list.bind("<<ListboxSelect>>", show_cover_image)
 
 root.mainloop()
