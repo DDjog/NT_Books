@@ -1,25 +1,17 @@
-from operator import length_hint
-from os.path import split
+
 from tkinter import *
 from PIL import Image, ImageTk
-import pygame
 import logging
 import time
 import io
-import os
 from tkinter import ttk
-from tkinter import messagebox
 from tkinter import filedialog
 
-from sqlalchemy.exc import OperationalError
-from sqlalchemy.sql.operators import filter_op
 
 from src.database.db import session
 from src.database.models import Author, Category, Tag, Title, Language, Book, Isbn, Cover_page
 
-from sqlalchemy import column
 
-import src.logging_to_file
 
 from src.constans import *
 from src.operations.category_operations import add_category, get_categories_list, delete_category, update_category
@@ -29,6 +21,7 @@ from src.operations.title_operations import add_title, delete_title, get_titles_
 from src.operations.language_operations import add_language, get_languages_list, delete_language
 from src.operations.tag_operations import add_tag, get_tags_list, delete_tag
 from src.operations.cover_page_operations import add_cover_page, delete_cover_page, get_cover_page, get_cover_page_list
+from src.tests_author.test_add_author_to_the_book import title
 from src.tests_author.test_delete_author import author_surname
 from src.tests_author.test_is_author_in_db import author_name
 
@@ -50,8 +43,7 @@ root.columnconfigure(3, weight=1)
 root.columnconfigure(4, weight=1)
 root.columnconfigure(5, weight=1)
 
-# t_text_list = None
-# lista tytułów w oknie book_oper_window
+
 
 def cat_oper_window():
     global c_text_list
@@ -432,7 +424,7 @@ def books_oper_window():
     e_author = Entry(b_top, width=50)
     e_author.grid(row=3, column=0, sticky='ew')
 
-    add_in_e_nt = Button(b_top, text='Add new author', command=lambda: add_new_author_to_db)
+    add_in_e_nt = Button(b_top, text='Add new author', command= add_new_author_to_db)
     add_in_e_nt.grid(row=3, column=1, padx=10, pady=10, sticky='ew')
 
     operation_status, languages = get_languages_list()
@@ -545,22 +537,24 @@ def message_window_data_exists():
 ##############***********####################
 
 def add_category_to_book_text_list():
+
     global choosen_category
+    global lines
+    global e_categories_list
+
+    lines = book_text_list.get(0, END)
+
     choosen_category = e_categories_list.get()
-    if not choosen_category.strip():
-        message_window_empty_data()
-        return None
-    else:
-        if choosen_category and choosen_category != '---Choose category from the list---':
-            book_text_list.insert(END, f"Category: {choosen_category}")
-            e_category.delete(0, END)
-            e_categories_list.set('---Choose category from the list---')
-            logging.info('Category added to the list')
-            category_add_successfull_window()
-            return None
-        else:
-            logging.info('Category is already on the list')
-            return None
+    if not choosen_category and choosen_category == '---Choose category from the list---':
+        return
+
+    for index, line in enumerate(book_text_list.get(0, END)):
+        if line.startswith('Category'):
+            book_text_list.delete(index)
+
+    book_text_list.insert(0, f"Category: {choosen_category}")
+    e_categories_list.set('---Choose category from the list---')
+    category_add_successfull_window()
 
 def add_category_to_db():
     global c_text_list
@@ -641,27 +635,23 @@ def add_author_to_db():
 def add_author_to_book_text_list():
     global e_authors_list
     global choosen_author
+
     choosen_author = e_authors_list.get()
-    if not choosen_author.strip():
-        message_window_empty_data()
-        return None
+    if not choosen_author and choosen_author == '---Choose author from the list---':
+        return
     else:
         split_text = choosen_author.split()
         if len(split_text) < 2:
             message_window_empty_data()
             return None
         else:
-            if f'Author: {choosen_author}' and choosen_author!= '---Choose author from the list---':
-                formatted_text=f'Author: {choosen_author}'
-                book_text_list.insert(END, formatted_text)
-                e_authors_list.delete(0, END)
-                author_add_successfull_window()
-                e_authors_list.set('---Choose author from the list---')
-                logging.info('Author added to the book')
-                return None
-            else:
-                logging.info('Author was already added')
-                return None
+            for index, line in enumerate(book_text_list.get(0, END)):
+                if line.startswith('Author'):
+                    book_text_list.delete(index)
+
+            book_text_list.insert(0, f"Author: {choosen_author}")
+            e_authors_list.set('---Choose author from the list---')
+            author_add_successfull_window()
 
 def add_new_author_to_db():
     global e_author
@@ -671,12 +661,13 @@ def add_new_author_to_db():
     new_author_split = new_author.split()
     new_author_name = new_author_split[0]
     new_author_surname = new_author_split[1]
-    existing_author = session.query(Author).filter_by(
-        author_name=new_author_name,
-        author_surname=new_author_surname
+    existing_author = session.query(Author).filter(
+        author_name==new_author_name,
+        author_surname==new_author_surname
     ).first()
 
     if not existing_author:
+
         session.add(Author(author_name=new_author_name, author_surname=new_author_surname))
         session.commit()
         tmp_list = list(e_authors_list['values'])
@@ -703,13 +694,19 @@ def author_add_successfull_window():
 
 def add_title_to_book_text_list():
     global choosen_title
+    global lines
+
     choosen_title = e_titles_list.get()
-    if choosen_title and choosen_title != '---Choose title from the list---':
-        book_text_list.insert(END, f"Title: {choosen_title}")
-        e_titles_list.set('---Choose title from the list---')
-        title_add_successfull_window()
+    if not choosen_title and choosen_title == '---Choose title from the list---':
+        return
 
+    for index, line in enumerate (book_text_list.get(0, END)):
+        if line.startswith('Title'):
+                book_text_list.delete(index)
 
+    book_text_list.insert(0, f"Title: {choosen_title}")
+    e_titles_list.set('---Choose title from the list---')
+    title_add_successfull_window()
 
 def add_new_title_to_db():
     global e_titles_list
@@ -766,21 +763,21 @@ def title_add_successfull_window():
 
 def add_language_to_book_text_list():
     global choosen_language
+    global lines
+    global e_languages_list
+
     choosen_language = e_languages_list.get()
-    if not choosen_language.strip():
-        message_window_empty_data()
-        return None
-    else:
-        if choosen_language and choosen_language != '---Choose language from the list---':
-            book_text_list.insert(END, f"Language: {choosen_language}")
-            e_language.delete(0, END)
-            e_languages_list.set('---Choose language from the list---')
-            language_add_successfull_window()
-            logging.info('Language added to the list')
-            return None
-        else:
-            logging.info('Language is already on the list')
-            return None
+    if not choosen_language and choosen_language == '---Choose language from the list---':
+        return
+
+    for index, line in enumerate(book_text_list.get(0, END)):
+        if line.startswith('Language'):
+            book_text_list.delete(index)
+
+    book_text_list.insert(0, f"Language: {choosen_language}")
+    e_languages_list.set('---Choose language from the list---')
+    language_add_successfull_window()
+
 
 def add_language_to_db():
     global book_text_list
@@ -834,22 +831,22 @@ def language_add_successfull_window():
 ############**********##################
 
 def add_tag_to_book_text_list():
-    global choosen_tag
+    global choosen_category
+    global lines
+    global e_categories_list
+
     choosen_tag = e_tags_list.get()
-    if not choosen_tag.strip():
-        message_window_empty_data()
-        return None
-    else:
-        if choosen_tag and choosen_tag != '---Choose tag from the list---':
-            book_text_list.insert(END, f"Tag: {choosen_tag}")
-            e_tag.delete(0, END)
-            e_tags_list.set('---Choose tag from the list---')
-            tag_add_successfull_window()
-            logging.info('Tag added to the list')
-            return None
-        else:
-            logging.info('Tag is already on the list')
-            return None
+    if not choosen_tag and choosen_tag == '---Choose tag from the list---':
+        return
+
+    for index, line in enumerate(book_text_list.get(0, END)):
+        if line.startswith('Tag'):
+            book_text_list.delete(index)
+
+    book_text_list.insert(0, f"Tag: {choosen_tag}")
+    e_tags_list.set('---Choose tag from the list---')
+    tag_add_successfull_window()
+
 
 def add_tag_to_db():
 
@@ -875,7 +872,7 @@ def add_new_tag_to_db():
     global b_top
 
     new_tag = e_tag.get()
-    existing_tag = session.query(Tag).filter_by(Tag.tag == new_tag).first()
+    existing_tag = session.query(Tag).filter(Tag.tag == new_tag).first()
     if not existing_tag:
         session.add(Tag(tag=new_tag))
         session.commit()
@@ -904,21 +901,20 @@ def tag_add_successfull_window():
 
 def add_isbn_to_book_text_list():
     global choosen_isbn
+    global lines
+    global e_isbns_list
+
     choosen_isbn = e_isbns_list.get()
-    if not choosen_isbn.strip():
-        message_window_empty_data()
-        return None
-    else:
-        if choosen_isbn and choosen_isbn != '---Choose isbn from the list---':
-            book_text_list.insert(END, f"Isbn: {choosen_isbn}")
-            e_isbn.delete(0, END)
-            e_isbns_list.set('---Choose isbn from the list---')
-            isbn_add_successfull_window()
-            logging.info('Isbn added to the list')
-            return None
-        else:
-            logging.info('Isbn is already on the list')
-            return None
+    if not choosen_isbn and choosen_isbn == '---Choose isbn from the list---':
+        return
+
+    for index, line in enumerate(book_text_list.get(0, END)):
+        if line.startswith('Isbn'):
+            book_text_list.delete(index)
+
+    book_text_list.insert(0, f"Isbn: {choosen_isbn}")
+    e_isbns_list.set('---Choose isbn from the list---')
+    isbn_add_successfull_window()
 
 
 def add_isbn_to_db():
@@ -1011,7 +1007,7 @@ def category_add_successfull_window():
 
 def selected_to_be_deleted():
     global selected_indicate
-    selected_indicate= text_list.curselection()
+    selected_indicate= book_text_list.curselection()
     if selected_indicate:
         logging.info('Selected to be deleted')
         return selected_indicate[0]
@@ -1227,114 +1223,41 @@ def cover_page_delete_successfull_window():
     button_close.grid(row=1, column=0, padx=10, pady=10)
 
 ###########************###################
-#
-# def delete_book():
-#     # book_to_be_deleted = book_text_list.get()
-#     # if book_to_be_deleted.sta
-#
-#     global ta_text_list
-#     selected = book_text_list.curselection()
-#     if selected:
-#         book_text_list.delete(selected)
-#         delete_successfull_window()
-#
-#         selected_area = ta_text_list.curselection()
-#         if selected_area:
-#             ta_text_list.set('---Choose tag from the list---')
-#             logging.info('Tag deleted from the book')
-#         else:
-#             logging.info('No tag selected to be deleted')
-#
-#         selected_area = t_text_list.curselection()
-#         if selected_area:
-#             t_text_list.set('---Choose title from the list---')
-#             logging.info('Title deleted from the book')
-#         else:
-#             logging.info('No title selected to be deleted')
-#
-#         selected_area = a_text_list.curselection()
-#         if selected_area:
-#             a_text_list.set('---Choose author from the list---')
-#             logging.info('Author deleted from the book')
-#         else:
-#             logging.info('No author selected to be deleted')
-#
-#         selected_area = l_text_list.curselection()
-#         if selected_area:
-#             l_text_list.set('---Choose language from the list---')
-#             logging.info('Language deleted from the book')
-#         else:
-#             logging.info('No language selected to be deleted')
-#
-#         selected_area = c_text_list.curselection()
-#         if selected_area:
-#             c_text_list.set('---Choose category from the list---')
-#             logging.info('Category deleted from the book')
-#         else:
-#             logging.info('No category selected to be deleted')
 
 def delete_book():
-    selected = book_text_list.curselection()
-    if not selected:
-        logging.info('No book selected for deletion.')
-        return
 
-    selected_text = book_text_list.get(selected[0])
-    logging.info(f"Attempting to delete book entry: {selected_text}")
-
-    title = None
-    author_name = None
-    author_surname = None
-    language = None
-    category = None
-    tag = None
+    selected_title = selected_isbn = selected_language = None
 
     for i in range(book_text_list.size()):
         line = book_text_list.get(i)
         if line.startswith("Title: "):
-            title = line.replace("Title: ", "").strip()
-        elif line.startswith("Author: "):
-            parts = line.replace("Author: ", "").strip().split()
-            if len(parts) >= 2:
-                author_name, author_surname = parts[0], parts[1]
+            selected_title = line.replace("Title: ", "").strip()
+        elif line.startswith("Isbn: "):
+            selected_isbn = line.replace("Isbn: ", "").strip()
         elif line.startswith("Language: "):
-            language = line.replace("Language: ", "").strip()
-        elif line.startswith("Category: "):
-            category = line.replace("Category: ", "").strip()
-        elif line.startswith("Tag: "):
-            tag = line.replace("Tag: ", "").strip()
+            selected_language = line.replace("Language: ", "").strip()
 
-    if not all([title, author_name, author_surname, language, category, tag]):
+    if not all([selected_title, selected_isbn, selected_language]):
         logging.warning("Book data incomplete")
+        return
+
+    title_obj = session.query(Title).filter_by(title=selected_title).first()
+    isbn_obj = session.query(Isbn).filter_by(isbn_name=selected_isbn).first()
+    language_obj = session.query(Language).filter_by(language=selected_language).first()
+
+    existing_book = session.query(Book).filter_by(title=title_obj, isbn=isbn_obj, language = language_obj).first()
+
+    if not existing_book:
+        logging.info("Book not found in database")
         message_window_empty_data()
         return
 
-    title_obj = session.query(Title).filter_by(title=title).first()
-    author_obj = session.query(Author).filter_by(author_name=author_name, author_surname=author_surname).first()
-    language_obj = session.query(Language).filter_by(language=language).first()
-    category_obj = session.query(Category).filter_by(category_name=category).first()
-    tag_obj = session.query(Tag).filter_by(tag=tag).first()
+    session.delete(existing_book)
+    session.commit()
 
-    if not all([title_obj, author_obj, language_obj, category_obj, tag_obj]):
-        logging.warning("One or more related entities not found in db")
-        message_window_empty_data()
-        return
-
-    book = session.query(Book).filter_by(title_id=title_obj.id, language_id=language_obj.id).first()
-    if book and author_obj in book.authors and category_obj in book.categories and tag_obj in book.tags:
-        book.authors.remove(author_obj)
-        book.categories.remove(category_obj)
-        book.tags.remove(tag_obj)
-        session.delete(book)
-        session.commit()
-
-        book_text_list.delete(0, END)
-        delete_successfull_window()
-        logging.info(f"Book '{title}' deleted successfully")
-    else:
-        logging.info("Book not found")
-        message_window_empty_data()
-
+    book_text_list.delete(0, END)
+    delete_successfull_window()
+    logging.info(f"Book '{title}' deleted successfully")
 
 def delete_successfull_window():
     global b_top
@@ -1423,29 +1346,6 @@ def update_category_button_to_click():
             top.destroy()
             return None
 
-    # global top
-    # old_category_selected = c_text_list.curselection()
-    #
-    # if not old_category_selected:
-    #     logging.info('No category selected for an update')
-    # else:
-    #     selected_index = old_category_selected[0]
-    #     old_category = c_text_list.get(selected_index)
-    #     new_category = e_category.get()
-    #     if new_category in c_text_list.get(0,END):
-    #         logging.info('Category is already on the categories list ')
-    #     else:
-    #         operation_status, category_id = update_category(old_category, new_category)
-    #         if operation_status == OPER_UPDATE_SUCCEEDED:
-    #             update_category(old_category, new_category)
-    #             c_text_list.delete(selected_index)
-    #             c_text_list.insert(selected_index, new_category)
-    #             top.destroy()
-    #             category_update_successfull_window()
-    #             logging.info('Category was updated')
-    #         else:
-    #             logging.info('Category update failed')
-    #             return None
 
 def category_update_successfull_window():
     c_u_win_top = Toplevel()
@@ -1967,9 +1867,9 @@ def select_file_from_disc(event_object):
         event_object.insert(0, str(filepath))
 
 def add_book_to_db():
-    new_book = Book()
+    global lines
 
-    lines = book_text_list.get(0, END)
+    new_book = Book()
 
     title = author_name = author_surname = language = category = tag = isbn = None
 
@@ -1993,7 +1893,7 @@ def add_book_to_db():
     if not all([title, author_name, author_surname, language, category, tag, isbn]):
         logging.warning("Some book data are missing")
         message_window_empty_data()
-        return
+        return None
 
     title_obj = session.query(Title).filter_by(title=title).first()
     author_obj = session.query(Author).filter_by(author_name=author_name, author_surname=author_surname).first()
@@ -2002,11 +1902,18 @@ def add_book_to_db():
     tag_obj = session.query(Tag).filter_by(tag=tag).first()
     isbn_obj = session.query(Isbn).filter_by(isbn_name=isbn).first()
 
-    existing_book = session.query(Book).filter_by(title_id=title_obj.id, language_id=language_obj.id).first()
-    if existing_book:
-        logging.info("Book exists already in db")
+
+    existing_book_title = session.query(Book).filter_by(title_id=title_obj.id).first()
+    existing_book_isbn = session.query(Book).filter_by(isbn_id=isbn_obj.id).first()
+    if existing_book_title:
+        logging.info("Book with this title exists already in db")
         message_window_data_exists()
-        return
+        return existing_book_title.id
+    if existing_book_isbn:
+        logging.info("Book with this isbn exists already in db")
+        message_window_data_exists()
+        print('{existing_book_isbn.id}')
+        return existing_book_isbn.id
 
     new_book.title_id = title_obj.id
     new_book.language_id = language_obj.id
