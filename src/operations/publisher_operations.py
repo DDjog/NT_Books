@@ -55,11 +55,12 @@ def get_publishers_list():
         logging.error(f'No database connection: {e}')
         return OPER_GET_LIST_FAILED_NO_DATABASE_CONNECTION, None
 
-def update_publisher(old_publisher_name, updated_publisher_name, old_publication_year, updated_publication_year):
+def update_publisher(old_publisher_name, updated_publisher_name, old_publication_year, updated_publication_year, old_address_id, new_address_idd):
     try:
         publisher = session.query(Publisher).filter_by(
             publisher=old_publisher_name,
-            publication_year=old_publication_year
+            publication_year=old_publication_year,
+            address_id = old_address_id
         ).first()
         if publisher:
             publisher.publisher = updated_publisher_name
