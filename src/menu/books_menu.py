@@ -867,10 +867,10 @@ def add_new_title_to_db():
         session.add(Title(title=new_title))
         session.commit()
         # title_add_successfull_window()
-        e_title.delete(0, END)
         tmp_list =  list(e_titles_list['values'])
         tmp_list.append(new_title)
         e_titles_list['values']=tmp_list
+        e_title.delete(0, END)
         logging.info('Title was added to the database')
         return None
     else:
@@ -2286,31 +2286,60 @@ def select_file_from_disc(event_object):
         event_object.delete(0, END)
         event_object.insert(0, str(filepath))
 
-def add_book_to_db():
+def    add_book_to_db():
 
     new_book = Book()
 
-    title = author_name = author_surname = language = category = tag = isbn = None
+    title = author_name = author_surname = language = category = tag = isbn = publisher = shelf_signature = None
 
     book_list = book_text_list.get(0, END)
-    for line in book_list:
+    for line in book_text_list.get(0, END):
+        # print("line:", line)
+
+        if line.startswith("Category: "):
+            category = line.replace("Category: ", "").strip()
+            continue
+
+        if line.startswith("Tag: "):
+            tag = line.replace("Tag: ", "").strip()
+            continue
+
+        if line.startswith("Isbn: "):
+            isbn = line.replace("Isbn: ", "").strip()
+            continue
+
         if line.startswith("Title: "):
             title = line.replace("Title: ", "").strip()
-        elif line.startswith("Author: "):
+            continue
+        if line.startswith("Author: "):
             parts = line.replace("Author: ", "").strip().split()
             if len(parts) >= 2:
                 author_name = parts[0]
                 author_surname = " ".join(parts[1:])
-        elif line.startswith("Language: "):
+            continue
+        if line.startswith("Language: "):
             language = line.replace("Language: ", "").strip()
-        elif line.startswith("Category: "):
-            category = line.replace("Category: ", "").strip()
-        elif line.startswith("Tag: "):
-            tag = line.replace("Tag: ", "").strip()
-        elif line.startswith("Isbn: "):
-            isbn = line.replace("Isbn: ", "").strip()
+            continue
 
-    if not all([title, author_name, author_surname, language, category, tag, isbn]):
+        if line.startswith("Publisher: "):
+            publisher = line.replace("Publisher: ", "").strip()
+            continue
+
+        if line.startswith("Shelf signature: "):
+            shelf_signature = line.replace("Shelf signature: ", "").strip()
+            continue
+
+    print('tile = ', title )
+    print('author_name = ', author_name )
+    print('author_surname = ', author_surname )
+    print('language = ', language )
+    print('category = ', category )
+    print('tag = ', tag )
+    print('isbn = ', isbn )
+    print('publisher = ', publisher)
+    print('shef_signature = ', shelf_signature)
+
+    if not all([title, author_name, author_surname, language, category, tag, isbn, publisher, shelf_signature]):
         logging.warning("Some book data are missing")
         message_window_empty_data()
         return None
@@ -2321,19 +2350,18 @@ def add_book_to_db():
     category_obj = session.query(Category).filter_by(category_name=category).first()
     tag_obj = session.query(Tag).filter_by(tag=tag).first()
     isbn_obj = session.query(Isbn).filter_by(isbn_name=isbn).first()
+    publisher_obj = session.query(Publisher).filter_by(publisher=publisher).first()
+    shelf_signature_obj = session.query(ShelfSignature).filter_by(shelf_signature=shelf_signature).first()
 
 
-    existing_book_title = session.query(Book).filter_by(title_id=title_obj.id).first()
-    existing_book_isbn = session.query(Book).filter_by(isbn_id=isbn_obj.id).first()
-    if existing_book_title:
-        logging.info("Book with this title exists already in db")
+    existing_book = session.query(Book).filter_by(
+        title_id=title_obj.id,
+        isbn_id=isbn_obj.id
+    ).first()
+    if existing_book:
+        logging.info("Book with this title, author and isbn exists already in db")
         message_window_data_exists()
-        return existing_book_title.id
-    if existing_book_isbn:
-        logging.info("Book with this isbn exists already in db")
-        message_window_data_exists()
-        print('{existing_book_isbn.id}')
-        return existing_book_isbn.id
+        return existing_book.id
 
     new_book.title_id = title_obj.id
     new_book.language_id = language_obj.id
@@ -2341,9 +2369,13 @@ def add_book_to_db():
     new_book.categories.append(category_obj)
     new_book.tags.append(tag_obj)
     new_book.isbn = isbn_obj
+    new_book.publisher = publisher_obj
+    if shelf_signature_obj == None:
+        shelf_signature_obj = '0001'
+    new_book.shelf_signature = shelf_signature_obj
 
 
-    session.add(Book.new_book)
+    session.add(new_book)
     session.commit()
 
     logging.info(f"Book '{title}' was added to db")
