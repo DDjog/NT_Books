@@ -4,9 +4,11 @@ from PIL import Image, ImageTk
 import logging
 import time
 import io
+import os
 from tkinter import ttk
 from tkinter import filedialog
 
+from sqlalchemy import column
 
 from src.database.db import session
 from src.database.models import Author, Category, Tag, Title, Language, Book, Isbn, Cover_page, Publisher, \
@@ -22,7 +24,8 @@ from src.operations.tag_operations import add_tag, get_tags_list, delete_tag
 from src.operations.cover_page_operations import add_cover_page, delete_cover_page, get_cover_page, get_cover_page_list
 from src.operations.publisher_operations import add_publisher, delete_publisher, get_publishers_list, update_publisher
 from src.operations.shelf_signature_operations import add_shelf_signature, delete_shelf_signature, update_shelf_signature, get_shelf_signatures_list
-
+from src.tests_author.test_is_author_in_db import author_name
+from src.tests_shelf_signature.test_get_shelf_signatures_list import shelf_signature
 
 root = Tk()
 clock_label = None
@@ -326,6 +329,7 @@ def cover_page_oper_window():
 
     cp_text_list = Listbox(cp_top, width=60, height=15)
     cp_text_list.grid(row=2, column=0, padx=10, pady=10, sticky='nsew')
+    cp_text_list.bind("<<ListboxSelect>>", show_cover_image)
 
     button_update = Button(cp_top, text='Update cover page', command=update_cover_page_window)
     button_update.grid(row=1, column=1, padx=10, pady=10, sticky='nsew')
@@ -410,7 +414,7 @@ def shelf_signature_oper_window():
     e_ss=Entry(top, width=50)
     e_ss.grid(row=0, column=0, sticky='ew')
 
-    add_in_e_ss=Button(top, text='Add self signature', command=add_ss_to_db)
+    add_in_e_ss=Button(top, text='Add shelf signature', command=add_ss_to_db)
     add_in_e_ss.grid(row=0, column=1, padx=10, pady=10, sticky='ew')
 
     delete_in_e_ss = Button(top, text='Delete shelf signature', command=delete_selected_ss)
@@ -428,7 +432,7 @@ def shelf_signature_oper_window():
     ss_text_list_label = Label(top, text='List of shelf signatures:')
     ss_text_list_label.grid(row=1, column=0, padx=10, pady=10, sticky='nsew')
 
-    button_update = Button(top, text='Update shelf signature', command=update_shelf_signature_window)
+    button_update = Button(top, text='Update shelf signature', command=update_ss_window)
     button_update.grid(row=1, column=1, padx=10, pady=10, sticky='nsew')
 
     button_quit = Button(top, text='Close', command=top.destroy)
@@ -1532,6 +1536,23 @@ def publisher_delete_successfull_window():
 
 ###########************###################
 
+def delete_selected_ss():
+    delete_for_sure(_delete_selected_shelf_signature)
+    return None
+
+def _delete_selected_shelf_signature():
+    selected = ss_text_list.curselection()
+    if selected:
+        delete_shelf_signature(ss_text_list.get(selected))
+        ss_text_list.delete(selected)
+        logging.info('Shelf signature deleted')
+        return None
+    else:
+        logging.info('No record to be deleted')
+        return None
+
+###########************###################
+
 def delete_book():
 
     selected_title = selected_isbn = selected_language = None
@@ -2274,6 +2295,97 @@ def publisher_update_successfull_window():
 
 ###############*******###############
 
+def update_ss_window():
+    global old_ss
+    global new_ss
+    global selected_ss
+    global selected_index
+    global top
+    global e_ss
+
+    top = Toplevel()
+    top.grab_set()
+
+    top.columnconfigure(0, weight=1)
+    top.columnconfigure(1, weight=1)
+    top.columnconfigure(2, weight=1)
+    top.columnconfigure(3, weight=1)
+    top.rowconfigure(0, weight=1)
+    top.rowconfigure(1, weight=1)
+    top.rowconfigure(2, weight=1)
+
+    top.title('Update shelf signature')
+    selected_ss = ss_text_list.curselection()
+
+
+    old_ss = Entry(top, width=50)
+    old_ss.grid(row=0, column=1, sticky='ew')
+
+    new_ss = Entry(top, width=50)
+    new_ss.grid(row=1, column=1, sticky='ew')
+
+    if selected_ss:
+        selected_index = selected_ss[0]
+        selected_ss_content = ss_text_list.get(selected_index)
+        old_ss.insert(0, selected_ss)
+        ss_entry_content = e_ss.get()
+        new_ss.insert(0, ss_entry_content)
+
+
+
+    old_isbn_label = Label(top, text='from')
+    old_isbn_label.grid(row=0, column=0, padx=10, pady=10, sticky='nsew')
+
+    new_isbn_label = Label(top, text='to')
+    new_isbn_label.grid(row=1, column=0, padx=10, pady=10, sticky='nsew')
+
+    button_update = Button(top, text='Press to update', command=lambda: update_isbn_button_to_click(new_isbn_name, selected_index))
+    button_update.grid(row=2, column=1, padx=10, pady=10)
+
+    button_close = Button(top, text='Close', command=top.destroy)
+    button_close.grid(row=2, column=2, padx=10, pady=10)
+
+
+def update_isbn_button_to_click(new_isbn, selected_index):
+    updated_isbn = new_isbn.get()
+    if not updated_isbn:
+        logging.info("No isbn indicated for an update")
+        return None
+    else:
+        selected_isbn_text = i_text_list.get(selected_index)
+        delete_isbn(selected_isbn_text)
+
+        isbn_list = i_text_list.get(0, END)
+        if not updated_isbn in isbn_list:
+
+            add_isbn(updated_isbn)
+            i_text_list.delete(selected_index)
+            i_text_list.insert(selected_index, updated_isbn)
+            top.destroy()
+            # isbn_update_successfull_window()
+            logging.info('Isbn updated')
+        else:
+            logging.info('Isbn is already in db')
+            message_window_data_exists()
+            top.destroy()
+            return None
+
+
+def isbn_update_successfull_window():
+    i_u_win_top = Toplevel()
+    i_u_win_top.grab_set()
+    i_u_win_top.lift()
+    i_u_win_top.after(10, lambda: i_u_win_top.attributes('-topmost', False))
+    top_label = Label(i_u_win_top, text='Isbn update successfull.')
+    top_label.grid(row=0, column=0, padx=10, pady=10, sticky='nsew')
+
+    button_close = Button(i_u_win_top, text='Close', command=i_u_win_top.destroy)
+    button_close.grid(row=1, column=0, padx=10, pady=10)
+
+
+###############********############
+
+
 def select_file_from_disc(event_object):
     filepath = filedialog.askopenfilename(initialdir=".",
                                       title="File with cover",
@@ -2286,7 +2398,7 @@ def select_file_from_disc(event_object):
         event_object.delete(0, END)
         event_object.insert(0, str(filepath))
 
-def    add_book_to_db():
+def add_book_to_db():
 
     new_book = Book()
 
@@ -2339,7 +2451,7 @@ def    add_book_to_db():
     print('publisher = ', publisher)
     print('shef_signature = ', shelf_signature)
 
-    if not all([title, author_name, author_surname, language, category, tag, isbn, publisher, shelf_signature]):
+    if not all([title, author_name, author_surname, language, category, tag, isbn]):
         logging.warning("Some book data are missing")
         message_window_empty_data()
         return None
@@ -2368,10 +2480,10 @@ def    add_book_to_db():
     new_book.authors.append(author_obj)
     new_book.categories.append(category_obj)
     new_book.tags.append(tag_obj)
-    new_book.isbn = isbn_obj
+    new_book.isbn_id = isbn_obj.id
     new_book.publisher = publisher_obj
     if shelf_signature_obj == None:
-        shelf_signature_obj = '0001'
+        shelf_signature_obj = int('1')
     new_book.shelf_signature = shelf_signature_obj
 
 
@@ -2380,6 +2492,117 @@ def    add_book_to_db():
 
     logging.info(f"Book '{title}' was added to db")
 
+def books_list_window():
+    global selelected_book_id
+
+    top = Toplevel()
+    top.title('List of books in db')
+    top.grab_set()
+
+    top.columnconfigure(0, weight=1)
+    top.columnconfigure(1, weight=1)
+    top.columnconfigure(2, weight=1)
+    top.rowconfigure(0, weight=1)
+    top.rowconfigure(1, weight=1)
+    top.rowconfigure(2, weight=1)
+
+    cols = ('id', 'title', 'author')
+    tree = ttk.Treeview(top, columns=cols, show='headings', height=15)
+    tree.heading('id', text='ID')
+    tree.heading('title', text='Title')
+    tree.heading('author', text="Author")
+
+    tree.column('id', width=70, anchor='center')
+    tree.column('title', width=320, anchor='w')
+    tree.column('author', width=260, anchor='w')
+
+    tree.grid(row=0, column=0, sticky='nsew')
+
+    for item in tree.get_children():
+        tree.delete(item)
+    books = session.query(Book).all()
+    for b in books:
+        names = []
+        for a in b.authors:
+            names.append(f'{a.author_name} {a.author_surname}')
+        title_txt = getattr(b.title, "title", "") or ""
+        author_names = ','.join(names)
+        tree.insert('', 'end', iid=str(b.id), values=(b.id, title_txt, author_names))
+    tree.bind('<<TreeviewSelect>>', lambda e: open_publisher_ss_window(int(tree.selection()[0])))
+
+    button_quit = Button(top, text='Close', command=top.quit)
+    button_quit.grid(row=3, column=2)
+
+
+    def open_publisher_ss_window(selected_book_id):
+        global e_publisher_book
+        global e_ss_book
+
+        top = Toplevel()
+        top.title(f'Add Publisher/Shelf signature(Book ID: {selected_book_id})')
+        top.grab_set()
+
+        label = Label(top, text='New Publisher:')
+        label.grid(row=0, column=0, padx=10, pady=10, sticky='e', )
+
+        e_publisher_book = Entry(top, width=40)
+        e_publisher_book.grid(row=0, column=1, padx=10, pady=10, sticky='w')
+
+        label = Label(top, text='New Shelf signature:')
+        label.grid(row=1, column=0, padx=10, pady=10, sticky='e', )
+
+        e_ss_book = Entry(top, width=40)
+        e_ss_book.grid(row=1, column=1, padx=10, pady=10, sticky='w')
+
+        Button1 = Button(top, text='Add new publisher', fg='black', command=lambda: add_new_publisher_to_book(selected_book_id, e_publisher_book.get()))
+        Button1.grid(row=0, column=2, padx=10, pady=10, sticky='ew')
+
+        Button2 = Button(top, text='Add new shelf signature', fg='black', command=lambda:add_new_ss_to_book(selected_book_id, e_ss_book.get()))
+        Button2.grid(row=1, column=2, padx=10, pady=10, sticky='ew')
+
+
+
+    def add_new_publisher_to_book(selected_book_id, new_publisher):
+        if not new_publisher:
+            message_window_empty_data()
+            return None
+
+        publisher = session.query(Publisher).filter(Publisher.publisher == new_publisher).first()
+        if not publisher:
+            publisher = Publisher(publisher=new_publisher)
+            session.add(publisher)
+            session.commit()
+
+        book = session.query(Book).filter(Book.id == selected_book_id).first()
+        if not book:
+            logging.info('Book not found')
+            return None
+
+        book.publisher = publisher
+        session.commit()
+        logging.info('Publisher was set for the book')
+        return None
+
+    def add_new_ss_to_book(selected_book_id, new_ss):
+        if not new_ss:
+            message_window_empty_data()
+            return None
+
+        ss = session.query(ShelfSignature).filter(ShelfSignature.shelf_signature == new_ss).first()
+        if not ss:
+            ss = ShelfSignature(shelf_signature=new_ss)
+            session.add(ss)
+            session.commit()
+
+        book = session.query(Book).filter(Book.id == selected_book_id).first()
+        if not book:
+            logging.info('Book not found')
+            return None
+
+        book.shelf_signature = ss
+        session.commit()
+        logging.info('Shelf signature was set for the book')
+        return None
 
 myButton1 = Button(root, text='Categories operations', fg='blue', command=cat_oper_window)
 myButton1.grid(row=0, column=0, padx=10, pady=10, sticky='ew')
@@ -2405,17 +2628,20 @@ myButton7.grid(row=6, column=0, padx=10, pady=10, sticky='ew')
 myButton8 = Button(root, text='Publishers operations', fg='olive', command= publisher_oper_window)
 myButton8.grid(row=7, column=0, padx=10, pady=10, sticky='ew')
 
-myButton9 = Button(root, text='Shelf signature operations', fg='lightsalmon', command= publisher_oper_window)
+myButton9 = Button(root, text='Shelf signature operations', fg='lightsalmon', command= shelf_signature_oper_window)
 myButton9.grid(row=8, column=0, padx=10, pady=10, sticky='ew')
 
-myButton10 = Button(root, text='Books operations', fg='black', highlightbackground='orange', command= books_oper_window, width=20, height=3)
+myButton10 = Button(root, text='ADD NEW BOOK', fg='black', highlightbackground='orange', command= books_oper_window, width=20, height=3)
 myButton10.grid(row=1, column=1, padx=10, pady=10, sticky='ew')
 
-digit_clock_label = Label(root, font=('Calibri', 20), fg='orange', bg='grey')
-digit_clock_label.grid(row=2, column=1, padx=10, pady=10, sticky='nsew')
+myButton10 = Button(root, text='List of books in db', fg='magenta', highlightbackground='orange', command= books_list_window, width=20, height=3)
+myButton10.grid(row=2, column=1, padx=10, pady=10, sticky='ew')
+
+digit_clock_label = Label(root, font=('Calibri', 30), fg='orange', bg='grey')
+digit_clock_label.grid(row=3, column=1, padx=10, pady=10, sticky='nsew')
 
 logo_label = Label(root)
-logo_label.grid(row=3, column=1, padx=10, pady=10, sticky='nsew')
+logo_label.grid(row=4, column=1, padx=10, pady=10, sticky='nsew')
 
 button_quit = Button(root, text='Close', command=root.quit)
 button_quit.grid(row=5, column=3)
@@ -2443,27 +2669,44 @@ show_logo(logo)
 
 
 
+IMAGES_DIR = os.path.normpath(os.path.join(os.path.dirname(__file__), '..', 'images'))
+os.makedirs(IMAGES_DIR, exist_ok=True)
 
 def show_cover_image(event):
     global cp_text_list
 
     selection = cp_text_list.curselection()
-    if selection:
-        selected_id = cp_text_list.get(selection[0])
-        cover_data = session.query(Cover_page).filter(Cover_page.id == selected_id).scalar()
-        if cover_data:
-            try:
-                image = Image.open(io.BytesIO(cover_data))
-                image = image.resize((150, 200))
-                photo = ImageTk.PhotoImage(image)
-                cover_image_label.config(image=photo, text='')
-                cover_image_label.image = photo
-            except Exception:
-                cover_image_label.config(image='', text='Error loading image')
-        else:
-            cover_image_label.config(image='', text='No cover found')
+    if not selection:
+        cover_image_label.config(image='', text='No cover selected')
+        cover_image_label.image = None
+        return
 
 
-    cp_text_list.bind("<<ListboxSelect>>", show_cover_image)
+    selected_id = int(cp_text_list.get(selection[0]))
+
+    output_path = os.path.join(IMAGES_DIR, f'cover_{selected_id}.png')
+
+    try:
+        get_cover_page(selected_id, output_path)
+    except TypeError:
+
+        cover_image_label.config(image='', text='get_cover_page(id, output_path) required')
+        cover_image_label.image = None
+        return
+
+    if not os.path.exists(output_path):
+        cover_image_label.config(image='', text='No cover found')
+        cover_image_label.image = None
+        return
+
+    try:
+        image = Image.open(output_path)
+        image = image.resize((150, 200))
+        photo = ImageTk.PhotoImage(image)
+        cover_image_label.config(image=photo, text='')
+        cover_image_label.image = photo
+    except Exception:
+        cover_image_label.config(image='', text='Error loading image')
+        cover_image_label.image = None
 
 root.mainloop()
